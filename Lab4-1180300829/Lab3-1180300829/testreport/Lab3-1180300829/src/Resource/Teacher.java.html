@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Teacher.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Resource</a> &gt; <span class="el_source">Teacher.java</span></div><h1>Teacher.java</h1><pre class="source lang-java linenums">package Resource;
+
+<span class="pc bpc" id="L3" title="1 of 2 branches missed.">public class Teacher {</span>
+
+	private final String idnumber;       //教师身份证号
+	private final String teachername;    //教师姓名
+	private final String teachergender;  //教师性别
+	private final String teachertitle;   //教师职称
+	
+	// immutability类
+	// Abstraction function:
+    // AF(idnumber)=教师身份证号
+	// AF(teachername)=教师姓名
+	// AF(teachergender)=教师性别
+	// AF(teachertitle)=教师职称
+	// Representation invariant:
+	// 教师身份证号,教师姓名,教师性别,教师职称不为空
+	// Safety from rep exposure:
+	// 将idnumber,teachername,teachergender,teachertitle设置为private final
+
+	// TODO checkRep
+    private void checkRep() {  //教师身份证号,教师姓名,教师性别,教师职称不为空
+<span class="pc bpc" id="L23" title="2 of 4 branches missed.">          assert idnumber!=null;</span>
+<span class="pc bpc" id="L24" title="2 of 4 branches missed.">          assert teachername!=null;</span>
+<span class="pc bpc" id="L25" title="2 of 4 branches missed.">          assert teachergender!=null;</span>
+<span class="pc bpc" id="L26" title="2 of 4 branches missed.">          assert teachertitle!=null;</span>
+<span class="fc" id="L27">    }</span>
+	
+	/**
+	 * 初始化构造方法
+	 * @param a 教师身份证号
+	 * @param b 教师姓名
+	 * @param c 教师性别
+	 * @param d 教师职称
+	 */
+<span class="fc" id="L36">	public Teacher(String a,String b,String c,String d) {</span>
+<span class="fc" id="L37">		this.idnumber=a;</span>
+<span class="fc" id="L38">		this.teachername=b;</span>
+<span class="fc" id="L39">		this.teachergender=c;</span>
+<span class="fc" id="L40">		this.teachertitle=d;</span>
+<span class="fc" id="L41">		checkRep();</span>
+<span class="fc" id="L42">	}</span>
+	
+	/**
+	 * 返回教师身份证号
+	 * @return 教师身份证号
+	 */
+	public String getidnumber() {
+<span class="fc" id="L49">		checkRep();</span>
+<span class="fc" id="L50">		return idnumber;</span>
+	}
+	
+	/**
+	 * 返回教师姓名
+	 * @return 教师姓名
+	 */
+	public String getteachername() {
+<span class="fc" id="L58">		checkRep();</span>
+<span class="fc" id="L59">		return teachername;</span>
+	}
+	
+	/**
+	 * 返回教师性别
+	 * @return 教师性别
+	 */
+	public String getteachergender() {
+<span class="fc" id="L67">		checkRep();</span>
+<span class="fc" id="L68">		return teachergender;</span>
+	}
+	
+	/**
+	 * 返回教师职称
+	 * @return 教师职称
+	 */
+	public String getteachertitle() {
+<span class="fc" id="L76">		checkRep();</span>
+<span class="fc" id="L77">		return teachertitle;</span>
+	}
+
+	/**
+	 * 重写hashcode方法
+	 */
+	@Override
+	public int hashCode() {
+<span class="fc" id="L85">		final int prime = 31;</span>
+<span class="fc" id="L86">		int result = 1;</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">		result = prime * result + ((idnumber == null) ? 0 : idnumber.hashCode());</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">		result = prime * result + ((teachergender == null) ? 0 : teachergender.hashCode());</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">		result = prime * result + ((teachername == null) ? 0 : teachername.hashCode());</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		result = prime * result + ((teachertitle == null) ? 0 : teachertitle.hashCode());</span>
+<span class="fc" id="L91">		return result;</span>
+	}
+
+	/**
+	 * 重写equals方法
+	 */
+	@Override
+	public boolean equals(Object obj) {
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">		if (this == obj)</span>
+<span class="nc" id="L100">			return true;</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">		if (obj == null)</span>
+<span class="nc" id="L102">			return false;</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="nc" id="L104">			return false;</span>
+<span class="fc" id="L105">		Teacher other = (Teacher) obj;</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">		if (idnumber == null) {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">			if (other.idnumber != null)</span>
+<span class="nc" id="L108">				return false;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		} else if (!idnumber.equals(other.idnumber))</span>
+<span class="fc" id="L110">			return false;</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">		if (teachergender == null) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">			if (other.teachergender != null)</span>
+<span class="nc" id="L113">				return false;</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">		} else if (!teachergender.equals(other.teachergender))</span>
+<span class="nc" id="L115">			return false;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (teachername == null) {</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">			if (other.teachername != null)</span>
+<span class="nc" id="L118">				return false;</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		} else if (!teachername.equals(other.teachername))</span>
+<span class="nc" id="L120">			return false;</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">		if (teachertitle == null) {</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">			if (other.teachertitle != null)</span>
+<span class="nc" id="L123">				return false;</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		} else if (!teachertitle.equals(other.teachertitle))</span>
+<span class="nc" id="L125">			return false;</span>
+<span class="fc" id="L126">		return true;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CourseEntryTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">PlanningEntry</a> &gt; <span class="el_source">CourseEntryTest.java</span></div><h1>CourseEntryTest.java</h1><pre class="source lang-java linenums">package PlanningEntry;
+
+import static org.junit.Assert.*;
+
+import java.text.ParseException;
+
+import org.junit.Test;
+
+import Exception.BeginEndTimeException;
+import Factory.CourseEntryFactory;
+import Location.CourseLocation;
+import Resource.Teacher;
+import Timeslot.Timeslot;
+
+<span class="fc" id="L15">public class CourseEntryTest {</span>
+	
+	/**
+	 * 在测试该类的过程中已经完成了对其委托方法的测试
+	 */
+
+	/* Testing strategy
+	 * 测试setlocations方法
+	 * 按照位置是否已被设置划分：位置已被设置，位置未被设置
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void setlocationstest() {
+<span class="fc" id="L28">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L32">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L33">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L34">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L35">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L36">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L38">		assertEquals(true,course1.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;)));</span>
+<span class="fc" id="L39">		assertEquals(false,course1.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;)));</span>
+<span class="fc" id="L40">	}</span>
+
+	/* Testing strategy
+	 * 测试changelocations方法
+	 * 按照位置是否和原位置重复划分：重复，不重复
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void changelocationstest() {
+<span class="fc" id="L49">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L53">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L54">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L55">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L56">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L57">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L59">		course1.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L60">		assertEquals(true,course1.changelocations(new CourseLocation(weidu,jingdu,&quot;明德楼32&quot;)));	</span>
+<span class="fc" id="L61">		assertEquals(false,course1.changelocations(new CourseLocation(weidu,jingdu,&quot;明德楼32&quot;)));</span>
+<span class="fc" id="L62">	}</span>
+	
+	/* Testing strategy
+	 * 测试deletelocations方法
+	 * 按照待删除的位置是否存在划分：存在，不存在
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void deletelocationstest() {
+<span class="fc" id="L71">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L75">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L76">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L77">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L78">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L79">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L81">		course1.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L82">		assertEquals(false,course1.deletelocations(new CourseLocation(weidu,jingdu,&quot;明德楼32&quot;)));	</span>
+<span class="fc" id="L83">		assertEquals(true,course1.deletelocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;)));</span>
+<span class="fc" id="L84">	}</span>
+	
+	/* Testing strategy
+	 * 测试getlocations方法
+     * 测试返回值即可
+     */
+	@Test
+	public void getlocationstest() {
+<span class="fc" id="L92">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L96">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L97">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L98">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L99">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L100">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L102">		course1.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L103">		assertEquals(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;),course1.getlocations());	</span>
+<span class="fc" id="L104">	}</span>
+	
+	/* Testing strategy
+	 * 测试setresource方法
+	 * 按照资源是否已被设置划分：资源已被设置，资源未被设置
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void setresourcetest() {
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L116">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L117">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L118">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L119">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L120">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L122">		assertEquals(true,course1.setresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;)));</span>
+<span class="fc" id="L123">		assertEquals(false,course1.setresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;)));</span>
+<span class="fc" id="L124">	}</span>
+	
+	/* Testing strategy
+	 * 测试getresource方法
+	 * 测试返回值即可
+     */
+	@Test
+	public void getresourcetest() {
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L135">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L136">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L137">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L138">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L139">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L141">		course1.setresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+<span class="fc" id="L142">		assertEquals(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;),course1.getresource());</span>
+<span class="fc" id="L143">	}</span>
+	
+	/* Testing strategy
+	 * 测试changeresource方法
+	 * 按照是否与原教师重复划分：重复，不重复
+	 * 覆盖每个取值如下：
+     */
+	@Test
+	public void changeresourcetest() {
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L155">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L156">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L157">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L158">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L159">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L161">		course1.setresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+<span class="fc" id="L162">		assertEquals(false,course1.changeresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;)));</span>
+<span class="fc" id="L163">		assertEquals(true,course1.changeresource(new Teacher(&quot;422823199812211111&quot;,&quot;王宁&quot;,&quot;男&quot;,&quot;讲师&quot;)));</span>
+<span class="fc" id="L164">	}</span>
+	
+	/* Testing strategy
+	 * 测试whetherblockable方法
+	 * 测试返回值即可
+     */
+	@Test
+	public void whetherblockabletest() {
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L175">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L176">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L177">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L178">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L179">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+<span class="fc" id="L180">		assertEquals(false,course1.whetherblockable());</span>
+<span class="fc" id="L181">	}</span>
+	
+	/* Testing strategy
+	 * 测试settimeslot方法
+	 * 按照时间是否已被设置划分：已被设置，未被设置
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void settimeslottest() throws ParseException, BeginEndTimeException{
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L193">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L194">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L195">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L196">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L197">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L199">		assertEquals(true,course1.settimeslot(new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;)));</span>
+<span class="fc" id="L200">		assertEquals(false,course1.settimeslot(new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;)));</span>
+<span class="fc" id="L201">	}</span>
+	
+	/* Testing strategy
+	 * 测试gettimeslot方法
+	 * 测试返回值即可
+     */
+	@Test
+	public void gettimeslottest() throws ParseException, BeginEndTimeException{
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L212">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L213">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L214">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L215">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L216">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L218">		course1.settimeslot(new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;));</span>
+<span class="fc" id="L219">		assertEquals(new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;),course1.gettimeslot());</span>
+<span class="fc" id="L220">	}</span>
+	
+	/* Testing strategy
+	 * 测试compareTo方法
+	 * 按照起始时间大小划分：大于，等于，小于
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void compareTotest() throws ParseException, BeginEndTimeException{
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L232">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L233">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L234">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L235">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L236">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+<span class="fc" id="L237">		course1.settimeslot(new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;));</span>
+
+		OneLocationEntryImpl a2;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b2;
+		NoBlockableEntryImpl c2;
+<span class="fc" id="L242">		a2=new OneLocationEntryImpl();</span>
+<span class="fc" id="L243">		b2=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L244">		c2=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L245">		PlanningEntry origincourse2=new CourseEntryFactory().getCourseEntry(a2, b2, c2); //用工厂方法创建对象</span>
+<span class="fc" id="L246">		CourseEntry&lt;Teacher&gt; course2=(CourseEntry&lt;Teacher&gt;)origincourse2;</span>
+<span class="fc" id="L247">		course2.settimeslot(new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;));</span>
+
+		
+		OneLocationEntryImpl a3;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b3;
+		NoBlockableEntryImpl c3;
+<span class="fc" id="L253">		a3=new OneLocationEntryImpl();</span>
+<span class="fc" id="L254">		b3=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L255">		c3=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L256">		PlanningEntry origincourse3=new CourseEntryFactory().getCourseEntry(a3, b3, c3); //用工厂方法创建对象</span>
+<span class="fc" id="L257">		CourseEntry&lt;Teacher&gt; course3=(CourseEntry&lt;Teacher&gt;)origincourse3;</span>
+<span class="fc" id="L258">		course3.settimeslot(new Timeslot(&quot;2020-02-01 16:45&quot;,&quot;2020-02-01 18:30&quot;));</span>
+		
+<span class="fc" id="L260">		assertEquals(1,course3.compareTo(course1));</span>
+<span class="fc" id="L261">		assertEquals(0,course1.compareTo(course2));</span>
+<span class="fc" id="L262">		assertEquals(-1,course1.compareTo(course3));</span>
+	
+<span class="fc" id="L264">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

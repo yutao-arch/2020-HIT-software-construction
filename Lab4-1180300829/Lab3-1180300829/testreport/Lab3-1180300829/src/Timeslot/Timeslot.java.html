@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Timeslot.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Timeslot</a> &gt; <span class="el_source">Timeslot.java</span></div><h1>Timeslot.java</h1><pre class="source lang-java linenums">package Timeslot;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import Exception.BeginEndTimeException;
+
+
+<span class="pc bpc" id="L10" title="1 of 2 branches missed.">public class Timeslot {</span>
+
+	private final Calendar begintime;  //一组时间对的初始时间
+	private final Calendar endtime;    //一组时间对的终止时间
+	
+    //immutability类
+	// Abstraction function:
+    // AF(begintime)=一组时间对的初始时间
+	// AF(endtime)=一组时间对的终止时间
+	// Representation invariant:
+    // 起始时间要早于终止时间
+    // Safety from rep exposure:
+    // 将begintime,endtime设置为private final
+	
+	// TODO checkRep
+    private void checkRep() {  //保证起始时间要早于终止时间
+<span class="pc bpc" id="L26" title="2 of 4 branches missed.">          assert begintime.compareTo(endtime)&lt;0:&quot;起始时间要早于终止时间\n&quot;;</span>
+<span class="fc" id="L27">    }</span>
+	
+	/**
+	 * 构造方法
+	 * @param begin 初始时间字符串
+	 * @param end   终止时间字符串
+	 * @throws ParseException 时间格式不为yyyy-MM-dd HH:mm
+	 * @throws BeginEndTimeException 起始时间晚于终止时间
+	 */
+<span class="fc" id="L36">	public Timeslot(String begin,String end) throws ParseException, BeginEndTimeException{</span>
+<span class="fc" id="L37">		this.begintime= Calendar.getInstance(); </span>
+<span class="fc" id="L38">		begintime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(begin));</span>
+<span class="fc" id="L39">		this.endtime= Calendar.getInstance(); </span>
+<span class="fc" id="L40">		endtime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(end));</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		if(begintime.compareTo(endtime)&gt;0) {  //起始时间晚于终止时间抛出异常</span>
+<span class="fc" id="L42">			throw new BeginEndTimeException();</span>
+		}
+<span class="fc" id="L44">		checkRep();</span>
+<span class="fc" id="L45">	}</span>
+	
+	/**
+	 * 返回初始时间
+	 * @return 初始时间
+	 */
+	public Calendar getbegintime() {
+<span class="fc" id="L52">		checkRep();</span>
+<span class="fc" id="L53">		return begintime;</span>
+	}
+	
+	/**
+	 * 返回终止时间
+	 * @return 终止时间
+	 */
+	public Calendar getendtime() {
+<span class="fc" id="L61">		checkRep();</span>
+<span class="fc" id="L62">		return endtime;</span>
+	}
+
+	/**
+	 * 重写hashCode方法
+	 */
+	
+	@Override
+	public int hashCode() {
+<span class="fc" id="L71">		final int prime = 31;</span>
+<span class="fc" id="L72">		int result = 1;</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">		result = prime * result + ((begintime == null) ? 0 : begintime.hashCode());</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		result = prime * result + ((endtime == null) ? 0 : endtime.hashCode());</span>
+<span class="fc" id="L75">		return result;</span>
+	}
+
+	/**
+	 * 重写equals方法
+	 */
+	@Override
+	public boolean equals(Object obj) {
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		if (this == obj)</span>
+<span class="nc" id="L84">			return true;</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">		if (obj == null)</span>
+<span class="nc" id="L86">			return false;</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="nc" id="L88">			return false;</span>
+<span class="fc" id="L89">		Timeslot other = (Timeslot) obj;</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		if (begintime == null) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">			if (other.begintime != null)</span>
+<span class="nc" id="L92">				return false;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		} else if (!begintime.equals(other.begintime))</span>
+<span class="fc" id="L94">			return false;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (endtime == null) {</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">			if (other.endtime != null)</span>
+<span class="nc" id="L97">				return false;</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">		} else if (!endtime.equals(other.endtime))</span>
+<span class="nc" id="L99">			return false;</span>
+<span class="fc" id="L100">		return true;</span>
+	}
+
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

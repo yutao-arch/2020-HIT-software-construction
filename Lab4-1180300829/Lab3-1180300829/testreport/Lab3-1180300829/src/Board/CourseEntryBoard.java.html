@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CourseEntryBoard.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Board</a> &gt; <span class="el_source">CourseEntryBoard.java</span></div><h1>CourseEntryBoard.java</h1><pre class="source lang-java linenums">package Board;
+
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+
+import EntryState.CourseState;
+import PlanningEntry.CourseEntry;
+import Resource.Teacher;
+
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.Timer;
+
+public class CourseEntryBoard extends JFrame {
+
+	private JPanel contentPane;
+	private JTable table;
+    private Timer time;
+
+    private String classroomlocation;  //该board版的位置字符串
+<span class="nc" id="L37">	private List&lt;CourseEntry&lt;Teacher&gt;&gt; allentry=new ArrayList&lt;&gt;();  //储存CourseEntry的一个集合</span>
+	private Calendar nowtime; //当前时间
+	
+	// mutability类
+ 	// Abstraction function:
+ 	// AF(classroomlocation)=当前位置
+ 	// AF(allentry)=该位置所有计划项
+	// AF(nowtime)=当前时间
+ 	// Representation invariant:
+ 	// 时间转字符串出问题抛出异常
+ 	// Safety from rep exposure:
+ 	// 将classroomlocation,allentry,nowtime设置为private
+    
+	/**
+	 * 构造方法
+	 */
+<span class="nc" id="L53">	public CourseEntryBoard() {</span>
+<span class="nc" id="L54">	}</span>
+	
+	/**
+	 * 设置board的位置
+	 * @param mm 该board版的位置字符串
+	 */
+	public void setclassroomlocation(String mm) {
+<span class="nc" id="L61">		this.classroomlocation=mm;</span>
+<span class="nc" id="L62">	}</span>
+	
+	/**
+	 * 从CourseEntry的一个集合找到与classroomlocation位置相同的CourseEntry并按照每个计划项的起始时间排序
+	 * @param courselist 待排序的CourseEntry集合
+	 */
+	public void getsortallentry(List&lt;CourseEntry&lt;Teacher&gt;&gt; courselist) {
+<span class="nc bnc" id="L69" title="All 2 branches missed.">		for(int i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc" id="L70">			allentry.add(courselist.get(i).clone());</span>
+		}
+<span class="nc" id="L72">		Iterator&lt;CourseEntry&lt;Teacher&gt;&gt; iterator=allentry.iterator();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">		while(iterator.hasNext()) {</span>
+<span class="nc" id="L74">			CourseEntry&lt;Teacher&gt; pe=iterator.next();</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">			if(!(pe.getlocations().getlocationname().equals(classroomlocation))) {</span>
+<span class="nc" id="L76">				iterator.remove();</span>
+			}
+		}
+<span class="nc" id="L79">		Collections.sort(allentry,new Comparator&lt;CourseEntry&lt;Teacher&gt;&gt;() {</span>
+
+			@Override
+			public int compare(CourseEntry&lt;Teacher&gt; o1, CourseEntry&lt;Teacher&gt; o2) {
+<span class="nc bnc" id="L83" title="All 2 branches missed.">				if(o1.gettimeslot().getbegintime().compareTo(o2.gettimeslot().getbegintime())&gt;0) {</span>
+<span class="nc" id="L84">					return 1;</span>
+				}
+<span class="nc bnc" id="L86" title="All 2 branches missed.">				else if(o1.gettimeslot().getbegintime().compareTo(o2.gettimeslot().getbegintime())==0) {</span>
+<span class="nc" id="L87">					return 0;</span>
+				}
+<span class="nc" id="L89">				return -1;</span>
+			}
+		});
+<span class="nc" id="L92">	}</span>
+	
+	/**
+	 * 显示当前board
+	 */
+	public void visualize() {
+<span class="nc" id="L98">		EventQueue.invokeLater(new Runnable() {</span>
+			public void run() {
+				try {
+<span class="nc" id="L101">					setVisible(true);</span>
+<span class="nc" id="L102">				} catch (Exception e) {</span>
+<span class="nc" id="L103">					e.printStackTrace();</span>
+				}
+<span class="nc" id="L105">			}</span>
+		});
+<span class="nc" id="L107">	}</span>
+
+	/**
+	 * 创建frame并储存CourseEntry集合的各种信息
+	 * @throws ParseException 
+	 */
+	public List&lt;CourseEntry&lt;Teacher&gt;&gt; createCourseEntryBoard() throws ParseException {
+	
+<span class="nc" id="L115">		setTitle(&quot;教室占用情况表&quot;);</span>
+<span class="nc" id="L116">		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</span>
+<span class="nc" id="L117">		setBounds(100, 100, 630, 500);</span>
+<span class="nc" id="L118">		contentPane = new JPanel();</span>
+<span class="nc" id="L119">		contentPane.setToolTipText(&quot;&quot;);</span>
+<span class="nc" id="L120">		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));</span>
+<span class="nc" id="L121">		setContentPane(contentPane);</span>
+<span class="nc" id="L122">		contentPane.setLayout(null);</span>
+		
+<span class="nc" id="L124">		JPanel panel = new JPanel();</span>
+<span class="nc" id="L125">		panel.setBounds(0, 0, 600, 480);</span>
+<span class="nc" id="L126">		contentPane.add(panel);</span>
+<span class="nc" id="L127">		panel.setLayout(null);</span>
+		
+<span class="nc" id="L129">		JLabel lblNewLabel = new JLabel(&quot;&quot;);   </span>
+<span class="nc" id="L130">		time = new Timer(1000,new ActionListener() {   </span>
+		 
+		public void actionPerformed(ActionEvent arg0) {  
+<span class="nc" id="L133">			lblNewLabel.setText(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;).format(new Date())+&quot;,&quot;+classroomlocation);</span>
+<span class="nc" id="L134">		}  </span>
+		});  
+<span class="nc" id="L136">		time.start();   </span>
+<span class="nc" id="L137">		lblNewLabel.setBounds(0, 0, 600, 30);</span>
+<span class="nc" id="L138">		panel.add(lblNewLabel);</span>
+		
+<span class="nc" id="L140">		JScrollPane scrollPane = new JScrollPane();</span>
+<span class="nc" id="L141">		scrollPane.setBounds(0, 60, 600, 250);</span>
+<span class="nc" id="L142">		panel.add(scrollPane);</span>
+		
+		int i,j;
+		CourseEntry&lt;Teacher&gt; course;
+			
+<span class="nc" id="L147">		String[][] biao=new String[100][4];</span>
+		
+<span class="nc" id="L149">		nowtime = Calendar.getInstance();  //当前时间</span>
+<span class="nc" id="L150">		String str = (new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(nowtime.getTime()); </span>
+<span class="nc" id="L151">	    nowtime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(str));</span>
+	    Calendar begintime,endtime;
+
+	    
+<span class="nc" id="L155">		Iterator&lt;CourseEntry&lt;Teacher&gt;&gt; iterator=allentry.iterator();</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">		while(iterator.hasNext()) {</span>
+<span class="nc" id="L157">			CourseEntry&lt;Teacher&gt; pe=iterator.next();</span>
+<span class="nc" id="L158">			begintime=pe.gettimeslot().getbegintime();</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">			if(!((begintime.get(Calendar.YEAR)==(nowtime.get(Calendar.YEAR)))&amp;&amp;</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">					(begintime.get(Calendar.MONTH)==nowtime.get(Calendar.MONTH))&amp;&amp;</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">					(begintime.get(Calendar.DAY_OF_MONTH)==nowtime.get(Calendar.DAY_OF_MONTH)))) {</span>
+<span class="nc" id="L162">				iterator.remove();</span>
+			}
+		}
+		
+<span class="nc bnc" id="L166" title="All 2 branches missed.">		for(i=0;i&lt;100;i++) {</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">		    for(j=0;j&lt;4;j++) {</span>
+<span class="nc" id="L168">				biao[i][j]=null;</span>
+			}
+		}
+		
+		
+<span class="nc bnc" id="L173" title="All 2 branches missed.">		for(i=0;i&lt;allentry.size();i++) {</span>
+<span class="nc" id="L174">			course=allentry.get(i);</span>
+<span class="nc" id="L175">			begintime=course.gettimeslot().getbegintime();</span>
+<span class="nc" id="L176">			endtime=course.gettimeslot().getendtime();</span>
+			//if(course!=null) {
+<span class="nc" id="L178">				biao[i][0]=Integer.toString(begintime.get(Calendar.HOUR_OF_DAY))+&quot;:&quot;</span>
+<span class="nc" id="L179">			            +Integer.toString(begintime.get(Calendar.MINUTE))+&quot;-&quot;+</span>
+<span class="nc" id="L180">						Integer.toString(endtime.get(Calendar.HOUR_OF_DAY))</span>
+<span class="nc" id="L181">			            +&quot;:&quot;+Integer.toString(endtime.get(Calendar.MINUTE));</span>
+<span class="nc" id="L182">				biao[i][1]=(String) course.getplanningentryname();</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">				if(course.getresource()==null) {</span>
+<span class="nc" id="L184">					 biao[i][2]=&quot;未设置老师资源&quot;;</span>
+<span class="nc" id="L185">				}</span>
+				else {
+<span class="nc" id="L187">					 biao[i][2]=course.getresource().getteachername();</span>
+				}
+<span class="nc" id="L189">			    biao[i][3]=((CourseState)course.getcurrentstate()).getcoursestate();</span>
+			//}
+		}
+		
+<span class="nc" id="L193">		table = new JTable();</span>
+<span class="nc" id="L194">		table.setModel(new DefaultTableModel(</span>
+<span class="nc" id="L195">			biao,</span>
+<span class="nc" id="L196">			new String[] {</span>
+<span class="nc" id="L197">				&quot;课程时间&quot;, &quot;课程名&quot;, &quot;教师&quot;, &quot;状态&quot;</span>
+			}
+		));
+<span class="nc" id="L200">		table.getColumnModel().getColumn(0).setPreferredWidth(150);</span>
+<span class="nc" id="L201">		table.getColumnModel().getColumn(1).setPreferredWidth(150);</span>
+<span class="nc" id="L202">		table.getColumnModel().getColumn(2).setPreferredWidth(150);</span>
+<span class="nc" id="L203">		table.getColumnModel().getColumn(3).setPreferredWidth(150);</span>
+<span class="nc" id="L204">		scrollPane.setViewportView(table);</span>
+	
+<span class="nc" id="L206">		return allentry;</span>
+	}	
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

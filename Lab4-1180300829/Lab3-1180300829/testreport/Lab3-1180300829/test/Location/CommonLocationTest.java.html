@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CommonLocationTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">Location</a> &gt; <span class="el_source">CommonLocationTest.java</span></div><h1>CommonLocationTest.java</h1><pre class="source lang-java linenums">package Location;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import Resource.Flight;
+
+<span class="fc" id="L9">public class CommonLocationTest {</span>
+	
+	
+<span class="fc" id="L12">    CommonLocation temp=new CommonLocation(&quot;北纬112&quot;,&quot;东经20&quot;,&quot;湖北&quot;);</span>
+    
+	/* Testing strategy
+	 * 测试getlongitude方法
+     * 测试返回值即可
+     */
+	@Test
+	public void getlongitudetest() {
+<span class="fc" id="L20">		assertEquals(&quot;北纬112&quot;,temp.getlongitude());</span>
+<span class="fc" id="L21">	}</span>
+	
+	/* Testing strategy
+	 * 测试getlatitude方法
+     * 测试返回值即可
+     */
+	@Test
+	public void getlatitudetest() {
+<span class="fc" id="L29">		assertEquals(&quot;东经20&quot;,temp.getlatitude());</span>
+<span class="fc" id="L30">	}</span>
+	
+	/* Testing strategy
+	 * 测试getlocationname方法
+     * 测试返回值即可
+     */
+	@Test
+	public void getlocationnametest() {
+<span class="fc" id="L38">		assertEquals(&quot;湖北&quot;,temp.getlocationname());</span>
+<span class="fc" id="L39">	}</span>
+	
+	/* Testing strategy
+	 * 测试hashcode方法
+     * 测试两个相同的位置类hashcode是否相同即可
+     */
+	@Test
+	public void hashcodetest() {
+<span class="fc" id="L47">		CommonLocation temp1=new CommonLocation(&quot;北纬112&quot;,&quot;东经20&quot;,&quot;湖北&quot;);</span>
+<span class="fc" id="L48">		assertEquals(temp.hashCode(),temp1.hashCode());</span>
+<span class="fc" id="L49">	}</span>
+	
+	/* Testing strategy
+	 * 测试equals方法
+     * 按照两个位置类是否相同划分等价类：相同，不同
+     */
+	@Test
+	public void equalstest() {
+<span class="fc" id="L57">		CommonLocation temp1=new CommonLocation(&quot;北纬112&quot;,&quot;东经20&quot;,&quot;湖北&quot;);</span>
+<span class="fc" id="L58">		CommonLocation temp2=new CommonLocation(&quot;北纬11&quot;,&quot;东经2&quot;,&quot;湖北&quot;);</span>
+<span class="fc" id="L59">		assertEquals(true,temp.equals(temp1));</span>
+<span class="fc" id="L60">		assertEquals(false,temp.equals(temp2));</span>
+<span class="fc" id="L61">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

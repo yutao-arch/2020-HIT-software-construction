@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>FlightEntryTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">PlanningEntry</a> &gt; <span class="el_source">FlightEntryTest.java</span></div><h1>FlightEntryTest.java</h1><pre class="source lang-java linenums">package PlanningEntry;
+
+import static org.junit.Assert.*;
+
+import java.text.ParseException;
+
+import org.junit.Test;
+
+import Exception.BeginEndTimeException;
+import Exception.LessThanZeroException;
+import Exception.SameLocationException;
+import Factory.FlightEntryFactory;
+import Location.FlightTrainLocation;
+import Resource.Flight;
+import Timeslot.Timeslot;
+
+<span class="fc" id="L17">public class FlightEntryTest {</span>
+	
+	/**
+	 * 在测试该类的过程中已经完成了对其委托方法的测试
+	 * @throws SameLocationException 
+	 */
+
+	/* Testing strategy
+	 * 测试setlocations方法
+	 * 按照位置是否已被设置划分：位置已被设置，位置未被设置
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void setlocationstest() throws SameLocationException {
+<span class="fc" id="L31">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L35">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L36">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L37">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L38">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L39">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="fc" id="L40">		assertEquals(true,flight.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;)));</span>
+<span class="fc" id="L41">		assertEquals(false,flight.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;)));</span>
+<span class="fc" id="L42">	}</span>
+	
+	/* Testing strategy
+	 * 测试changelocations方法
+     * 测试返回值即可
+     */
+	@Test
+	public void changelocationstest() throws SameLocationException {
+<span class="fc" id="L50">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L54">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L55">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L56">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L57">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L58">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="fc" id="L59">		flight.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L60">		assertEquals(false,flight.changelocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;)));</span>
+<span class="fc" id="L61">	}</span>
+	
+	/* Testing strategy
+	 * 测试getfromlocation方法
+     * 测试返回值即可
+     */
+	@Test
+	public void getfromlocationtest() throws SameLocationException {
+<span class="fc" id="L69">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L73">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L74">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L75">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L76">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L77">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="fc" id="L78">		flight.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L79">		assertEquals(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;),flight.getfromlocation());</span>
+<span class="fc" id="L80">	}</span>
+	
+	/* Testing strategy
+	 * 测试gettolocation方法
+     * 测试返回值即可
+     */
+	@Test
+	public void gettolocationtest() throws SameLocationException {
+<span class="fc" id="L88">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L92">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L93">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L94">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L95">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L96">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="fc" id="L97">		flight.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L98">		assertEquals(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;),flight.gettolocation());</span>
+<span class="fc" id="L99">	}</span>
+	
+	/* Testing strategy
+	 * 测试setresource方法
+	 * 按照资源是否已被设置划分：资源已被设置，资源未被设置
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void setresourcetest() throws LessThanZeroException {
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L111">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L112">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L113">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L114">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L115">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="fc" id="L116">		assertEquals(true,flight.setresource(new Flight(&quot;A678&quot;,&quot;A28&quot;,100,2.5)));</span>
+<span class="fc" id="L117">		assertEquals(false,flight.setresource(new Flight(&quot;A678&quot;,&quot;A28&quot;,100,2.5)));</span>
+<span class="fc" id="L118">	}</span>
+	
+	/* Testing strategy
+	 * 测试getresource方法
+	 * 测试返回值即可
+     */
+	@Test
+	public void getresourcetest() throws LessThanZeroException {
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L129">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L130">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L131">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L132">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L133">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="fc" id="L134">		flight.setresource(new Flight(&quot;A678&quot;,&quot;A28&quot;,100,2.5));</span>
+<span class="fc" id="L135">		assertEquals(new Flight(&quot;A678&quot;,&quot;A28&quot;,100,2.5),flight.getresource());</span>
+<span class="fc" id="L136">	}</span>
+	
+	/* Testing strategy
+	 * 测试changeresource方法
+	 * 按照是否与原飞机重复划分：重复，不重复
+	 * 覆盖每个取值如下：
+     */
+	@Test
+	public void changeresourcetest() throws LessThanZeroException {
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L148">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L149">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L150">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L151">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L152">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="fc" id="L153">		flight.setresource(new Flight(&quot;A678&quot;,&quot;A28&quot;,100,2.5));</span>
+<span class="fc" id="L154">		assertEquals(false,flight.changeresource(new Flight(&quot;A678&quot;,&quot;A28&quot;,100,2.5)));</span>
+<span class="fc" id="L155">		assertEquals(true,flight.changeresource(new Flight(&quot;A424&quot;,&quot;A11&quot;,100,2.5)));</span>
+<span class="fc" id="L156">	}</span>
+	
+	/* Testing strategy
+	 * 测试whetherblockable方法
+	 * 测试返回值即可
+     */
+	@Test
+	public void whetherblockabletest() {
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L167">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L168">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L169">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L170">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L171">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="fc" id="L172">		assertEquals(false,flight.whetherblockable());</span>
+<span class="fc" id="L173">	}</span>
+	
+	/* Testing strategy
+	 * 测试settimeslot方法
+	 * 按照时间是否已被设置划分：已被设置，未被设置
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void settimeslottest() throws ParseException, BeginEndTimeException {
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L185">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L186">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L187">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L188">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L189">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="fc" id="L190">		assertEquals(true,flight.settimeslot(new Timeslot(&quot;2020-01-02 16:45&quot;,&quot;2020-01-02 18:30&quot;)));</span>
+<span class="fc" id="L191">		assertEquals(false,flight.settimeslot(new Timeslot(&quot;2020-01-02 16:45&quot;,&quot;2020-01-02 18:30&quot;)));</span>
+<span class="fc" id="L192">	}</span>
+	
+	/* Testing strategy
+	 * 测试gettimeslot方法
+	 * 测试返回值即可
+     */
+	@Test
+	public void gettimeslottest() throws ParseException, BeginEndTimeException {
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L203">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L204">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L205">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L206">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L207">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="fc" id="L208">		flight.settimeslot(new Timeslot(&quot;2020-01-02 16:45&quot;,&quot;2020-01-02 18:30&quot;));</span>
+<span class="fc" id="L209">		assertEquals(new Timeslot(&quot;2020-01-02 16:45&quot;,&quot;2020-01-02 18:30&quot;),flight.gettimeslot());</span>
+<span class="fc" id="L210">	}</span>
+	
+	/* Testing strategy
+	 * 测试compareTo方法
+	 * 按照起始时间大小划分：大于，等于，小于
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void compareTotest() throws ParseException, BeginEndTimeException {
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L222">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L223">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L224">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L225">		PlanningEntry originflight1=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L226">		FlightEntry&lt;Flight&gt; flight1=(FlightEntry&lt;Flight&gt;)originflight1;</span>
+<span class="fc" id="L227">		flight1.settimeslot(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+		
+		TwoLocationEntryImpl a5;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b5;
+		NoBlockableEntryImpl c5;
+<span class="fc" id="L232">		a5=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L233">		b5=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L234">		c5=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L235">		PlanningEntry originflight2=new FlightEntryFactory().getFlightEntry(a5, b5, c5); //用工厂方法创建对象</span>
+<span class="fc" id="L236">		FlightEntry&lt;Flight&gt; flight2=(FlightEntry&lt;Flight&gt;)originflight2;	</span>
+<span class="fc" id="L237">		flight2.settimeslot(new Timeslot(&quot;2020-01-01 17:45&quot;,&quot;2020-01-01 19:30&quot;));</span>
+		
+		TwoLocationEntryImpl a6;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b6;
+		NoBlockableEntryImpl c6;
+<span class="fc" id="L242">		a6=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L243">		b6=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L244">		c6=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L245">		PlanningEntry originflight3=new FlightEntryFactory().getFlightEntry(a6, b6, c6); //用工厂方法创建对象</span>
+<span class="fc" id="L246">		FlightEntry&lt;Flight&gt; flight3=(FlightEntry&lt;Flight&gt;)originflight3;</span>
+<span class="fc" id="L247">		flight3.settimeslot(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+		
+<span class="fc" id="L249">		assertEquals(1,flight2.compareTo(flight1));</span>
+<span class="fc" id="L250">		assertEquals(0,flight3.compareTo(flight1));</span>
+<span class="fc" id="L251">		assertEquals(-1,flight1.compareTo(flight2));</span>
+<span class="fc" id="L252">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

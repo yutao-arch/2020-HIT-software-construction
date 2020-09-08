@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Strategy1checkLocationConflict.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">PlanningEntryAPIs</a> &gt; <span class="el_source">Strategy1checkLocationConflict.java</span></div><h1>Strategy1checkLocationConflict.java</h1><pre class="source lang-java linenums">package PlanningEntryAPIs;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import PlanningEntry.CourseEntry;
+import PlanningEntry.FlightEntry;
+import PlanningEntry.PlanningEntry;
+import PlanningEntry.TrainEntry;
+import Resource.Teacher;
+import Timeslot.Timeslot;
+
+<span class="fc" id="L13">public class Strategy1checkLocationConflict implements StrategycheckLocationConflict{</span>
+
+	/**
+	 * 检测一组计划项之间是否存在位置独占冲突
+	 * @param entries 计划项集合
+	 * @return 是否存在位置独占冲突
+	 */
+	@Override
+	public boolean checkLocationConflict(List&lt;PlanningEntry&gt; entries) {
+		int i,j;
+		Timeslot b1,b2;
+		String l1,l2,m1,m2;
+		boolean flag;
+<span class="fc bfc" id="L26" title="All 2 branches covered.">		if(entries.get(0) instanceof CourseEntry) {</span>
+<span class="fc" id="L27">			flag=false;</span>
+<span class="fc" id="L28">			List&lt;CourseEntry&lt;Teacher&gt;&gt; courseentries=new ArrayList&lt;&gt;();  //向下转型后的list</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">			for(i=0;i&lt;entries.size();i++) {</span>
+<span class="fc" id="L30">				courseentries.add((CourseEntry&lt;Teacher&gt;)entries.get(i));</span>
+			}
+<span class="fc bfc" id="L32" title="All 2 branches covered.">			for(i=0;i&lt;courseentries.size()-1;i++) {   //将储存Entry的list每一项与它后面的所有项的地址和时间进行比较，判断是否时间冲突</span>
+<span class="fc" id="L33">				b1=courseentries.get(i).gettimeslot();</span>
+<span class="fc" id="L34">				m1=(String) courseentries.get(i).getplanningentryname();</span>
+<span class="fc" id="L35">				l1=courseentries.get(i).getlocations().getlocationname();</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">				for(j=i+1;j&lt;courseentries.size();j++) {</span>
+<span class="fc" id="L37">					b2=courseentries.get(j).gettimeslot();</span>
+<span class="fc" id="L38">					m2=(String) courseentries.get(j).getplanningentryname();</span>
+<span class="fc" id="L39">					l2=courseentries.get(j).getlocations().getlocationname();</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">					if(l1.equals(l2)) {</span>
+<span class="pc bpc" id="L41" title="1 of 4 branches missed.">						if(!(b1.getendtime().compareTo(b2.getbegintime())&lt;=0||b2.getendtime().compareTo(b1.getbegintime())&lt;=0)) {</span>
+<span class="fc" id="L42">							System.out.println(&quot;计划项“&quot;+m1+&quot;”与计划项“&quot;+m2+&quot;”存在时间冲突且使用了同一间教室&quot;+&quot;“&quot;+l2+&quot;”&quot;);</span>
+<span class="fc" id="L43">							flag=true;</span>
+						}
+					}
+				}
+			}
+<span class="fc bfc" id="L48" title="All 2 branches covered.">			if(flag==true) {</span>
+<span class="fc" id="L49">				return true;</span>
+			}
+			else {
+<span class="fc" id="L52">				System.out.println(&quot;没有计划项在重叠时间使用同一教室&quot;);</span>
+<span class="fc" id="L53">				return false;</span>
+			}
+		}
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		if(entries.get(0) instanceof FlightEntry) {</span>
+<span class="fc" id="L57">			System.out.println(&quot;机场位置可共享，不存在冲突&quot;);</span>
+<span class="fc" id="L58">			return false;</span>
+		}
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		if(entries.get(0) instanceof TrainEntry) {</span>
+<span class="fc" id="L61">			System.out.println(&quot;高铁站位置可共享，不存在冲突&quot;);</span>
+<span class="fc" id="L62">			return false;</span>
+		}
+<span class="fc" id="L64">	   System.out.println(&quot;请输入正确信息&quot;);</span>
+<span class="fc" id="L65">	   return false;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

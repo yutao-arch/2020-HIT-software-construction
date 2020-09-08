@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>FlightEntry.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">PlanningEntry</a> &gt; <span class="el_source">FlightEntry.java</span></div><h1>FlightEntry.java</h1><pre class="source lang-java linenums">package PlanningEntry;
+
+import Exception.SameLocationException;
+import Location.Location;
+import Resource.Flight;
+import Timeslot.Timeslot;
+
+public class FlightEntry&lt;Flight&gt; extends CommonPlanningEntry implements Cloneable,FlightPlanningEntry&lt;Flight&gt;,Comparable&lt;FlightEntry&lt;Flight&gt;&gt;{
+
+	private TwoLocationEntryImpl a;
+	private OneDistinguishResourceEntryImpl&lt;Flight&gt; b;
+	private NoBlockableEntryImpl c;
+	
+	// mutability类
+	// Abstraction function:
+	// AF(a)=两个位置
+	// AF(b)=一个飞机资源
+	// AF(c)=不能阻塞的时间对
+	// Safety from rep exposure:
+	// 将a,b,c设置为private
+
+	/**
+	 * 构造方法
+	 * @param a 两个位置的类
+	 * @param b 一个飞机资源的类
+	 * @param c 不能阻塞的时间对的类
+	 */
+<span class="fc" id="L28">	public FlightEntry(TwoLocationEntryImpl a,OneDistinguishResourceEntryImpl&lt;Flight&gt; b,NoBlockableEntryImpl c) {</span>
+<span class="fc" id="L29">		this.a=a;</span>
+<span class="fc" id="L30">		this.b=b;</span>
+<span class="fc" id="L31">		this.c=c;</span>
+<span class="fc" id="L32">	}</span>
+	
+
+	/**
+	 * 设置起点站和终点站的位置
+	 * @param from 起点站的位置
+	 * @param to 终点站的位置
+	 * @return 是否设置成功
+	 * @throws SameLocationException 
+	 */
+	@Override
+	public boolean setlocations(Location from, Location to) throws SameLocationException {
+<span class="fc" id="L44">		return a.setlocations(from, to);</span>
+	}
+
+	/**
+	 * 更改起点站和终点站的位置
+	 * @param from 起点站的位置
+	 * @param to 终点站的位置
+	 * @return 是否设置成功
+	 */
+	@Override
+	public boolean changelocations(Location from, Location to) {
+<span class="fc" id="L55">		return a.changelocations(from, to);</span>
+	}
+	
+	/**
+	 * 得到起点站的位置
+	 * @return 起点站
+	 */
+	@Override
+	public Location getfromlocation() {
+<span class="fc" id="L64">		return a.getfromlocation();</span>
+	}
+
+	/**
+	 * 得到终点站的位置
+	 * @return 起点站
+	 */
+	@Override
+	public Location gettolocation() {
+<span class="fc" id="L73">		return a.gettolocation();</span>
+	}
+
+
+	/**
+	 * 设置飞机资源
+	 * @param a 待设置的飞机资源
+	 * @return 飞机资源是否设置成功
+	 */
+	@Override
+	public boolean setresource(Flight a) {
+<span class="fc" id="L84">		return b.setresource(a);</span>
+	}
+
+	/**
+	 * 得到该飞机资源
+	 * @return 该飞机资源
+	 */
+	@Override
+	public Flight getresource() {
+<span class="fc" id="L93">		return b.getresource();</span>
+	}
+
+	/**
+	 * 更改该飞机资源
+	 * @param a 更改后的资源
+	 * @return 是否更改成功
+	 */
+	@Override
+	public boolean changeresource(Flight a) {
+<span class="fc" id="L103">		return b.changeresource(a);</span>
+	}
+
+	/**
+	 * 判断该类是否可阻塞
+	 * @return 该类是否可阻塞
+	 */
+	@Override
+	public boolean whetherblockable() {
+<span class="fc" id="L112">		return c.whetherblockable();</span>
+	}
+
+	/**
+	 * 设置该时间对
+	 * @param mytime 时间对
+	 * @return 是否成功设置该时间对
+	 */
+	@Override
+	public boolean settimeslot(Timeslot mytime) {
+<span class="fc" id="L122">		return c.settimeslot(mytime);</span>
+	}
+
+	/**
+	 * 得到该时间对
+	 * @return 该时间对
+	 */
+	@Override
+	public Timeslot gettimeslot() {
+<span class="fc" id="L131">		return c.gettimeslot();</span>
+	}
+
+	/**
+     * 重写compareTo方法，完成按照时间对起始时间的升序对计划项集合排序
+     */
+	@Override
+	public int compareTo(FlightEntry&lt;Flight&gt; o) {
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		if(this.c.gettimeslot().getbegintime().compareTo(o.gettimeslot().getbegintime())&gt;0) {</span>
+<span class="fc" id="L140">			return 1;</span>
+		}
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		else if(this.c.gettimeslot().getbegintime().compareTo(o.gettimeslot().getbegintime())==0) {</span>
+<span class="fc" id="L143">			return 0;</span>
+		}
+<span class="fc" id="L145">		return -1;</span>
+	}
+		
+	 @Override
+	  public FlightEntry&lt;Flight&gt; clone() { 
+<span class="nc" id="L150">		 FlightEntry&lt;Flight&gt; stu = null; </span>
+	    try{ 
+<span class="nc" id="L152">	      stu = (FlightEntry&lt;Flight&gt;)super.clone(); </span>
+<span class="nc" id="L153">	    }catch(CloneNotSupportedException e) { </span>
+<span class="nc" id="L154">	      e.printStackTrace(); </span>
+	    } 
+<span class="nc" id="L156">	    stu.a=(TwoLocationEntryImpl)a.clone();</span>
+<span class="nc" id="L157">	    stu.b=(OneDistinguishResourceEntryImpl&lt;Flight&gt;)b.clone();</span>
+<span class="nc" id="L158">	    stu.c=(NoBlockableEntryImpl)c.clone();</span>
+<span class="nc" id="L159">	    return stu; </span>
+	  } 
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

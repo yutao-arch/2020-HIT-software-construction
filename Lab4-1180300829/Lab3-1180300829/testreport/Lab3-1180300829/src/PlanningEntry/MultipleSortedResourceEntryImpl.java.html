@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>MultipleSortedResourceEntryImpl.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">PlanningEntry</a> &gt; <span class="el_source">MultipleSortedResourceEntryImpl.java</span></div><h1>MultipleSortedResourceEntryImpl.java</h1><pre class="source lang-java linenums">package PlanningEntry;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
+import Exception.SameResourceException;
+import Location.Location;
+
+
+<span class="pc bpc" id="L12" title="1 of 2 branches missed.">public class MultipleSortedResourceEntryImpl&lt;R&gt; implements Cloneable,MultipleSortedResourceEntry&lt;R&gt; {</span>
+
+	private List&lt;R&gt; mysource; //资源集合
+	
+	// mutability类
+	// Abstraction function:
+	// AF(mytsource)=资源集合
+	// Representation invariant:
+	// 输入的资源不能为空,资源都不同
+	// Safety from rep exposure:
+	// 将mysource设置为private
+	
+	// TODO checkRep
+    private void checkRep() {  //保证资源都不同，资源不为空
+<span class="pc bpc" id="L26" title="2 of 4 branches missed.">    	assert mysource!=null;</span>
+<span class="fc" id="L27">    	boolean result=true;</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">		for(int i=0;i&lt;mysource.size()-1;i++) {</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">			for(int j=i+1;j&lt;mysource.size();j++) {</span>
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">				if(mysource.get(i).equals(mysource.get(j))) {</span>
+<span class="nc" id="L31">					result=false;</span>
+<span class="nc" id="L32">					break;</span>
+				}
+			}
+		} 
+<span class="pc bpc" id="L36" title="2 of 4 branches missed.">        assert result==true:&quot;存在重复资源\n&quot;;</span>
+<span class="fc" id="L37">    }</span>
+	
+	/**
+	 * 设置该资源集合
+	 * @param source 资源集合，资源不能相同
+	 * @return 是否成功设置该资源集合
+	 * @throws SameResourceException 存在相同的资源
+	 */
+	@Override
+	public boolean setresource(List&lt;R&gt; source) throws SameResourceException {
+<span class="fc" id="L47">		boolean result=true;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		for(int i=0;i&lt;source.size()-1;i++) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">			for(int j=i+1;j&lt;source.size();j++) {</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">				if(source.get(i).equals(source.get(j))) {</span>
+<span class="nc" id="L51">					result=false;</span>
+<span class="nc" id="L52">					break;</span>
+				}
+			}
+		} 
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if(result==false) {      //存在相同的资源抛出异常</span>
+<span class="nc" id="L57">			throw new SameResourceException();</span>
+		}
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if(mysource==null) {</span>
+<span class="fc" id="L60">			 this.mysource=new ArrayList&lt;&gt;(source);</span>
+<span class="fc" id="L61">			 System.out.println(&quot;资源集合设置成功&quot;);</span>
+<span class="fc" id="L62">			 checkRep();</span>
+<span class="fc" id="L63">			 return true;</span>
+		}
+<span class="fc" id="L65">		 System.out.println(&quot;资源集合只能设置一次&quot;);</span>
+<span class="fc" id="L66">		return false;</span>
+	}
+	
+
+	/**
+	 * 得到该资源集合
+	 * @return 该资源集合
+	 */
+	@Override
+	public List&lt;R&gt; getresource() {
+<span class="fc" id="L76">		checkRep();</span>
+<span class="fc" id="L77">		return mysource;</span>
+	}
+
+	/**
+	 * 更改某资源
+	 * @param presource 待更改的资源
+	 * @param aftersource 更改后的资源
+	 * @return 是否成功更改资源
+	 */
+	@Override
+	public boolean changeresource(R presource,R aftersource) {
+<span class="fc" id="L88">		checkRep();</span>
+		int i;
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		for(i=0;i&lt;mysource.size();i++) {</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			if(mysource.get(i).equals(presource) ){</span>
+<span class="fc" id="L92">				break;</span>
+			}
+		}
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		if(i==mysource.size()) {</span>
+<span class="fc" id="L96">			System.out.println(&quot;没有待替换资源\n&quot;);</span>
+<span class="fc" id="L97">			System.out.println();</span>
+<span class="fc" id="L98">			return false;</span>
+		}
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		if(mysource.contains(aftersource)) {</span>
+<span class="fc" id="L101">			System.out.println(&quot;该资源已经存在\n&quot;);</span>
+<span class="fc" id="L102">			return false;</span>
+		}
+<span class="fc" id="L104">		mysource.set(i,aftersource);</span>
+<span class="fc" id="L105">		System.out.println(&quot;该资源已被替换为指定资源\n&quot;);</span>
+<span class="fc" id="L106">		return true;	</span>
+	}
+
+	/**
+	 * 向资源集合里面加入一个资源
+	 * @param source 待加入的资源
+	 * @param temp 加入资源的位置
+	 * @return 是否成功加入资源
+	 */
+	@Override
+	public boolean addresource(R source,int temp) {
+<span class="fc" id="L117">		checkRep();</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		if(mysource.contains(source)) {</span>
+<span class="fc" id="L119">			System.out.println(&quot;待加入资源已经存在\n&quot;);</span>
+<span class="fc" id="L120">			return false;</span>
+		}
+		else {
+<span class="fc bfc" id="L123" title="All 2 branches covered.">			if(temp&lt;mysource.size()) {</span>
+<span class="fc" id="L124">				mysource.add(temp, source);</span>
+<span class="fc" id="L125">				System.out.println(&quot;该资源已经增加在指定位置\n&quot;);</span>
+<span class="fc" id="L126">				return true;</span>
+			}
+			else {
+<span class="fc" id="L129">				mysource.add(source);</span>
+<span class="fc" id="L130">				System.out.println(&quot;该资源已经增加在指定位置\n&quot;);</span>
+<span class="fc" id="L131">				return true;</span>
+			}
+		}
+	}
+
+	/**
+	 * 删除资源集合中的某资源
+	 * @param source 待删除的资源
+	 * @return 是否成功删除资源
+	 */
+	@Override
+	public boolean deleteresource(R source) {
+<span class="fc" id="L143">		checkRep();</span>
+<span class="fc" id="L144">		boolean flag=false;</span>
+<span class="fc" id="L145">		Iterator&lt;R&gt; temp=mysource.iterator();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">		while(temp.hasNext()) {</span>
+<span class="fc" id="L147">			R mm=temp.next();</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			if(mm.equals(source)) {</span>
+<span class="fc" id="L149">				temp.remove();</span>
+<span class="fc" id="L150">				flag=true;</span>
+			}
+		}
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		if(flag==true) {</span>
+<span class="fc" id="L154">			System.out.println(&quot;指定资源已被移除\n&quot;);</span>
+<span class="fc" id="L155">			return true;</span>
+		}
+		else {
+<span class="fc" id="L158">			System.out.println(&quot;没有待移除资源\n&quot;);</span>
+<span class="fc" id="L159">			return false;</span>
+		}
+	}
+	
+	@Override
+	  public MultipleSortedResourceEntryImpl&lt;R&gt; clone() { 
+<span class="nc" id="L165">		MultipleSortedResourceEntryImpl&lt;R&gt; stu = null; </span>
+	    try{ 
+<span class="nc" id="L167">	      stu = (MultipleSortedResourceEntryImpl&lt;R&gt;)super.clone(); </span>
+<span class="nc" id="L168">	    }catch(CloneNotSupportedException e) { </span>
+<span class="nc" id="L169">	      e.printStackTrace(); </span>
+	    } 
+<span class="nc" id="L171">	    return stu; </span>
+	  } 
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

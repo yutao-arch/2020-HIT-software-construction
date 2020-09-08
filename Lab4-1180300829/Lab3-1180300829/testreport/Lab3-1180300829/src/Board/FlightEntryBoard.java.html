@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>FlightEntryBoard.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Board</a> &gt; <span class="el_source">FlightEntryBoard.java</span></div><h1>FlightEntryBoard.java</h1><pre class="source lang-java linenums">package Board;
+
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JScrollPane;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
+
+import EntryState.FlightState;
+import PlanningEntry.FlightEntry;
+import Resource.Flight;
+
+public class FlightEntryBoard extends JFrame {
+
+	private JPanel contentPane;
+	private JTable table;
+	private JTable table_1;
+	private Timer time;
+
+	private String airportlocation;  //该board版的位置字符串
+<span class="nc" id="L37">	private List&lt;FlightEntry&lt;Flight&gt;&gt; comeentry=new ArrayList&lt;&gt;(); //储存抵达的FlightEntry的一个集合</span>
+<span class="nc" id="L38">	private List&lt;FlightEntry&lt;Flight&gt;&gt; toentry=new ArrayList&lt;&gt;(); //储存起飞的FlightEntry的一个集合</span>
+	private Calendar nowtime; //当前时间
+	
+	// mutability类
+	// Abstraction function:
+	// AF(airportlocation)=当前位置
+	// AF(comeentry)=该位置所有抵达计划项
+	// AF(toentry)=该位置所有起飞计划项
+	// AF(nowtime)=当前时间
+	// Representation invariant:
+	// 时间转字符串出问题抛出异常
+	// Safety from rep exposure:
+	// 将airportlocation,comeentry,toentry,nowtime设置为private
+
+	/**
+	 * 构造方法
+	 */
+<span class="nc" id="L55">	public FlightEntryBoard() {</span>
+<span class="nc" id="L56">	}</span>
+	
+	/**
+	 * 设置board的位置
+	 * @param mm 该board版的位置字符串
+	 */
+	public void setairportlocation(String mm) {
+<span class="nc" id="L63">		this.airportlocation=mm;</span>
+<span class="nc" id="L64">	}</span>
+	
+	/**
+	 * 从FlightEntry的一个集合找到与airportlocation位置相同的FlightEntry并按照每个计划项的抵达时间排序
+	 * @param courselist 待排序的FlightEntry集合
+	 */
+	public void getsortcomeentry(List&lt;FlightEntry&lt;Flight&gt;&gt; flightlist) {
+<span class="nc bnc" id="L71" title="All 2 branches missed.">		for(int i=0;i&lt;flightlist.size();i++) {</span>
+<span class="nc" id="L72">			comeentry.add(flightlist.get(i).clone());</span>
+		}
+<span class="nc" id="L74">		Iterator&lt;FlightEntry&lt;Flight&gt;&gt; iterator=comeentry.iterator();</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">		while(iterator.hasNext()) {</span>
+<span class="nc" id="L76">			FlightEntry&lt;Flight&gt; pe=iterator.next();</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">			if(!(pe.gettolocation().getlocationname().equals(airportlocation))) {</span>
+<span class="nc" id="L78">				iterator.remove();</span>
+			}
+		}
+<span class="nc" id="L81">		Collections.sort(comeentry,new Comparator&lt;FlightEntry&lt;Flight&gt;&gt;() {</span>
+
+			@Override
+			public int compare(FlightEntry&lt;Flight&gt; o1, FlightEntry&lt;Flight&gt; o2) {
+<span class="nc bnc" id="L85" title="All 2 branches missed.">				if(o1.gettimeslot().getendtime().compareTo(o2.gettimeslot().getendtime())&gt;0) {</span>
+<span class="nc" id="L86">					return 1;</span>
+				}
+<span class="nc bnc" id="L88" title="All 2 branches missed.">				else if(o1.gettimeslot().getendtime().compareTo(o2.gettimeslot().getendtime())==0) {</span>
+<span class="nc" id="L89">					return 0;</span>
+				}
+<span class="nc" id="L91">				return -1;</span>
+			}
+		});
+<span class="nc" id="L94">	}</span>
+	
+	/**
+	 * 从FlightEntry的一个集合找到与airportlocation位置相同的FlightEntry并按照每个计划项的起飞时间排序
+	 * @param courselist 待排序的FlightEntry集合
+	 */
+	public void getsorttoentry(List&lt;FlightEntry&lt;Flight&gt;&gt; flightlist) {
+<span class="nc bnc" id="L101" title="All 2 branches missed.">		for(int i=0;i&lt;flightlist.size();i++) {</span>
+<span class="nc" id="L102">			toentry.add(flightlist.get(i).clone());</span>
+		}
+<span class="nc" id="L104">		Iterator&lt;FlightEntry&lt;Flight&gt;&gt; iterator=toentry.iterator();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">		while(iterator.hasNext()) {</span>
+<span class="nc" id="L106">			FlightEntry&lt;Flight&gt; pe=iterator.next();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">			if(!(pe.getfromlocation().getlocationname().equals(airportlocation))) {</span>
+<span class="nc" id="L108">				iterator.remove();</span>
+			}
+		}
+<span class="nc" id="L111">		Collections.sort(toentry,new Comparator&lt;FlightEntry&lt;Flight&gt;&gt;() {</span>
+			@Override
+			public int compare(FlightEntry&lt;Flight&gt; o1, FlightEntry&lt;Flight&gt; o2) {
+<span class="nc bnc" id="L114" title="All 2 branches missed.">				if(o1.gettimeslot().getbegintime().compareTo(o2.gettimeslot().getbegintime())&gt;0) {</span>
+<span class="nc" id="L115">					return 1;</span>
+				}
+<span class="nc bnc" id="L117" title="All 2 branches missed.">				else if(o1.gettimeslot().getbegintime().compareTo(o2.gettimeslot().getbegintime())==0) {</span>
+<span class="nc" id="L118">					return 0;</span>
+				}
+<span class="nc" id="L120">				return -1;</span>
+			}
+		});
+<span class="nc" id="L123">	}</span>
+	
+	/**
+	 * 显示当前board
+	 */
+	public void visualize() {
+<span class="nc" id="L129">		EventQueue.invokeLater(new Runnable() {</span>
+			public void run() {
+				try {
+<span class="nc" id="L132">					setVisible(true);</span>
+<span class="nc" id="L133">				} catch (Exception e) {</span>
+<span class="nc" id="L134">					e.printStackTrace();</span>
+				}
+<span class="nc" id="L136">			}</span>
+		});
+<span class="nc" id="L138">	}</span>
+
+	/**
+	 * 创建frame并储存FlightEntry集合的各种信息
+	 * @throws ParseException 
+	 */
+	public List&lt;FlightEntry&lt;Flight&gt;&gt; createFlightEntryBoard() throws ParseException  {
+<span class="nc" id="L145">		setTitle(&quot;航班状态显示屏&quot;);</span>
+<span class="nc" id="L146">		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</span>
+<span class="nc" id="L147">		setBounds(100, 100, 630, 750);</span>
+<span class="nc" id="L148">		contentPane = new JPanel();</span>
+<span class="nc" id="L149">		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));</span>
+<span class="nc" id="L150">		setContentPane(contentPane);</span>
+<span class="nc" id="L151">		contentPane.setLayout(null);</span>
+		
+<span class="nc" id="L153">		JPanel panel = new JPanel();</span>
+<span class="nc" id="L154">		panel.setBounds(0, 0, 600, 730);</span>
+<span class="nc" id="L155">		contentPane.add(panel);</span>
+<span class="nc" id="L156">		panel.setLayout(null);</span>
+		
+<span class="nc" id="L158">		JLabel lblNewLabel = new JLabel(&quot;&quot;);   </span>
+<span class="nc" id="L159">		time = new Timer(1000,new ActionListener() {   </span>
+		 
+		public void actionPerformed(ActionEvent arg0) {  
+<span class="nc" id="L162">			lblNewLabel.setText(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;).format(new Date())+&quot;(当地时间)&quot;+&quot;,&quot;+airportlocation+&quot;机场&quot;);</span>
+<span class="nc" id="L163">		}  </span>
+		});  
+<span class="nc" id="L165">		time.start();   </span>
+<span class="nc" id="L166">		lblNewLabel.setBounds(0, 0, 600, 30);</span>
+<span class="nc" id="L167">		panel.add(lblNewLabel);</span>
+		
+<span class="nc" id="L169">		nowtime = Calendar.getInstance();  //当前时间</span>
+<span class="nc" id="L170">		String str = (new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(nowtime.getTime()); </span>
+<span class="nc" id="L171">	    nowtime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(str));</span>
+		
+		
+		int i,j;
+		FlightEntry&lt;Flight&gt; flight;
+<span class="nc" id="L176">		String[][] comebiao=new String[100][4];</span>
+<span class="nc" id="L177">		String[][] tobiao=new String[100][4];</span>
+		
+<span class="nc" id="L179">		Iterator&lt;FlightEntry&lt;Flight&gt;&gt; iterator=comeentry.iterator();</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">		while(iterator.hasNext()) {</span>
+<span class="nc" id="L181">			FlightEntry&lt;Flight&gt; pe=iterator.next();</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">			if(((pe.gettimeslot().getendtime().getTime().getTime()-nowtime.getTime().getTime())/1000)&gt;3600</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">					||((nowtime.getTime().getTime()-pe.gettimeslot().getendtime().getTime().getTime())/1000)&gt;3600) {</span>
+<span class="nc" id="L184">				iterator.remove();</span>
+			}
+		}
+			
+<span class="nc bnc" id="L188" title="All 2 branches missed.">		for(i=0;i&lt;100;i++) {</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">		    for(j=0;j&lt;4;j++) {</span>
+<span class="nc" id="L190">				comebiao[i][j]=null;</span>
+			}
+		}
+		
+<span class="nc bnc" id="L194" title="All 2 branches missed.">		for(i=0;i&lt;comeentry.size();i++) {</span>
+<span class="nc" id="L195">			flight=comeentry.get(i);</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">			if(flight!=null) {</span>
+<span class="nc" id="L197">				comebiao[i][0]=(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(flight.gettimeslot().getendtime().getTime());</span>
+<span class="nc" id="L198">				comebiao[i][1]=(String) flight.getplanningentryname();</span>
+<span class="nc" id="L199">			    comebiao[i][2]=flight.getfromlocation().getlocationname()+&quot;—&quot;+flight.gettolocation().getlocationname();</span>
+<span class="nc" id="L200">			    comebiao[i][3]=((FlightState)flight.getcurrentstate()).getflightstate();</span>
+			}
+		}
+		
+<span class="nc" id="L204">		JLabel lblNewLabel_1 = new JLabel(&quot;                                  抵达航班&quot;);</span>
+<span class="nc" id="L205">		lblNewLabel_1.setBounds(0, 30, 600, 30);</span>
+<span class="nc" id="L206">		panel.add(lblNewLabel_1);</span>
+		
+<span class="nc" id="L208">		JScrollPane scrollPane = new JScrollPane();</span>
+<span class="nc" id="L209">		scrollPane.setBounds(0, 60, 600, 200);</span>
+<span class="nc" id="L210">		panel.add(scrollPane);</span>
+		
+<span class="nc" id="L212">		table = new JTable();</span>
+<span class="nc" id="L213">		table.setModel(new DefaultTableModel(</span>
+<span class="nc" id="L214">			comebiao,</span>
+<span class="nc" id="L215">			new String[] {</span>
+<span class="nc" id="L216">				&quot;计划降落时间&quot;, &quot;航班号&quot;, &quot;起始和终点&quot;, &quot;状态&quot;</span>
+			}
+		));
+		
+<span class="nc" id="L220">		table.getColumnModel().getColumn(0).setPreferredWidth(150);</span>
+<span class="nc" id="L221">		table.getColumnModel().getColumn(1).setPreferredWidth(150);</span>
+<span class="nc" id="L222">		table.getColumnModel().getColumn(2).setPreferredWidth(150);</span>
+<span class="nc" id="L223">		table.getColumnModel().getColumn(3).setPreferredWidth(150);</span>
+<span class="nc" id="L224">		scrollPane.setViewportView(table);</span>
+		
+<span class="nc" id="L226">		JLabel lblNewLabel_2 = new JLabel(&quot;                                  出发航班&quot;);</span>
+<span class="nc" id="L227">		lblNewLabel_2.setBounds(0, 280, 600, 30);</span>
+<span class="nc" id="L228">		panel.add(lblNewLabel_2);</span>
+		
+<span class="nc" id="L230">		JScrollPane scrollPane_1 = new JScrollPane();</span>
+<span class="nc" id="L231">		scrollPane_1.setBounds(0, 310, 600, 200);</span>
+<span class="nc" id="L232">		panel.add(scrollPane_1);</span>
+		
+<span class="nc" id="L234">		Iterator&lt;FlightEntry&lt;Flight&gt;&gt; iterator1=toentry.iterator();</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">		while(iterator1.hasNext()) {</span>
+<span class="nc" id="L236">			FlightEntry&lt;Flight&gt; pe=iterator1.next();</span>
+<span class="nc bnc" id="L237" title="All 4 branches missed.">			if(((pe.gettimeslot().getbegintime().getTime().getTime()-nowtime.getTime().getTime())/1000)&gt;3600||((nowtime.getTime().getTime()-pe.gettimeslot().getbegintime().getTime().getTime())/1000)&gt;3600) {</span>
+<span class="nc" id="L238">				iterator1.remove();</span>
+			}
+		}
+			
+<span class="nc bnc" id="L242" title="All 2 branches missed.">		for(i=0;i&lt;100;i++) {</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">		    for(j=0;j&lt;4;j++) {</span>
+<span class="nc" id="L244">				tobiao[i][j]=null;</span>
+			}
+		}
+		
+<span class="nc bnc" id="L248" title="All 2 branches missed.">		for(i=0;i&lt;toentry.size();i++) {</span>
+<span class="nc" id="L249">			flight=toentry.get(i);</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">			if(flight!=null) {</span>
+<span class="nc" id="L251">				tobiao[i][0]=(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(flight.gettimeslot().getbegintime().getTime());  ;</span>
+<span class="nc" id="L252">				tobiao[i][1]=(String) flight.getplanningentryname();</span>
+<span class="nc" id="L253">			    tobiao[i][2]=flight.getfromlocation().getlocationname()+&quot;——&quot;+flight.gettolocation().getlocationname();</span>
+<span class="nc" id="L254">			    tobiao[i][3]=((FlightState)flight.getcurrentstate()).getflightstate();</span>
+			}
+		}
+		
+<span class="nc" id="L258">		table_1 = new JTable();</span>
+<span class="nc" id="L259">		table_1.setModel(new DefaultTableModel(</span>
+<span class="nc" id="L260">			tobiao,</span>
+<span class="nc" id="L261">			new String[] {</span>
+<span class="nc" id="L262">					&quot;计划起飞时间&quot;, &quot;航班号&quot;, &quot;起始地&quot;, &quot;状态&quot;</span>
+			}
+		));
+<span class="nc" id="L265">		table_1.getColumnModel().getColumn(0).setPreferredWidth(150);</span>
+<span class="nc" id="L266">		table_1.getColumnModel().getColumn(1).setPreferredWidth(150);</span>
+<span class="nc" id="L267">		table_1.getColumnModel().getColumn(2).setPreferredWidth(150);</span>
+<span class="nc" id="L268">		table_1.getColumnModel().getColumn(3).setPreferredWidth(150);</span>
+<span class="nc" id="L269">		scrollPane_1.setViewportView(table_1);</span>
+		
+<span class="nc" id="L271">		List&lt;FlightEntry&lt;Flight&gt;&gt; allentry=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L272">		allentry.addAll(comeentry);</span>
+<span class="nc" id="L273">		allentry.addAll(toentry);</span>
+<span class="nc" id="L274">		return allentry;</span>
+	}
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

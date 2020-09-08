@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>OneLocationEntryImpl.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">PlanningEntry</a> &gt; <span class="el_source">OneLocationEntryImpl.java</span></div><h1>OneLocationEntryImpl.java</h1><pre class="source lang-java linenums">package PlanningEntry;
+
+import Location.*;
+
+<span class="pc bpc" id="L5" title="1 of 2 branches missed.">public class OneLocationEntryImpl implements Cloneable,OneLocationEntry {</span>
+
+	private Location onlylocation; //该位置
+	
+	    // mutability类
+		// Abstraction function:
+		// AF(onlylocation)=该位置
+		// Representation invariant:
+		// 输入的位置不能为空
+		// Safety from rep exposure:
+		// 将onlylocation设置为private
+	
+	// TODO checkRep
+    private void checkRep() {  //保证位置不为空
+<span class="pc bpc" id="L19" title="2 of 4 branches missed.">    	assert onlylocation!=null:&quot;教室位置为空&quot;;</span>
+<span class="fc" id="L20">    }</span>
+	
+	/**
+	 * 设置该位置
+	 * @param only 该位置
+	 * @return 该位置是否设置成功
+	 */
+	@Override
+	public boolean setlocations(Location only) {
+<span class="pc bpc" id="L29" title="1 of 4 branches missed.">		if(onlylocation==null&amp;&amp;only!=null) {</span>
+<span class="fc" id="L30">			this.onlylocation=only;	</span>
+<span class="fc" id="L31">			System.out.println(&quot;位置设置成功&quot;);</span>
+<span class="fc" id="L32">			checkRep();</span>
+<span class="fc" id="L33">			return true;</span>
+		}
+<span class="fc" id="L35">		System.out.println(&quot;位置只能设置一次&quot;);</span>
+<span class="fc" id="L36">		return false;</span>
+	}
+
+	/**
+	 * 更改该位置
+	 * @param only 更改后的位置
+	 * @return 位置是否更改成功
+	 */
+	@Override
+	public boolean changelocations(Location only) {
+<span class="fc" id="L46">		    checkRep();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		    if(only.equals(onlylocation)) {</span>
+<span class="fc" id="L48">		    	System.out.println(&quot;与原位置重复&quot;);</span>
+<span class="fc" id="L49">		    	return false;</span>
+		    }
+<span class="fc" id="L51">			this.onlylocation=only;</span>
+<span class="fc" id="L52">			System.out.println(&quot;教室位置修改(重新设置)成功&quot;);</span>
+<span class="fc" id="L53">			return true;</span>
+	}
+
+	/**
+	 * 删除该位置
+	 * @param waittodelete 待删除的位置
+	 * @return 位置是否删除成功
+	 */
+	@Override
+	public boolean deletelocations(Location waittodelete) {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		if(onlylocation.getlocationname().equals(waittodelete.getlocationname())) {</span>
+<span class="fc" id="L64">			onlylocation=null;</span>
+<span class="fc" id="L65">			System.out.println(&quot;教室位置删除成功&quot;);</span>
+<span class="fc" id="L66">			return true;</span>
+		}
+<span class="fc" id="L68">		System.out.println(&quot;没有该教室&quot;);</span>
+<span class="fc" id="L69">		return false;</span>
+	}
+
+	/**
+	 * 得到该位置
+	 * @return 该位置
+	 */
+	@Override
+	public Location getlocations() {
+<span class="fc" id="L78">		checkRep();</span>
+<span class="fc" id="L79">		return this.onlylocation;</span>
+	}
+
+	 @Override
+	  public OneLocationEntryImpl clone() { 
+<span class="nc" id="L84">		 OneLocationEntryImpl stu = null; </span>
+	    try{ 
+<span class="nc" id="L86">	      stu = (OneLocationEntryImpl)super.clone(); </span>
+<span class="nc" id="L87">	    }catch(CloneNotSupportedException e) { </span>
+<span class="nc" id="L88">	      e.printStackTrace(); </span>
+	    } 
+<span class="nc" id="L90">	    return stu; </span>
+	  } 
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

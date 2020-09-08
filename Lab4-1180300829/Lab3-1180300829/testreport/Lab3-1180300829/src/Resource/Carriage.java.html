@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Carriage.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Resource</a> &gt; <span class="el_source">Carriage.java</span></div><h1>Carriage.java</h1><pre class="source lang-java linenums">package Resource;
+
+import Exception.LessThanZeroException;
+
+<span class="pc bpc" id="L5" title="1 of 2 branches missed.">public class Carriage {</span>
+
+	private final String carriagenumber;  //车厢编号
+	private final String carriagetype;    //车厢类型
+	private final int carriageallseat;    //定员数
+	private final String carriagbirth;    //出厂年份
+	
+	// immutability类
+	// Abstraction function:
+    // AF(carriagenumber)=车厢编号
+	// AF(carriagetype)=车厢类型
+	// AF(carriageallseat)=定员数
+	// AF(carriagbirth)=出厂年份
+	// Representation invariant:
+    // 定员数是正数,车厢编号,车厢类型,定员数不为空
+	// Safety from rep exposure:
+	// 将carriagenumber,carriagetype,carriageallseat,carriagbirth设置为private final
+	
+	// TODO checkRep
+    private void checkRep() {  //定员数是正数,车厢编号,车厢类型,定员数不为空
+<span class="pc bpc" id="L25" title="2 of 4 branches missed.">          assert carriageallseat&gt;0:&quot;定员数不为正数\n&quot;;</span>
+<span class="pc bpc" id="L26" title="2 of 4 branches missed.">          assert carriagenumber!=null;</span>
+<span class="pc bpc" id="L27" title="2 of 4 branches missed.">          assert carriagetype!=null;</span>
+<span class="pc bpc" id="L28" title="2 of 4 branches missed.">          assert carriagbirth!=null;</span>
+<span class="fc" id="L29">    }</span>
+	
+	/**
+	 * 初始化构造方法
+	 * @param a 车厢编号
+	 * @param b 车厢类型
+	 * @param c 定员数:正数
+	 * @param d 出厂年份
+	 * @throws LessThanZeroException 定员数为负数
+	 */
+<span class="fc" id="L39">	public Carriage(String a,String b,int c,String d) throws LessThanZeroException {</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		if(c&lt;=0) {</span>
+<span class="fc" id="L41">			throw new LessThanZeroException();</span>
+		}
+<span class="fc" id="L43">		this.carriagenumber=a;</span>
+<span class="fc" id="L44">		this.carriagetype=b;</span>
+<span class="fc" id="L45">		this.carriageallseat=c;</span>
+<span class="fc" id="L46">		this.carriagbirth=d;</span>
+<span class="fc" id="L47">		checkRep();</span>
+<span class="fc" id="L48">	}</span>
+	
+	/**
+	 * 返回车厢编号
+	 * @return 车厢编号
+	 */
+	public String getcarriagenumber() {
+<span class="fc" id="L55">		checkRep();</span>
+<span class="fc" id="L56">		return carriagenumber;</span>
+	}
+	
+	/**
+	 * 返回车厢类型
+	 * @return 车厢类型
+	 */
+	public String getcarriagetype() {
+<span class="fc" id="L64">		checkRep();</span>
+<span class="fc" id="L65">		return carriagetype;</span>
+	}
+	
+	/**
+	 * 返回定员数
+	 * @return 定员数
+	 */
+	public int getcarriageallseat() {
+<span class="fc" id="L73">		checkRep();</span>
+<span class="fc" id="L74">		return carriageallseat;</span>
+	}
+	
+	/**
+	 * 返回车厢出厂年份
+	 * @return 车厢出厂年份
+	 */
+	public String getcarriagbirth() {
+<span class="fc" id="L82">		checkRep();</span>
+<span class="fc" id="L83">		return carriagbirth;</span>
+	}
+
+	/**
+	 * 重写hashcode方法
+	 */
+	@Override
+	public int hashCode() {
+<span class="fc" id="L91">		final int prime = 31;</span>
+<span class="fc" id="L92">		int result = 1;</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		result = prime * result + ((carriagbirth == null) ? 0 : carriagbirth.hashCode());</span>
+<span class="fc" id="L94">		result = prime * result + carriageallseat;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		result = prime * result + ((carriagenumber == null) ? 0 : carriagenumber.hashCode());</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">		result = prime * result + ((carriagetype == null) ? 0 : carriagetype.hashCode());</span>
+<span class="fc" id="L97">		return result;</span>
+	}
+
+	/**
+	 * 重写equals方法
+	 */
+	@Override
+	public boolean equals(Object obj) {
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		if (this == obj)</span>
+<span class="fc" id="L106">			return true;</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">		if (obj == null)</span>
+<span class="nc" id="L108">			return false;</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="nc" id="L110">			return false;</span>
+<span class="fc" id="L111">		Carriage other = (Carriage) obj;</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		if (carriagbirth == null) {</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">			if (other.carriagbirth != null)</span>
+<span class="nc" id="L114">				return false;</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">		} else if (!carriagbirth.equals(other.carriagbirth))</span>
+<span class="nc" id="L116">			return false;</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">		if (carriageallseat != other.carriageallseat)</span>
+<span class="nc" id="L118">			return false;</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		if (carriagenumber == null) {</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">			if (other.carriagenumber != null)</span>
+<span class="nc" id="L121">				return false;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		} else if (!carriagenumber.equals(other.carriagenumber))</span>
+<span class="fc" id="L123">			return false;</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		if (carriagetype == null) {</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">			if (other.carriagetype != null)</span>
+<span class="nc" id="L126">				return false;</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">		} else if (!carriagetype.equals(other.carriagetype))</span>
+<span class="nc" id="L128">			return false;</span>
+<span class="fc" id="L129">		return true;</span>
+	}
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

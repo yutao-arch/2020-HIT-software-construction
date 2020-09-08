@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CommonPlanningEntry.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">PlanningEntry</a> &gt; <span class="el_source">CommonPlanningEntry.java</span></div><h1>CommonPlanningEntry.java</h1><pre class="source lang-java linenums">package PlanningEntry;
+
+
+public class CommonPlanningEntry&lt;R&gt; implements PlanningEntry&lt;R&gt; {
+
+	private String planningentryname; //计划项名字
+	private R currentstate;  //计划项当前状态
+	
+	// mutability类
+	// Abstraction function:
+	// AF(planningentryname)=计划项名字
+	// AF(currentstate)=计划项当前状态
+	// Representation invariant:
+	// 对输入的指令进行检查
+	// Safety from rep exposure:
+	// 将planningentryname,currentstate设置为private
+	
+	/**
+	 * 构造方法
+	 */
+<span class="fc" id="L21">	public CommonPlanningEntry(){</span>
+<span class="fc" id="L22">	}</span>
+	
+	/**
+	 * 设置计划项的名字
+	 * @param planningentryname 待设置的名字
+	 */
+	@Override
+	public void setplanningentryname(String planningentryname) {
+<span class="fc" id="L30">		this.planningentryname=planningentryname;</span>
+<span class="fc" id="L31">	}</span>
+	
+	/**
+	 * 设置计划项当前的状态
+	 * @param currentstate 待设置的状态
+	 */
+	@Override
+	public void setcurrentstate(R currentstate) {
+<span class="fc" id="L39">		this.currentstate=currentstate;</span>
+<span class="fc" id="L40">	}</span>
+	
+	/**
+	 * 创造一个计划项
+	 * @return 创造的计划项
+	 */
+	@Override
+	public CommonPlanningEntry&lt;R&gt; createplanningentry() {
+<span class="fc" id="L48">		return new CommonPlanningEntry&lt;R&gt;();</span>
+	}
+
+	/**
+	 * 启动一个计划项
+	 * @param a 启动的指令
+	 * @return 是否成功启动
+	 */
+	@Override
+	public boolean launch(R a) {
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if(a.equals(&quot;启动&quot;)) {</span>
+<span class="fc" id="L59">			System.out.println(&quot;计划项已启动&quot;);</span>
+<span class="fc" id="L60">			return true;</span>
+		}
+		else {
+<span class="fc" id="L63">			System.out.println(&quot;请输入正确指令&quot;);</span>
+<span class="fc" id="L64">			return false;</span>
+		}
+	}
+
+	/**
+	 * 取消一个计划项
+	 * @param a 取消的指令
+	 * @return 是否成功取消
+	 */
+	@Override
+	public boolean cancel(R a) {
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		if(a.equals(&quot;取消&quot;)) {</span>
+<span class="fc" id="L76">			System.out.println(&quot;计划项已取消&quot;);</span>
+<span class="fc" id="L77">			return true;</span>
+		}
+		else {
+<span class="fc" id="L80">			System.out.println(&quot;请输入正确指令&quot;);</span>
+<span class="fc" id="L81">			return false;</span>
+		}
+	}
+
+	/**
+	 * 结束一个计划项
+	 * @param a 结束的指令
+	 * @return 是否成功结束
+	 */
+	@Override
+	public boolean finish(R a) {
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		if(a.equals(&quot;结束&quot;)) {</span>
+<span class="fc" id="L93">			System.out.println(&quot;计划项已结束&quot;);</span>
+<span class="fc" id="L94">			return true;</span>
+		}
+		else {
+<span class="fc" id="L97">			System.out.println(&quot;请输入正确指令&quot;);</span>
+<span class="fc" id="L98">			return false;</span>
+		}
+	}
+
+	/**
+	 * 得到计划项的名字
+	 * @return 计划项的名字
+	 */
+	@Override
+	public String getplanningentryname() {
+<span class="fc" id="L108">		return planningentryname;</span>
+	}
+
+	/**
+	 * 得到当前计划项的状态
+	 * @return
+	 */
+	@Override
+	public R getcurrentstate() {
+<span class="fc" id="L117">		return currentstate;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

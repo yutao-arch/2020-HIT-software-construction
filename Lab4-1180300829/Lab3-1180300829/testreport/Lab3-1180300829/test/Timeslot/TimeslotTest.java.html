@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TimeslotTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">Timeslot</a> &gt; <span class="el_source">TimeslotTest.java</span></div><h1>TimeslotTest.java</h1><pre class="source lang-java linenums">package Timeslot;
+
+import static org.junit.Assert.*;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import org.junit.Test;
+
+import Exception.BeginEndTimeException;
+import Exception.ComponentsNumberException;
+import Exception.DateException;
+import Exception.FlightNumberException;
+import Exception.FromTimeException;
+import Exception.PlaneAgeException;
+import Exception.PlaneIdException;
+import Exception.PlaneSeatsException;
+import Exception.PlaneTypeException;
+import Exception.ToTimeException;
+import Parser.Parser;
+import Resource.Teacher;
+
+<span class="fc" id="L28">public class TimeslotTest {</span>
+	
+	
+
+	/* Testing strategy
+	 * 测试getbegintime方法
+     * 测试起始时间的返回值即可
+     */
+	@Test
+	public void getbegintimetest() throws ParseException, BeginEndTimeException {
+<span class="fc" id="L38">		Timeslot temp=new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;);</span>
+<span class="fc" id="L39">		Calendar begintime= Calendar.getInstance(); </span>
+<span class="fc" id="L40">		begintime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(&quot;2020-01-01 15:45&quot;));</span>
+<span class="fc" id="L41">		assertEquals(begintime,temp.getbegintime());</span>
+<span class="fc" id="L42">	}</span>
+	
+	/* Testing strategy
+	 * 测试getendtime方法
+     * 测试结束时间的返回值即可
+     */
+	@Test
+	public void getendtimetest() throws ParseException, BeginEndTimeException {
+<span class="fc" id="L50">		Timeslot temp=new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;);</span>
+<span class="fc" id="L51">		Calendar endtime= Calendar.getInstance(); </span>
+<span class="fc" id="L52">		endtime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(&quot;2020-01-01 17:30&quot;));</span>
+<span class="fc" id="L53">		assertEquals(endtime,temp.getendtime());</span>
+<span class="fc" id="L54">	}</span>
+	
+	
+	/* Testing strategy
+	 * 测试hashcode方法
+     * 测试两个相同的时间类hashcode是否相同即可
+     */
+	@Test
+	public void hashcodetest() throws ParseException, BeginEndTimeException {
+<span class="fc" id="L63">		Timeslot temp=new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;);</span>
+<span class="fc" id="L64">		Timeslot temp1=new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;);</span>
+<span class="fc" id="L65">		assertEquals(temp.hashCode(),temp1.hashCode());</span>
+<span class="fc" id="L66">	}</span>
+	
+	/* Testing strategy
+	 * 测试equals方法
+     * 按照两个时间是否相同划分等价类：时间相同，时间不同
+     */
+	@Test
+	public void equalstest() throws ParseException, BeginEndTimeException {
+<span class="fc" id="L74">		Timeslot temp=new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;);</span>
+<span class="fc" id="L75">		Timeslot temp1=new Timeslot(&quot;2020-01-01 12:45&quot;,&quot;2020-01-01 17:30&quot;);</span>
+<span class="fc" id="L76">		Timeslot temp2=new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;);</span>
+<span class="fc" id="L77">		assertEquals(false,temp.equals(temp1));</span>
+<span class="fc" id="L78">		assertEquals(true,temp.equals(temp2));</span>
+<span class="fc" id="L79">	}</span>
+	
+	/* Testing strategy
+	 * 测试创建时的异常
+     */
+	 @Test(expected = BeginEndTimeException.class)
+	 public void shouldGetBeginEndTimeException() throws ParseException, BeginEndTimeException {
+<span class="nc" id="L86">		 Timeslot temp=new Timeslot(&quot;2020-01-02 15:45&quot;,&quot;2020-01-01 17:30&quot;);	 </span>
+<span class="nc" id="L87">		 temp.hashCode();</span>
+<span class="nc" id="L88">	 }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

@@ -1,0 +1,968 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>FlightScheduleApp.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">App</a> &gt; <span class="el_source">FlightScheduleApp.java</span></div><h1>FlightScheduleApp.java</h1><pre class="source lang-java linenums">package App;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import Board.FlightEntryBoard;
+import EntryState.*;
+import Exception.*;
+import Factory.FlightEntryFactory;
+import Location.*;
+import Parser.Parser;
+import PlanningEntry.*;
+import PlanningEntryAPIs.PlanningEntryAPIs;
+import Resource.Flight;
+import Timeslot.*;
+
+<span class="nc" id="L34">public class FlightScheduleApp {</span>
+
+<span class="nc" id="L36">	private static List&lt;FlightEntry&lt;Flight&gt;&gt; flightlist=new ArrayList&lt;&gt;(); //储存所有FlightEntry的集合</span>
+<span class="nc" id="L37">	private final static Logger logger = Logger.getLogger(FlightScheduleApp.class.getName());</span>
+	
+	 /**
+     * 菜单
+     */
+	public static void menu() {
+<span class="nc" id="L43">		System.out.println(&quot;1.创建一个新的航班计划项并设置信息(为了方便在信息版检测，设置时间时请设置为当前时间一小时前后的时间)&quot;);</span>
+<span class="nc" id="L44">		System.out.println(&quot;2.为某个航班计划项分配资源&quot;);</span>
+<span class="nc" id="L45">		System.out.println(&quot;3.变更某个航班计划项的位置&quot;);</span>
+<span class="nc" id="L46">		System.out.println(&quot;4.变更某个航班计划项的资源&quot;);</span>
+<span class="nc" id="L47">		System.out.println(&quot;5.启动某个航班计划项&quot;);</span>
+<span class="nc" id="L48">		System.out.println(&quot;6.结束某个航班计划项&quot;);</span>
+<span class="nc" id="L49">		System.out.println(&quot;7.取消某个航班计划项&quot;);</span>
+<span class="nc" id="L50">		System.out.println(&quot;8.查看某个航班计划项的状态&quot;);</span>
+<span class="nc" id="L51">		System.out.println(&quot;9.从文件中读入航班计划项并加入计划项集合中(读取大的文件可能耗时很长)&quot;);</span>
+<span class="nc" id="L52">		System.out.println(&quot;****(注意：执行10,11,12的操作需要为每一个计划项分配资源后执行,否则异常)****&quot;);</span>
+<span class="nc" id="L53">		System.out.println(&quot;10.检测航班计划项中是否存在位置和资源独占冲突&quot;);</span>
+<span class="nc" id="L54">		System.out.println(&quot;11.针对某个飞机资源，列出所有使用该资源的航班计划项&quot;);</span>
+<span class="nc" id="L55">		System.out.println(&quot;12.针对某个飞机资源，选中含有该资源的某个航班计划项，列出它的前序计划项(输出一个即可)&quot;);</span>
+<span class="nc" id="L56">		System.out.println(&quot;13.选定某个位置，展示当前时刻该位置的信息版&quot;);</span>
+<span class="nc" id="L57">		System.out.println(&quot;14.显示当前含有航班计划项的个数&quot;);</span>
+<span class="nc" id="L58">		System.out.println(&quot;15.按照过滤条件进行日志查询&quot;);</span>
+<span class="nc" id="L59">		System.out.println(&quot;16.写入日志到文件并结束程序&quot;);</span>
+<span class="nc" id="L60">	}</span>
+	
+	
+	/**
+	 * 
+	 * @param args
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static void main(String[] args)   {
+		TwoLocationEntryImpl a;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b;
+		NoBlockableEntryImpl c;
+<span class="nc" id="L72">		String choice,weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+<span class="nc" id="L73">		Scanner scanner=new Scanner(System.in);</span>
+		FlightState state;
+		Flight myflight;
+		Calendar canceltimeone;
+<span class="nc" id="L77">		PlanningEntryAPIs myapis=new PlanningEntryAPIs&lt;&gt;();</span>
+		String fileentry,fileoneline;
+<span class="nc" id="L79">		List&lt;String&gt; allfileentry=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L80">		System.out.println(&quot;最开始请执行第一步&quot;);</span>
+		
+<span class="nc" id="L82">		File file=new File(&quot;log/FlightScheduleLog.txt&quot;);</span>
+		try {
+<span class="nc bnc" id="L84" title="All 2 branches missed.">			if(!file.exists()) {</span>
+<span class="nc" id="L85">				file.createNewFile();</span>
+			}
+<span class="nc" id="L87">			FileWriter fileWriter=new FileWriter(file);</span>
+<span class="nc" id="L88">			fileWriter.write(&quot;&quot;);</span>
+<span class="nc" id="L89">			fileWriter.flush();</span>
+<span class="nc" id="L90">			fileWriter.close();</span>
+<span class="nc" id="L91">		}catch(IOException e) {</span>
+<span class="nc" id="L92">			System.out.println(&quot;创建文件失败&quot;);</span>
+		}
+		
+		try {		
+<span class="nc" id="L96">			while(true) {</span>
+				String[] temp;
+				String yixie;
+<span class="nc" id="L99">				menu();</span>
+<span class="nc" id="L100">				Locale.setDefault(new Locale(&quot;en&quot;, &quot;EN&quot;));</span>
+<span class="nc" id="L101">				logger.setLevel(Level.INFO);</span>
+				FileHandler fileHandler;	
+<span class="nc" id="L103">				fileHandler = new FileHandler(&quot;log/FlightScheduleLog.txt&quot;, true);</span>
+<span class="nc" id="L104">				fileHandler.setFormatter(new SimpleFormatter());</span>
+<span class="nc" id="L105">				logger.addHandler(fileHandler);	</span>
+<span class="nc" id="L106">				logger.setUseParentHandlers(false);</span>
+<span class="nc" id="L107">				System.out.println(&quot;请输入你的操作：&quot;);</span>
+<span class="nc" id="L108">				choice=scanner.nextLine();</span>
+<span class="nc bnc" id="L109" title="All 17 branches missed.">				switch(choice) {</span>
+				case &quot;1&quot;:
+<span class="nc" id="L111">					a=new TwoLocationEntryImpl();</span>
+<span class="nc" id="L112">					b=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="nc" id="L113">					c=new NoBlockableEntryImpl();</span>
+<span class="nc" id="L114">					PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a, b, c); //用工厂方法创建对象</span>
+<span class="nc" id="L115">					FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+<span class="nc" id="L116">					System.out.println(&quot;此航班计划项已经创建完成,下面输入一些信息完成初始状态的建立：&quot;);</span>
+<span class="nc" id="L117">					System.out.println(&quot;请输入航班号(eg AH3567)：&quot;);</span>
+<span class="nc" id="L118">					String flightname=scanner.nextLine();</span>
+<span class="nc" id="L119">					flight.setplanningentryname(flightname);</span>
+<span class="nc" id="L120">					logger.log(Level.INFO,&quot;true:setplanningentryname,计划项&quot;+flightname);</span>
+<span class="nc" id="L121">				    System.out.println(&quot;计划项名字设置成功&quot;);</span>
+<span class="nc" id="L122">					System.out.println(&quot;请输入起点站名称(eg 北京)：&quot;);</span>
+					String tempname;
+<span class="nc" id="L124">					tempname=scanner.nextLine();</span>
+<span class="nc" id="L125">					FlightTrainLocation from=new FlightTrainLocation(weidu,jingdu,tempname);</span>
+<span class="nc" id="L126">					System.out.println(&quot;请输入终点站名称(eg 武汉)：&quot;);</span>
+<span class="nc" id="L127">					tempname=scanner.nextLine();</span>
+<span class="nc" id="L128">					FlightTrainLocation to=new FlightTrainLocation(weidu,jingdu,tempname);</span>
+					try {
+<span class="nc bnc" id="L130" title="All 2 branches missed.">						if(flight.setlocations(from, to)) {</span>
+<span class="nc" id="L131">							logger.log(Level.INFO,&quot;true:setlocation,计划项&quot;+flightname);</span>
+						}
+<span class="nc" id="L133">					} catch (SameLocationException e2) {</span>
+<span class="nc" id="L134">						logger.log(Level.SEVERE,&quot;flase:setlocation,SameLocationException-&gt;operation again,计划项&quot;+flightname,e2);</span>
+<span class="nc" id="L135">						System.out.println(&quot;存在两个相同飞机场位置，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L136">						break;</span>
+					}
+<span class="nc" id="L138">					System.out.println(&quot;请输入起飞和降落时间(用逗号隔开)(eg 2020-01-01 12:00,2020-01-01 14:00)：&quot;);</span>
+					try {
+<span class="nc" id="L140">						temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L141">						Timeslot mytime=new Timeslot(temp[0],temp[1]);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">						if(flight.settimeslot(mytime)) {</span>
+<span class="nc" id="L143">							logger.log(Level.INFO,&quot;true:settimeslot,计划项&quot;+flightname);</span>
+<span class="nc" id="L144">							System.out.println(&quot;一个时间对设置成功&quot;);</span>
+						}
+<span class="nc" id="L146">					}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L147">						 logger.log(Level.SEVERE,&quot;flase:settimeslot,ArrayIndexOutOfBoundsException-&gt;operation again,计划项&quot;+flightname,e);</span>
+<span class="nc" id="L148">						 System.out.println(&quot;未用,隔开，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L149">						 break;</span>
+<span class="nc" id="L150">					}catch(ParseException e) {</span>
+<span class="nc" id="L151">						logger.log(Level.SEVERE,&quot;flase:settimeslot,ParseException-&gt;operation again,计划项&quot;+flightname,e);</span>
+<span class="nc" id="L152">						System.out.println(&quot;时间不符合yyyy-MM-dd HH:mm的要求，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L153">						break;</span>
+<span class="nc" id="L154">					} catch (BeginEndTimeException e) {</span>
+<span class="nc" id="L155">						logger.log(Level.SEVERE,&quot;flase:settimeslot,BeginEndTimeException-&gt;operation again,计划项&quot;+flightname,e);</span>
+<span class="nc" id="L156">						System.out.println(&quot;起始时间晚于终止时间，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L157">						break;</span>
+					}
+<span class="nc" id="L159">					state = FlightWaitingState.instance;</span>
+<span class="nc" id="L160">					flight.setcurrentstate(state);</span>
+<span class="nc" id="L161">					System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L162">					System.out.println(&quot;信息设置完成&quot;);</span>
+<span class="nc" id="L163">					flightlist.add(flight);</span>
+<span class="nc" id="L164">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L165">					break;</span>
+				case &quot;2&quot;:
+<span class="nc" id="L167">					System.out.println(&quot;请输入你想加入资源的航班计划项的航班号(eg AH3567)：&quot;);</span>
+<span class="nc" id="L168">					tempname=scanner.nextLine();</span>
+					int i;
+<span class="nc bnc" id="L170" title="All 2 branches missed.">					for(i=0;i&lt;flightlist.size();i++) {</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">						if(flightlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L172">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L175" title="All 2 branches missed.">					if(i==flightlist.size()) {</span>
+<span class="nc" id="L176">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L177">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L178">						System.out.println();</span>
+<span class="nc" id="L179">						break;</span>
+					}
+<span class="nc" id="L181">					List&lt;FlightEntry&lt;Flight&gt;&gt; tempflightlist=new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">					for(int oo=0;oo&lt;flightlist.size();oo++) {</span>
+<span class="nc" id="L183">						tempflightlist.add(flightlist.get(oo).clone());</span>
+					}
+<span class="nc" id="L185">					FlightEntry&lt;Flight&gt; tempentry=flightlist.get(i).clone();</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">					if(((FlightState)tempentry.getcurrentstate()).getflightstate().equals(&quot;航班未分配飞机(Waiting)&quot;)) {</span>
+<span class="nc" id="L187">						System.out.println(&quot;请输入待加入飞机编号，机型号，座位数，机龄(eg N8981,C88,100,2.5)：&quot;);</span>
+						try {
+<span class="nc" id="L189">							temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L190">							myflight=new Flight(temp[0],temp[1],Integer.parseInt(temp[2]),Double.parseDouble(temp[3]));</span>
+<span class="nc" id="L191">							tempentry.setresource(myflight);</span>
+<span class="nc" id="L192">						}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L193">							 logger.log(Level.SEVERE,&quot;flase:setresource,ArrayIndexOutOfBoundsException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L194">							 System.out.println(&quot;未用,隔开，请重新执行2操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L195">							 break;</span>
+<span class="nc" id="L196">						} catch (NumberFormatException e) {</span>
+<span class="nc" id="L197">							e.printStackTrace();</span>
+<span class="nc" id="L198">						} catch (LessThanZeroException e) {</span>
+<span class="nc" id="L199">							 logger.log(Level.SEVERE,&quot;flase:setresource,LessThanZeroException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L200">							 System.out.println(&quot;座位数为非正数或机龄为负数，请重新执行2操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L201">							 break;</span>
+						}
+<span class="nc" id="L203">						state=((FlightState)tempentry.getcurrentstate()).move('a');</span>
+<span class="nc" id="L204">						tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L205">						System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L206">						tempflightlist.set(i, tempentry);</span>
+						try {
+<span class="nc bnc" id="L208" title="All 2 branches missed.">							if(myapis.checkResourceExclusiveConflict(tempflightlist)) {</span>
+<span class="nc" id="L209">								throw new ResourceExclusiveConflictException();</span>
+							}
+							else {
+<span class="nc" id="L212">								flightlist.set(i, tempentry);</span>
+<span class="nc" id="L213">								logger.log(Level.INFO,&quot;true:setresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L214">								System.out.println(&quot;飞机资源设置完成\n&quot;);</span>
+							}
+<span class="nc" id="L216">						}catch(ResourceExclusiveConflictException e) {</span>
+<span class="nc" id="L217">							logger.log(Level.SEVERE,&quot;flase:setresource,ResourceExclusiveConflictException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L218">							System.out.println(&quot;该资源分配后会与已有的其他计划项发生资源独占冲突，请重新分配资源\n&quot;);</span>
+						}
+<span class="nc" id="L220">					}</span>
+					else {
+<span class="nc" id="L222">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L223">						System.out.println(&quot;当前状态下不能执行设置飞机资源操作\n&quot;);</span>
+					}
+<span class="nc" id="L225">					break;</span>
+				case &quot;3&quot;:
+<span class="nc" id="L227">					logger.log(Level.INFO,&quot;false:changelocation,no changeable location-&gt;operation again&quot;);</span>
+<span class="nc" id="L228">					System.out.println(&quot;航班起点和终点位置不可变更&quot;);</span>
+<span class="nc" id="L229">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L230">					break;</span>
+				case &quot;4&quot;:
+<span class="nc" id="L232">					System.out.println(&quot;请输入你想变更资源的航班计划项的航班号(eg AH3567)：&quot;);</span>
+<span class="nc" id="L233">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">					for(i=0;i&lt;flightlist.size();i++) {</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">						if(flightlist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L236">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L239" title="All 2 branches missed.">					if(i==flightlist.size()) {</span>
+<span class="nc" id="L240">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L241">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L242">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L243">						break;</span>
+					}
+<span class="nc" id="L245">					tempentry=flightlist.get(i);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">					if(((FlightState)tempentry.getcurrentstate()).getflightstate().equals(&quot;航班已分配飞机(Allocated)&quot;)) {</span>
+<span class="nc" id="L247">						System.out.println(&quot;请输入新的飞机编号，机型号，座位数，机龄(eg B1104,A22,100,2.5)：&quot;);</span>
+						try {
+<span class="nc" id="L249">							temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L250">							myflight=new Flight(temp[0],temp[1],Integer.parseInt(temp[2]),Double.parseDouble(temp[3]));</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">							if(tempentry.changeresource(myflight)) {</span>
+<span class="nc" id="L252">								logger.log(Level.INFO,&quot;true:changeresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L253">							}</span>
+							else {
+<span class="nc" id="L255">								logger.log(Level.INFO,&quot;false:changeresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L256">								break;</span>
+							}
+<span class="nc" id="L258">						}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L259">							 logger.log(Level.SEVERE,&quot;flase:changeresource,ArrayIndexOutOfBoundsException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L260">							 System.out.println(&quot;未用,隔开，请重新执行4操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L261">							 break;</span>
+<span class="nc" id="L262">						} catch (NumberFormatException e) {</span>
+							// TODO 自动生成的 catch 块
+<span class="nc" id="L264">							e.printStackTrace();</span>
+<span class="nc" id="L265">						} catch (LessThanZeroException e) {</span>
+<span class="nc" id="L266">							 logger.log(Level.SEVERE,&quot;flase:setresource,LessThanZeroException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L267">							 System.out.println(&quot;座位数为非正数或机龄为负数，请重新执行4操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L268">							 break;</span>
+						}
+<span class="nc" id="L270">						flightlist.set(i, tempentry);</span>
+<span class="nc" id="L271">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L272">					}</span>
+					else {
+<span class="nc" id="L274">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L275">						System.out.println(&quot;当前状态下不能执行变更飞机资源操作\n&quot;);</span>
+					}
+<span class="nc" id="L277">					break;</span>
+				case &quot;5&quot;:
+<span class="nc" id="L279">					System.out.println(&quot;请输入你想要启动的航班计划项的航班号(eg AH3567)：&quot;);</span>
+<span class="nc" id="L280">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L281" title="All 2 branches missed.">					for(i=0;i&lt;flightlist.size();i++) {</span>
+<span class="nc bnc" id="L282" title="All 2 branches missed.">						if(flightlist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L283">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L286" title="All 2 branches missed.">					if(i==flightlist.size()) {</span>
+<span class="nc" id="L287">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L288">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L289">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L290">						break;</span>
+					}
+<span class="nc" id="L292">					tempentry=flightlist.get(i);</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">					if(((FlightState)tempentry.getcurrentstate()).getflightstate().equals(&quot;航班已分配飞机(Allocated)&quot;)) {	</span>
+<span class="nc" id="L294">						System.out.println(&quot;请输入指令：启动&quot;);</span>
+<span class="nc" id="L295">						yixie=scanner.nextLine();</span>
+<span class="nc bnc" id="L296" title="All 2 branches missed.">						if(tempentry.launch(yixie)) {</span>
+<span class="nc" id="L297">						logger.log(Level.INFO,&quot;true:launch,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L298">						state=((FlightState)tempentry.getcurrentstate()).move('a');</span>
+<span class="nc" id="L299">						tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L300">						System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L301">						flightlist.set(i, tempentry);</span>
+<span class="nc" id="L302">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L303">						}</span>
+						else {
+<span class="nc" id="L305">							logger.log(Level.INFO,&quot;false:launch,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L306">							System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L307">							break;</span>
+						}
+					}
+					else {
+<span class="nc" id="L311">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L312">						System.out.println(&quot;当前状态下不能执行起飞操作\n&quot;);</span>
+					}
+<span class="nc" id="L314">					break;</span>
+				case &quot;6&quot;:
+<span class="nc" id="L316">					System.out.println(&quot;请输入你想要结束的航班计划项的航班号(eg AH3567)：&quot;);</span>
+<span class="nc" id="L317">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">					for(i=0;i&lt;flightlist.size();i++) {</span>
+<span class="nc bnc" id="L319" title="All 2 branches missed.">						if(flightlist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L320">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L323" title="All 2 branches missed.">					if(i==flightlist.size()) {</span>
+<span class="nc" id="L324">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L325">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L326">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L327">						break;</span>
+					}
+<span class="nc" id="L329">					tempentry=flightlist.get(i);</span>
+<span class="nc bnc" id="L330" title="All 2 branches missed.">					if(((FlightState)tempentry.getcurrentstate()).getflightstate().equals(&quot;航班已起飞(Running)&quot;)) {</span>
+<span class="nc" id="L331">						System.out.println(&quot;请输入指令：结束&quot;);</span>
+<span class="nc" id="L332">						yixie=scanner.nextLine();</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">						if(tempentry.finish(yixie)) {</span>
+<span class="nc" id="L334">						logger.log(Level.INFO,&quot;true:finish,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L335">						state=((FlightState)tempentry.getcurrentstate()).move('a');</span>
+<span class="nc" id="L336">						tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L337">						System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L338">						flightlist.set(i, tempentry);</span>
+<span class="nc" id="L339">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L340">						}</span>
+						else {
+<span class="nc" id="L342">							logger.log(Level.INFO,&quot;false:finish,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L343">							System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L344">							break;</span>
+						}
+					}
+					else {
+<span class="nc" id="L348">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L349">						System.out.println(&quot;当前状态下不能执行降落操作\n&quot;);</span>
+					}
+<span class="nc" id="L351">					break;</span>
+				case &quot;7&quot;:
+<span class="nc" id="L353">					System.out.println(&quot;请输入你想要取消的航班计划项的航班号(eg AH3567)：&quot;);</span>
+<span class="nc" id="L354">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">					for(i=0;i&lt;flightlist.size();i++) {</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">						if(flightlist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L357">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L360" title="All 2 branches missed.">					if(i==flightlist.size()) {</span>
+<span class="nc" id="L361">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L362">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L363">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L364">						break;</span>
+					}
+<span class="nc" id="L366">					tempentry=flightlist.get(i);</span>
+					try {
+<span class="nc bnc" id="L368" title="All 2 branches missed.">						if(((FlightState)tempentry.getcurrentstate()).getflightstate().equals(&quot;航班未分配飞机(Waiting)&quot;)</span>
+<span class="nc bnc" id="L369" title="All 2 branches missed.">								||((FlightState)tempentry.getcurrentstate()).getflightstate().equals(&quot;航班已分配飞机(Allocated)&quot;)) {</span>
+<span class="nc" id="L370">							System.out.println(&quot;请输入指令：取消&quot;);</span>
+<span class="nc" id="L371">							yixie=scanner.nextLine();</span>
+<span class="nc bnc" id="L372" title="All 2 branches missed.">							if(tempentry.cancel(yixie)) {</span>
+<span class="nc" id="L373">							canceltimeone=Calendar.getInstance();</span>
+<span class="nc" id="L374">							String str = (new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(canceltimeone.getTime()); </span>
+							try {
+<span class="nc" id="L376">								canceltimeone.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(str));</span>
+<span class="nc" id="L377">								logger.log(Level.INFO,&quot;true:cancel,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L378">							} catch (ParseException e) {</span>
+<span class="nc" id="L379">								logger.log(Level.SEVERE,&quot;false:cancel,ParseException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L380">								System.out.println(&quot;取消时间出错\n&quot;);</span>
+<span class="nc" id="L381">								break;</span>
+							}
+<span class="nc" id="L383">							System.out.println(&quot;该航班计划项取消的时间为&quot;+str);</span>
+<span class="nc" id="L384">							state=((FlightState)tempentry.getcurrentstate()).move('b');</span>
+<span class="nc" id="L385">							tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L386">							System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L387">							flightlist.remove(i);</span>
+<span class="nc" id="L388">							System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L389">							}</span>
+							else {
+<span class="nc" id="L391">								System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L392">								break;</span>
+							}
+						}
+						else {
+<span class="nc" id="L396">							throw new NoCancelStateException();</span>
+						}
+<span class="nc" id="L398">					}catch(NoCancelStateException e) {</span>
+<span class="nc" id="L399">						logger.log(Level.SEVERE,&quot;false:cancel,NoCancelStateException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L400">						System.out.println(&quot;航班已起飞，无法取消\n&quot;);</span>
+<span class="nc" id="L401">						break;</span>
+					}
+				case &quot;8&quot;:
+<span class="nc" id="L404">					System.out.println(&quot;请输入你想要查看的航班计划项的航班号(eg AH3567)：&quot;);</span>
+<span class="nc" id="L405">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L406" title="All 2 branches missed.">					for(i=0;i&lt;flightlist.size();i++) {</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">						if(flightlist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L408">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L411" title="All 2 branches missed.">					if(i==flightlist.size()) {</span>
+<span class="nc" id="L412">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L413">						System.out.println(&quot;没有该计划项或者已被取消&quot;);</span>
+<span class="nc" id="L414">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L415">						break;</span>
+					}
+<span class="nc" id="L417">					tempentry=flightlist.get(i);</span>
+<span class="nc" id="L418">					System.out.println(&quot;该航班计划项的状态为：&quot;+((FlightState)tempentry.getcurrentstate()).getflightstate());</span>
+<span class="nc" id="L419">					logger.log(Level.INFO,&quot;true:getcurrentstate,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L420">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L421">					break;</span>
+				case &quot;9&quot;:
+<span class="nc" id="L423">					System.out.println(&quot;下面提供五个文件可供读取， 文件名分别为：FlightSchedule_1.txt,FlightSchedule_2.txt,FlightSchedule_3.txt&quot;</span>
+							+ &quot;FlightSchedule_4.txt,FlightSchedule_5.txt&quot;);
+<span class="nc" id="L425">					System.out.println(&quot;请输入你想要读取航班计划项的文件名(eg FlightSchedule_1.txt)：&quot;);</span>
+<span class="nc" id="L426">					tempname=scanner.nextLine();</span>
+					BufferedReader thisfile;
+					try {
+<span class="nc" id="L429">						thisfile = new BufferedReader(new FileReader(&quot;src/txt/&quot;+tempname));</span>
+<span class="nc" id="L430">					} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L431">						logger.log(Level.SEVERE,&quot;false:findfile,FileNotFoundException-&gt;operation again&quot;,e1);</span>
+<span class="nc" id="L432">						System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+<span class="nc" id="L433">						break;</span>
+					}
+<span class="nc" id="L435">					i=0;</span>
+<span class="nc" id="L436">					int qq=0;</span>
+<span class="nc" id="L437">					fileentry=&quot;&quot;;</span>
+<span class="nc" id="L438">					allfileentry=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L439">					Parser tempparser=new Parser();</span>
+<span class="nc" id="L440">					tempflightlist=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L441">					boolean flag=true;</span>
+					try {
+<span class="nc bnc" id="L443" title="All 2 branches missed.">						while((fileoneline=thisfile.readLine())!=null) { //忽略缩进每十三行合成一个字符串</span>
+<span class="nc bnc" id="L444" title="All 2 branches missed.">							if(fileoneline.equals(&quot;&quot;)) {  //忽略缩进</span>
+<span class="nc" id="L445">								continue;</span>
+							}
+							else {
+<span class="nc" id="L448">								fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+<span class="nc bnc" id="L449" title="All 2 branches missed.">								if(i==12) {</span>
+<span class="nc" id="L450">									allfileentry.add(fileentry);</span>
+<span class="nc" id="L451">									i=-1;</span>
+<span class="nc" id="L452">									fileentry=&quot;&quot;;</span>
+								}
+<span class="nc" id="L454">								i++;</span>
+							}
+						}
+<span class="nc bnc" id="L457" title="All 2 branches missed.">						if(i!=0) {</span>
+<span class="nc" id="L458">							throw new ComponentsNumberException();</span>
+						}
+<span class="nc" id="L460">					} catch (IOException e1) {</span>
+<span class="nc" id="L461">						logger.log(Level.SEVERE,&quot;false:readfile,IOException-&gt;operation again&quot;,e1);</span>
+<span class="nc" id="L462">						System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+<span class="nc" id="L463">						break;</span>
+<span class="nc" id="L464">					} catch (ComponentsNumberException e) {</span>
+<span class="nc" id="L465">						logger.log(Level.SEVERE,&quot;false:addfileentry,ComponentsNumberException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L466">						System.out.println(&quot;存在航班计划项元素定义的分量数目错误，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L467">						break;</span>
+					}
+					try {
+<span class="nc" id="L470">						thisfile.close();</span>
+<span class="nc" id="L471">					} catch (IOException e1) {</span>
+<span class="nc" id="L472">						e1.printStackTrace();</span>
+					}
+<span class="nc bnc" id="L474" title="All 2 branches missed.">					for(i=0;i&lt;allfileentry.size();i++) {  //依次检查每个字符串是否符合格式要求</span>
+						try {
+<span class="nc" id="L476">							tempparser.checkwhethercorrect(allfileentry.get(i));</span>
+<span class="nc" id="L477">						} catch (ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L478">							i++;</span>
+<span class="nc" id="L479">							logger.log(Level.SEVERE,&quot;false:addfileentry,ComponentsNumberException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L480">							System.out.println(&quot;第&quot;+i+&quot;个航班计划项缺少日期或航班号，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L481">							flag=false;</span>
+<span class="nc" id="L482">							break;</span>
+<span class="nc" id="L483">						} catch (DateException e) {</span>
+<span class="nc" id="L484">							i++;</span>
+<span class="nc" id="L485">							logger.log(Level.SEVERE,&quot;false:addfileentry,DateException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L486">							System.out.println(&quot;第&quot;+i+&quot;个航班计划项航班号在日期前面出现或者日期格式不符合yyyy-MM-dd的要求，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L487">							flag=false;</span>
+<span class="nc" id="L488">							break;</span>
+<span class="nc" id="L489">						} catch (FlightNumberException e) {</span>
+<span class="nc" id="L490">							i++;</span>
+<span class="nc" id="L491">							logger.log(Level.SEVERE,&quot;false:addfileentry,FlightNumberException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L492">							System.out.println(&quot;第&quot;+i+&quot;个航班计划项航班号不符合两位大写字母和2-4位数字构成的要求，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L493">							flag=false;</span>
+<span class="nc" id="L494">							break;</span>
+<span class="nc" id="L495">						} catch (FromTimeException e) {</span>
+<span class="nc" id="L496">							i++;</span>
+<span class="nc" id="L497">							logger.log(Level.SEVERE,&quot;false:addfileentry,FromTimeException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L498">							System.out.println(&quot;第&quot;+i+&quot;个航班计划项出发时间不符合yyyy-MM-dd HH:mm的要求，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L499">							flag=false;</span>
+<span class="nc" id="L500">							break;</span>
+<span class="nc" id="L501">						} catch (ToTimeException e) {</span>
+<span class="nc" id="L502">							i++;</span>
+<span class="nc" id="L503">							logger.log(Level.SEVERE,&quot;false:addfileentry,ToTimeException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L504">							System.out.println(&quot;第&quot;+i+&quot;个航班计划项抵达时间不符合yyyy-MM-dd HH:mm的要求，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L505">							flag=false;</span>
+<span class="nc" id="L506">							break;</span>
+<span class="nc" id="L507">						} catch (PlaneIdException e) {</span>
+<span class="nc" id="L508">							i++;</span>
+<span class="nc" id="L509">							logger.log(Level.SEVERE,&quot;false:addfileentry,PlaneIdException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L510">							System.out.println(&quot;第&quot;+i+&quot;个航班计划项飞机编号不符合第一位为N或B，后面是四位数字的要求，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L511">							flag=false;</span>
+<span class="nc" id="L512">							break;</span>
+<span class="nc" id="L513">						} catch (PlaneTypeException e) {</span>
+<span class="nc" id="L514">							i++;</span>
+<span class="nc" id="L515">							logger.log(Level.SEVERE,&quot;false:addfileentry,PlaneTypeException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L516">							System.out.println(&quot;第&quot;+i+&quot;个航班计划项机型不符合大小写字母或数字构成，不含有空格或其他符号的要求，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L517">							flag=false;</span>
+<span class="nc" id="L518">							break;</span>
+<span class="nc" id="L519">						} catch (PlaneSeatsException e) {</span>
+<span class="nc" id="L520">							i++;</span>
+<span class="nc" id="L521">							logger.log(Level.SEVERE,&quot;false:addfileentry,PlaneSeatsException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L522">							System.out.println(&quot;第&quot;+i+&quot;个航班计划项座位数不符合正整数且范围为[50,600]的要求，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L523">							flag=false;</span>
+<span class="nc" id="L524">							break;</span>
+<span class="nc" id="L525">						} catch (PlaneAgeException e) {</span>
+<span class="nc" id="L526">							i++;</span>
+<span class="nc" id="L527">							logger.log(Level.SEVERE,&quot;false:addfileentry,PlaneAgeException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L528">							System.out.println(&quot;第&quot;+i+&quot;个航班计划项机龄不符合范围为[50,600]，最多为1位小数或无小数的要求，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L529">							flag=false;</span>
+<span class="nc" id="L530">							break;</span>
+						}		
+					}
+<span class="nc bnc" id="L533" title="All 2 branches missed.">					if(flag==false) {</span>
+<span class="nc" id="L534">						break;</span>
+					}
+					else {          //对于符合要求的文件，依次读入航班计划项，并加入航班计划项集合中
+<span class="nc bnc" id="L537" title="All 2 branches missed.">						for(i=0;i&lt;allfileentry.size();i++) {</span>
+<span class="nc" id="L538">							fileentry=allfileentry.get(i);</span>
+<span class="nc" id="L539">							a=new TwoLocationEntryImpl();</span>
+<span class="nc" id="L540">							b=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="nc" id="L541">							c=new NoBlockableEntryImpl();</span>
+<span class="nc" id="L542">							originflight=new FlightEntryFactory().getFlightEntry(a, b, c); //用工厂方法创建对象</span>
+<span class="nc" id="L543">							flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+							
+<span class="nc" id="L545">							temp=tempparser.getAllinformation(&quot;Flight:&quot;, fileentry).split(&quot;,&quot;);  </span>
+							
+<span class="nc" id="L547">							Calendar readytime= Calendar.getInstance(); </span>
+							try {
+<span class="nc" id="L549">								readytime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd&quot;).parse(temp[0]));</span>
+<span class="nc" id="L550">								tempname=temp[1];  //得到航班号</span>
+<span class="nc" id="L551">								flight.setplanningentryname(tempname);</span>
+								
+<span class="nc" id="L553">								from=new FlightTrainLocation(weidu,jingdu,tempparser.getAllinformation(&quot;DepartureAirport:&quot;,fileentry)); //得到起点</span>
+<span class="nc" id="L554">								to=new FlightTrainLocation(weidu,jingdu,tempparser.getAllinformation(&quot;ArrivalAirport:&quot;,fileentry));  //得到终点</span>
+								try {
+<span class="nc" id="L556">									flight.setlocations(from, to);</span>
+<span class="nc" id="L557">									logger.log(Level.INFO,&quot;true:setlocation,计划项&quot;+tempname);</span>
+<span class="nc" id="L558">								} catch (SameLocationException e2) {</span>
+<span class="nc" id="L559">									logger.log(Level.SEVERE,&quot;false:setlocation,SameLocationException-&gt;operation again,计划项&quot;+tempname,e2);</span>
+<span class="nc" id="L560">									System.out.println(&quot;存在两个相同飞机场位置&quot;);</span>
+<span class="nc" id="L561">									flag=false;</span>
+<span class="nc" id="L562">									break;</span>
+								}
+								
+<span class="nc" id="L565">								Calendar begintime= Calendar.getInstance(); </span>
+<span class="nc" id="L566">								begintime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(tempparser.getAllinformation(&quot;DepatureTime:&quot;,fileentry))); //起飞时间</span>
+<span class="nc" id="L567">								Calendar endtime= Calendar.getInstance(); </span>
+<span class="nc" id="L568">								endtime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(tempparser.getAllinformation(&quot;ArrivalTime:&quot;,fileentry)));  //抵达时间</span>
+								
+								Timeslot mytime;
+								try {
+<span class="nc" id="L572">									mytime = new Timeslot(tempparser.getAllinformation(&quot;DepatureTime:&quot;,fileentry),tempparser.getAllinformation(&quot;ArrivalTime:&quot;,fileentry));</span>
+<span class="nc" id="L573">									flight.settimeslot(mytime);</span>
+<span class="nc" id="L574">									logger.log(Level.INFO,&quot;true:settimeslot,计划项&quot;+tempname);</span>
+<span class="nc" id="L575">								} catch (BeginEndTimeException e1) {</span>
+<span class="nc" id="L576">									logger.log(Level.SEVERE,&quot;false:settimeslot,BeginEndTimeException-&gt;operation again,计划项&quot;+tempname,e1);</span>
+<span class="nc" id="L577">									System.out.println(&quot;起始时间晚于终止时间，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L578">									flag=false;</span>
+<span class="nc" id="L579">									break;</span>
+								}  //得到时间对
+<span class="nc" id="L581">								String number=tempparser.getAllinformation(&quot;Plane:&quot;,fileentry);  //得到飞机的各种信息</span>
+<span class="nc" id="L582">								String type=tempparser.getAllinformation(&quot;Type:&quot;,fileentry);</span>
+<span class="nc" id="L583">								int seats= Integer.parseInt(tempparser.getAllinformation(&quot;Seats:&quot;,fileentry));</span>
+<span class="nc" id="L584">								Double age=Double.parseDouble(tempparser.getAllinformation(&quot;Age:&quot;,fileentry));</span>
+								
+<span class="nc" id="L586">								myflight=new Flight(number,type,seats,age);</span>
+<span class="nc" id="L587">								flight.setresource(myflight);</span>
+								
+<span class="nc" id="L589">								state = FlightWaitingState.instance;</span>
+<span class="nc" id="L590">								state=state.move('a');</span>
+<span class="nc" id="L591">								flight.setcurrentstate(state);</span>
+								
+								//除去所有非法情况
+								try {
+<span class="nc bnc" id="L595" title="All 2 branches missed.">									if(!((begintime.get(Calendar.YEAR)==(readytime.get(Calendar.YEAR))) </span>
+<span class="nc bnc" id="L596" title="All 2 branches missed.">											&amp;&amp;(begintime.get(Calendar.MONTH)==readytime.get(Calendar.MONTH))&amp;&amp;</span>
+<span class="nc bnc" id="L597" title="All 2 branches missed.">											(begintime.get(Calendar.DAY_OF_MONTH)==readytime.get(Calendar.DAY_OF_MONTH)))) {</span>
+<span class="nc" id="L598">										throw new OneLineDiferDateException();</span>
+									}
+<span class="nc" id="L600">								}catch(OneLineDiferDateException e) {</span>
+<span class="nc" id="L601">									logger.log(Level.SEVERE,&quot;false:addfileentry,OneLineDiferDateException-&gt;operation again,计划项&quot;+tempname,e);</span>
+<span class="nc" id="L602">									System.out.println(&quot;航班计划项&quot;+tempname+&quot;起飞日期与第一行日期不一致&quot;);</span>
+<span class="nc" id="L603">									flag=false;</span>
+								}	
+								try {
+<span class="nc bnc" id="L606" title="All 2 branches missed.">									if((endtime.get(Calendar.YEAR)!=begintime.get(Calendar.YEAR))||</span>
+<span class="nc bnc" id="L607" title="All 2 branches missed.">											(endtime.get(Calendar.MONTH)!=begintime.get(Calendar.MONTH))||</span>
+<span class="nc bnc" id="L608" title="All 2 branches missed.">									       (endtime.get(Calendar.DAY_OF_MONTH)-begintime.get(Calendar.DAY_OF_MONTH)&gt;1)){</span>
+<span class="nc" id="L609">										throw new MoreOneDayException();</span>
+									}
+<span class="nc" id="L611">								}catch(MoreOneDayException e) {</span>
+<span class="nc" id="L612">									logger.log(Level.SEVERE,&quot;false:addfileentry,MoreOneDayException-&gt;operation again,计划项&quot;+tempname,e);</span>
+<span class="nc" id="L613">									System.out.println(&quot;航班计划项&quot;+tempname+&quot;降落日期与起飞日期相差超过一天&quot;);</span>
+<span class="nc" id="L614">									flag=false;</span>
+								}
+<span class="nc bnc" id="L616" title="All 2 branches missed.">								for(int m=0;m&lt;tempflightlist.size();m++) {</span>
+<span class="nc" id="L617">									FlightEntry&lt;Flight&gt; tempflight=tempflightlist.get(m);</span>
+									try {
+<span class="nc bnc" id="L619" title="All 2 branches missed.">										if(((changeformat(tempflight.getplanningentryname()).equals(changeformat(flight.getplanningentryname()))))){</span>
+<span class="nc bnc" id="L620" title="All 2 branches missed.">											if((begintime.get(Calendar.YEAR)==(tempflight.gettimeslot().getbegintime().get(Calendar.YEAR)))</span>
+<span class="nc bnc" id="L621" title="All 2 branches missed.">													&amp;&amp;(begintime.get(Calendar.MONTH)==tempflight.gettimeslot().getbegintime().get(Calendar.MONTH))</span>
+<span class="nc bnc" id="L622" title="All 2 branches missed.">													&amp;&amp;(begintime.get(Calendar.DAY_OF_MONTH)==tempflight.gettimeslot().getbegintime().get(Calendar.DAY_OF_MONTH))) {</span>
+<span class="nc" id="L623">												throw new SameDateFlightNumberException();</span>
+											}
+<span class="nc bnc" id="L625" title="All 2 branches missed.">											else if(!(tempflight.getfromlocation().getlocationname().equals(from.getlocationname())&amp;&amp;</span>
+<span class="nc bnc" id="L626" title="All 2 branches missed.">													tempflight.gettolocation().getlocationname().equals(to.getlocationname())&amp;&amp;</span>
+<span class="nc bnc" id="L627" title="All 2 branches missed.">													tempflight.gettimeslot().getbegintime().get(Calendar.HOUR_OF_DAY)==begintime.get(Calendar.HOUR_OF_DAY)&amp;&amp;</span>
+<span class="nc bnc" id="L628" title="All 2 branches missed.">													tempflight.gettimeslot().getendtime().get(Calendar.HOUR_OF_DAY)==endtime.get(Calendar.HOUR_OF_DAY)&amp;&amp;</span>
+<span class="nc bnc" id="L629" title="All 2 branches missed.">													tempflight.gettimeslot().getbegintime().get(Calendar.MINUTE)==begintime.get(Calendar.MINUTE)&amp;&amp;</span>
+<span class="nc bnc" id="L630" title="All 2 branches missed.">													tempflight.gettimeslot().getendtime().get(Calendar.MINUTE)==endtime.get(Calendar.MINUTE))) {</span>
+<span class="nc" id="L631">												throw new DifferAirpotFromToTimeException();</span>
+											}
+										}
+<span class="nc bnc" id="L634" title="All 2 branches missed.">										if(tempflight.getresource().getflightnumber().equals(flight.getresource().getflightnumber())) {</span>
+<span class="nc bnc" id="L635" title="All 2 branches missed.">											if((!(tempflight.getresource().getflightage()-flight.getresource().getflightage()&lt;0.0000001))||</span>
+<span class="nc bnc" id="L636" title="All 2 branches missed.">													(!(tempflight.getresource().getflightallseat()==flight.getresource().getflightallseat()))||</span>
+<span class="nc bnc" id="L637" title="All 2 branches missed.">													(!(tempflight.getresource().getflighttype().equals(flight.getresource().getflighttype())))) {</span>
+<span class="nc" id="L638">												throw new NoCompleteSamePlane();</span>
+											}
+										}
+<span class="nc" id="L641">									}catch(SameDateFlightNumberException e) {</span>
+<span class="nc" id="L642">										i++;</span>
+<span class="nc" id="L643">										logger.log(Level.SEVERE,&quot;false:addfileentry,SameDateFlightNumberException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L644">										System.out.println(&quot;第&quot;+i+&quot;个航班计划项&quot;+tempname+&quot;与已存在列表中某计划项航班号和日期相同&quot;);</span>
+<span class="nc" id="L645">										flag=false;</span>
+<span class="nc" id="L646">										break;</span>
+<span class="nc" id="L647">									}catch(DifferAirpotFromToTimeException e) {</span>
+<span class="nc" id="L648">										i++;</span>
+<span class="nc" id="L649">										logger.log(Level.SEVERE,&quot;false:addfileentry,DifferAirpotFromToTimeException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L650">										System.out.println(&quot;第&quot;+i+&quot;个航班计划项&quot;+tempname+&quot;与已存在列表中某计划项航班号相同。但出发机场&quot;</span>
+<span class="nc" id="L651">												+ &quot;和降落机场、出发和到达时间中出现了不同&quot;);</span>
+<span class="nc" id="L652">										flag=false;</span>
+<span class="nc" id="L653">										break;</span>
+<span class="nc" id="L654">									} catch (NoCompleteSamePlane e) {</span>
+<span class="nc" id="L655">										i++;</span>
+<span class="nc" id="L656">										logger.log(Level.SEVERE,&quot;false:addfileentry,NoCompleteSamePlane-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L657">										System.out.println(&quot;第&quot;+i+&quot;个航班计划项&quot;+tempname+&quot;与已存在列表中某计划项飞机编号相同。但飞机的类型、&quot;</span>
+<span class="nc" id="L658">												+ &quot;座位数、机龄中出现了不同&quot;);</span>
+<span class="nc" id="L659">										flag=false;</span>
+<span class="nc" id="L660">										break;</span>
+									}
+								}
+<span class="nc bnc" id="L663" title="All 2 branches missed.">								if(flag==true) {</span>
+<span class="nc" id="L664">									tempflightlist.add(flight);</span>
+<span class="nc" id="L665">									qq++;</span>
+								}
+<span class="nc bnc" id="L667" title="All 2 branches missed.">								if(flag==false) {</span>
+<span class="nc" id="L668">									System.out.println(&quot;请读入其他文件\n&quot;);</span>
+<span class="nc" id="L669">									break;</span>
+								}
+<span class="nc" id="L671">							} catch (ParseException e) {</span>
+<span class="nc" id="L672">								logger.log(Level.SEVERE,&quot;ParseException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L673">								System.out.println(&quot;时间格式出错，请读入其他文件\n&quot;);</span>
+<span class="nc" id="L674">								break;</span>
+<span class="nc" id="L675">							} catch (LessThanZeroException e1) {</span>
+<span class="nc" id="L676">								System.out.println(&quot;座位数为非正数或机龄为负数，请读入其他文件\n&quot;);</span>
+							} 
+						}
+						//检测资源冲突的代码
+						try {
+<span class="nc bnc" id="L681" title="All 2 branches missed.">							if(myapis.checkResourceExclusiveConflict(tempflightlist)) {</span>
+<span class="nc" id="L682">								throw new ResourceExclusiveConflictException();</span>
+							}
+<span class="nc" id="L684">						}catch(ResourceExclusiveConflictException e) {</span>
+<span class="nc" id="L685">							logger.log(Level.SEVERE,&quot;ResourceExclusiveConflictException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L686">							System.out.println(&quot;存在资源独占冲突，请读取其他文件\n&quot;);</span>
+<span class="nc" id="L687">							flag=false;</span>
+						}
+<span class="nc bnc" id="L689" title="All 2 branches missed.">						if(flag==false) {</span>
+<span class="nc" id="L690">							logger.log(Level.INFO,&quot;false:addfileentry&quot;);</span>
+<span class="nc" id="L691">							tempflightlist=new ArrayList&lt;FlightEntry&lt;Flight&gt;&gt;();</span>
+						}
+<span class="nc bnc" id="L693" title="All 2 branches missed.">						if(flag==true) {</span>
+<span class="nc" id="L694">							logger.log(Level.INFO,&quot;true:addfileentry&quot;);</span>
+<span class="nc" id="L695">							flightlist.addAll(tempflightlist);</span>
+<span class="nc" id="L696">							System.out.println(&quot;共读入&quot;+qq+&quot;个计划项，所有文件中计划项已录入飞机计划项集合中\n&quot;);</span>
+						}
+					}
+<span class="nc" id="L699">					break;</span>
+				case &quot;10&quot;:
+<span class="nc" id="L701">					System.out.println(&quot;对于位置独占冲突，你可以选择两种算法来进行判断(输入1使用第一种，输入2使用第二种)，请选择输入(eg 1)&quot;);</span>
+<span class="nc" id="L702">					tempname=scanner.nextLine();</span>
+<span class="nc" id="L703">					System.out.println(&quot;所有计划项中位置独占冲突结果如下：&quot;);</span>
+<span class="nc bnc" id="L704" title="All 2 branches missed.">					if(myapis.checkLocationConflict(flightlist,tempname)) {</span>
+<span class="nc" id="L705">						logger.log(Level.INFO,&quot;true:LocationConflict&quot;);</span>
+<span class="nc" id="L706">					}</span>
+					else {
+<span class="nc" id="L708">						logger.log(Level.INFO,&quot;false:LocationConflict&quot;);</span>
+					}
+<span class="nc" id="L710">					System.out.println(&quot;所有计划项中资源独占冲突结果如下：&quot;);</span>
+<span class="nc bnc" id="L711" title="All 2 branches missed.">					if(myapis.checkResourceExclusiveConflict(flightlist)) {</span>
+<span class="nc" id="L712">						logger.log(Level.INFO,&quot;true:ResourceExclusiveConflict&quot;);</span>
+<span class="nc" id="L713">					}</span>
+					else {
+<span class="nc" id="L715">						logger.log(Level.INFO,&quot;false:ResourceExclusiveConflict&quot;);</span>
+					}
+<span class="nc" id="L717">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L718">					break;</span>
+				case &quot;11&quot;:
+<span class="nc" id="L720">					System.out.println(&quot;请输入你想要查看的飞机资源的飞机编号(eg N8981)：&quot;);</span>
+<span class="nc" id="L721">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L722" title="All 2 branches missed.">					for(i=0;i&lt;flightlist.size();i++) {</span>
+<span class="nc bnc" id="L723" title="All 2 branches missed.">						if(flightlist.get(i).getresource().getflightnumber().equals(tempname)) {</span>
+<span class="nc" id="L724">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L727" title="All 2 branches missed.">					if(i==flightlist.size()) {</span>
+<span class="nc" id="L728">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L729">						System.out.println(&quot;没有该计划项拥有该资源&quot;);</span>
+<span class="nc" id="L730">						System.out.println();</span>
+<span class="nc" id="L731">						break;</span>
+					}
+<span class="nc" id="L733">					tempentry=flightlist.get(i);</span>
+<span class="nc" id="L734">					myapis.findEntryPerResource(tempentry.getresource(), flightlist);</span>
+<span class="nc" id="L735">					logger.log(Level.INFO,&quot;findEntryPerResource&quot;);</span>
+<span class="nc" id="L736">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L737">					break;</span>
+				case &quot;12&quot;:
+<span class="nc" id="L739">					System.out.println(&quot;请输入你想要查看其前序计划项的航班号(eg AH3567)：&quot;);</span>
+<span class="nc" id="L740">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L741" title="All 2 branches missed.">					for(i=0;i&lt;flightlist.size();i++) {</span>
+<span class="nc bnc" id="L742" title="All 2 branches missed.">						if(flightlist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L743">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L746" title="All 2 branches missed.">					if(i==flightlist.size()) {</span>
+<span class="nc" id="L747">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L748">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L749">						System.out.println();</span>
+<span class="nc" id="L750">						break;</span>
+					}
+<span class="nc" id="L752">					tempentry=flightlist.get(i);</span>
+<span class="nc" id="L753">					myapis.findPreEntryPerResource(tempentry.getresource(),tempentry,flightlist);</span>
+<span class="nc" id="L754">					logger.log(Level.INFO,&quot;findPreEntryPerResource&quot;);</span>
+<span class="nc" id="L755">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L756">					break;</span>
+				case &quot;13&quot;:
+<span class="nc" id="L758">					System.out.println(&quot;请输入你想要展示当前时刻的信息版的位置(eg 北京)&quot;);</span>
+<span class="nc" id="L759">					tempname=scanner.nextLine();</span>
+<span class="nc" id="L760">					FlightEntryBoard flightboard=new FlightEntryBoard();	</span>
+<span class="nc" id="L761">					flightboard.setairportlocation(tempname);</span>
+<span class="nc" id="L762">					flightboard.getsortcomeentry(flightlist);</span>
+<span class="nc" id="L763">					flightboard.getsorttoentry(flightlist);</span>
+					try {
+<span class="nc" id="L765">						flightboard.createFlightEntryBoard();</span>
+<span class="nc" id="L766">						logger.log(Level.INFO,&quot;true:FlightEntryBoard&quot;);</span>
+<span class="nc" id="L767">					} catch (ParseException e) {</span>
+<span class="nc" id="L768">						logger.log(Level.SEVERE,&quot;false:FlightEntryBoard,ParseException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L769">						System.out.println(&quot;时间格式出错&quot;);</span>
+<span class="nc" id="L770">						break;</span>
+					}
+<span class="nc" id="L772">					flightboard.visualize();	</span>
+<span class="nc" id="L773">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L774">					break;</span>
+				case &quot;14&quot;:
+<span class="nc" id="L776">					logger.log(Level.INFO,&quot;true:get the number of allentrys&quot;);</span>
+<span class="nc" id="L777">					System.out.println(&quot;当前含有航班计划项的个数为：&quot;+flightlist.size()+&quot;\n&quot;);</span>
+<span class="nc" id="L778">					break;</span>
+				case &quot;15&quot;:
+<span class="nc" id="L780">					fileHandler.close();</span>
+					try {
+<span class="nc" id="L782">						thisfile = new BufferedReader(new FileReader(&quot;log/FlightScheduleLog.txt&quot;));</span>
+<span class="nc" id="L783">					} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L784">						logger.log(Level.SEVERE,&quot;false:findfile,FileNotFoundException-&gt;operation again&quot;,e1);</span>
+<span class="nc" id="L785">						System.out.println(&quot;文件不存在\n&quot;);</span>
+<span class="nc" id="L786">						break;</span>
+					}
+<span class="nc" id="L788">					fileoneline=null;</span>
+<span class="nc" id="L789">					List&lt;String&gt; alllog=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L790">					String onelog=&quot;&quot;;</span>
+					try {
+<span class="nc bnc" id="L792" title="All 2 branches missed.">						while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="nc" id="L793">							onelog=onelog+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+<span class="nc bnc" id="L794" title="All 4 branches missed.">							if(fileoneline.contains(&quot;INFO&quot;)||fileoneline.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L795">								alllog.add(onelog);</span>
+<span class="nc" id="L796">								onelog=&quot;&quot;;</span>
+							}
+						}
+<span class="nc" id="L799">					} catch (IOException e1) {</span>
+<span class="nc" id="L800">						System.out.println(&quot;读入文件异常\n&quot;);</span>
+					}finally{
+<span class="nc" id="L802">						thisfile.close();</span>
+					}
+					String mychoice;
+					int ll;
+<span class="nc" id="L806">					System.out.println(&quot;你可以选择三种过滤条件，第一种为按操作类型查询，第二种为按计划项名字查询，第三种为按照时间段查询(输入1使用第一种，输入2使用第二种，输入3使用第三种)，请选择输入(eg 1)&quot;);</span>
+<span class="nc" id="L807">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L808" title="All 2 branches missed.">					if(tempname.equals(&quot;1&quot;)) {</span>
+<span class="nc" id="L809">						System.out.println(&quot;一共有以下操作类型，请任选一种进行查询：(eg setlocation)&quot;);</span>
+<span class="nc" id="L810">						System.out.println(&quot;setplanningentryname,setlocation,settimeslot,setresource,changelocation,changeresource,launch,finish&quot;</span>
+								+ &quot;,cancel,getcurrentstate,addfileentry,LocationConflict,ResourceExclusiveConflict,findEntryPerResource,findPreEntryPerResource,&quot;
+								+ &quot;FlightEntryBoard,get the number of allentrys&quot;);
+<span class="nc" id="L813">						mychoice=scanner.nextLine();</span>
+<span class="nc" id="L814">						ll=1;</span>
+<span class="nc" id="L815">						System.out.println(&quot;该操作的所有日志为：&quot;);</span>
+<span class="nc bnc" id="L816" title="All 2 branches missed.">						for(String h:alllog) {</span>
+<span class="nc bnc" id="L817" title="All 2 branches missed.">							if(h.contains(mychoice)) {</span>
+<span class="nc" id="L818">								 System.out.print(&quot;日志&quot;+ll+&quot;为：&quot;+h+&quot;\n&quot;);</span>
+<span class="nc" id="L819">								 ll++;</span>
+							}
+						}
+<span class="nc bnc" id="L822" title="All 2 branches missed.">						if(ll==1) {</span>
+<span class="nc" id="L823">							System.out.print(&quot;没有该操作的日志\n&quot;);</span>
+						}
+					}
+<span class="nc bnc" id="L826" title="All 2 branches missed.">					if(tempname.equals(&quot;2&quot;)) {</span>
+<span class="nc" id="L827">						System.out.println(&quot;请输入计划项名字：(eg AH3567)&quot;);</span>
+<span class="nc" id="L828">						mychoice=scanner.nextLine();</span>
+<span class="nc" id="L829">						System.out.println(&quot;与该计划项有关的所有日志为：&quot;);</span>
+<span class="nc" id="L830">						ll=1;</span>
+<span class="nc bnc" id="L831" title="All 2 branches missed.">						for(String h:alllog) {</span>
+<span class="nc bnc" id="L832" title="All 2 branches missed.">							if(h.contains(mychoice)) {</span>
+<span class="nc" id="L833">								 System.out.print(&quot;日志&quot;+ll+&quot;为：&quot;+h+&quot;\n&quot;);</span>
+<span class="nc" id="L834">								 ll++;</span>
+							}
+						}
+<span class="nc bnc" id="L837" title="All 2 branches missed.">						if(ll==1) {</span>
+<span class="nc" id="L838">							System.out.print(&quot;没有该计划项的日志\n&quot;);</span>
+						}
+					}
+<span class="nc bnc" id="L841" title="All 2 branches missed.">					if(tempname.equals(&quot;3&quot;)) {</span>
+<span class="nc" id="L842">						Pattern pattern1 = Pattern.compile(&quot;([A-Z|a-z][A-Z|a-z][A-Z|a-z])\\s(\\d{2}),\\s(\\d{4})\\s(\\d{2}|[1-9]):(\\d{2}):(\\d{2})\\s(PM|AM)&quot;);</span>
+						Matcher tomatcher;
+						String month,day,year,hour,minute,panduan,time;
+<span class="nc" id="L845">						System.out.println(&quot;请输入你想查找的时间段(用逗号隔开)(eg 2020-06-04 19:00,2020-06-04 19:01)：&quot;);</span>
+						try {
+<span class="nc" id="L847">							temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L848">							Timeslot mytime=new Timeslot(temp[0],temp[1]);</span>
+<span class="nc" id="L849">							ll=1;</span>
+<span class="nc" id="L850">							System.out.println(&quot;该操作的所有日志为：&quot;);</span>
+<span class="nc bnc" id="L851" title="All 2 branches missed.">							for(String h:alllog) {</span>
+<span class="nc" id="L852">								tomatcher=pattern1.matcher(h);</span>
+<span class="nc bnc" id="L853" title="All 2 branches missed.">								if(tomatcher.find()) {  //获得所有时间信息</span>
+<span class="nc" id="L854">									month=tomatcher.group(1);</span>
+<span class="nc" id="L855">									day=tomatcher.group(2);</span>
+<span class="nc" id="L856">									year=tomatcher.group(3);</span>
+<span class="nc" id="L857">									hour=tomatcher.group(4);</span>
+<span class="nc" id="L858">									minute=tomatcher.group(5);</span>
+<span class="nc" id="L859">									panduan=tomatcher.group(7);</span>
+<span class="nc bnc" id="L860" title="All 13 branches missed.">									switch(month) {   //将月份转化为数字形式</span>
+									case &quot;Jan&quot;:
+<span class="nc" id="L862">										month=&quot;01&quot;;</span>
+<span class="nc" id="L863">										break;</span>
+									case &quot;Feb&quot;:
+<span class="nc" id="L865">										month=&quot;02&quot;;</span>
+<span class="nc" id="L866">										break;</span>
+									case &quot;Mar&quot;:
+<span class="nc" id="L868">										month=&quot;03&quot;;</span>
+<span class="nc" id="L869">										break;</span>
+									case &quot;Apr&quot;:
+<span class="nc" id="L871">										month=&quot;04&quot;;</span>
+<span class="nc" id="L872">										break;</span>
+									case &quot;May&quot;:
+<span class="nc" id="L874">										month=&quot;05&quot;;</span>
+<span class="nc" id="L875">										break;</span>
+									case &quot;Jun&quot;:
+<span class="nc" id="L877">										month=&quot;06&quot;;</span>
+<span class="nc" id="L878">										break;</span>
+									case &quot;Jul&quot;:
+<span class="nc" id="L880">										month=&quot;07&quot;;</span>
+<span class="nc" id="L881">										break;</span>
+									case &quot;Aug&quot;:
+<span class="nc" id="L883">										month=&quot;08&quot;;</span>
+<span class="nc" id="L884">										break;</span>
+									case &quot;Sep&quot;:
+<span class="nc" id="L886">										month=&quot;09&quot;;</span>
+<span class="nc" id="L887">										break;</span>
+									case &quot;Oct&quot;:
+<span class="nc" id="L889">										month=&quot;10&quot;;</span>
+<span class="nc" id="L890">										break;</span>
+									case &quot;Nov&quot;:
+<span class="nc" id="L892">										month=&quot;11&quot;;</span>
+<span class="nc" id="L893">										break;</span>
+									case &quot;Dec&quot;:
+<span class="nc" id="L895">										month=&quot;12&quot;;</span>
+										break;	
+									}
+<span class="nc bnc" id="L898" title="All 2 branches missed.">									if(panduan.equals(&quot;PM&quot;)) {  //对于PM的，小时数加12</span>
+<span class="nc" id="L899">										hour=Integer.toString(Integer.parseInt(hour)+12);</span>
+									}
+<span class="nc bnc" id="L901" title="All 4 branches missed.">									if(panduan.equals(&quot;AM&quot;)&amp;&amp;Integer.parseInt(hour)&lt;10) {  //对于AM的，小时数小于10的，前面加个0</span>
+<span class="nc" id="L902">										hour=&quot;0&quot;+hour;</span>
+									}
+<span class="nc" id="L904">									time=year+&quot;-&quot;+month+&quot;-&quot;+day+&quot; &quot;+hour+&quot;:&quot;+minute;</span>
+<span class="nc" id="L905">									Calendar temptime= Calendar.getInstance(); </span>
+<span class="nc" id="L906">									temptime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(time));</span>
+<span class="nc bnc" id="L907" title="All 4 branches missed.">									if(temptime.compareTo(mytime.getbegintime())&gt;0&amp;&amp;temptime.compareTo(mytime.getendtime())&lt;0) {  </span>
+<span class="nc" id="L908">										System.out.print(&quot;日志&quot;+ll+&quot;为：&quot;+h+&quot;\n&quot;);</span>
+<span class="nc" id="L909">										ll++;</span>
+									}
+									
+								}
+							}
+<span class="nc bnc" id="L914" title="All 2 branches missed.">							if(ll==1) {</span>
+<span class="nc" id="L915">								System.out.print(&quot;没有该时间段的日志\n&quot;);</span>
+							}
+<span class="nc" id="L917">						}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L918">							 System.out.println(&quot;未用,隔开，请重新执行操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L919">							 break;</span>
+<span class="nc" id="L920">						}catch(ParseException e) {</span>
+<span class="nc" id="L921">							System.out.println(&quot;时间不符合yyyy-MM-dd HH:mm的要求，请重新执行操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L922">							break;</span>
+<span class="nc" id="L923">						} catch (BeginEndTimeException e) {</span>
+<span class="nc" id="L924">							System.out.println(&quot;起始时间晚于终止时间，请重新执行操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L925">							break;</span>
+						}
+					}
+<span class="nc" id="L928">					System.out.print(&quot;\n&quot;);</span>
+<span class="nc" id="L929">					break;</span>
+				case &quot;16&quot;:
+<span class="nc" id="L931">					logger.log(Level.INFO,&quot;true:over program&quot;);</span>
+<span class="nc" id="L932">					fileHandler.close();</span>
+<span class="nc" id="L933">					System.out.println(&quot;日志已写入且程序已结束&quot;);</span>
+<span class="nc" id="L934">					System.exit(0);</span>
+<span class="nc" id="L935">					break;</span>
+				default:
+<span class="nc" id="L937">					System.out.println(&quot;请输入正确指令\n&quot;);</span>
+					break;	
+				}
+<span class="nc" id="L940">				fileHandler.close();</span>
+			}
+<span class="nc" id="L942">		} catch (SecurityException e3) {</span>
+			// TODO 自动生成的 catch 块
+<span class="nc" id="L944">			e3.printStackTrace();</span>
+<span class="nc" id="L945">		} catch (IOException e3) {</span>
+			// TODO 自动生成的 catch 块
+<span class="nc" id="L947">			e3.printStackTrace();</span>
+		}
+<span class="nc" id="L949">	}</span>
+	
+	/**
+	 * 将航班号进行转换用于比较
+	 * @param a 待转换航班号
+	 * @return 转换后的航班号
+	 */
+	public static String changeformat(String a) {  //转换航班号进行判断
+<span class="nc bnc" id="L957" title="All 2 branches missed.">		if(a.length()==6) {</span>
+<span class="nc" id="L958">			return a;</span>
+		}
+<span class="nc bnc" id="L960" title="All 2 branches missed.">		else if(a.length()==4) {</span>
+<span class="nc" id="L961">			return a.substring(0, 2)+&quot;00&quot;+a.substring(2);	</span>
+		}
+		else{
+<span class="nc" id="L964">			return a.substring(0, 2)+&quot;0&quot;+a.substring(2);</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

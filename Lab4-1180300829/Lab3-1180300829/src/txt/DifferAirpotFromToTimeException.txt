@@ -1,0 +1,26 @@
+Flight:2020-01-01,AA72
+{
+DepartureAirport:Tianjin
+ArrivalAirport:Sanya
+DepatureTime:2020-01-01 03:15
+ArrivalTime:2020-01-01 05:25
+Plane:B6863
+{
+Type:A319
+Seats:140
+Age:8.5
+}
+}
+Flight:2020-01-02,AA72
+{
+DepartureAirport:Tianjin
+ArrivalAirport:Nanjing
+DepatureTime:2020-01-02 08:42
+ArrivalTime:2020-01-02 13:47
+Plane:N1705
+{
+Type:A380
+Seats:468
+Age:1.5
+}
+}

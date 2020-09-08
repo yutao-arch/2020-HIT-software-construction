@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CarriageTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">Resource</a> &gt; <span class="el_source">CarriageTest.java</span></div><h1>CarriageTest.java</h1><pre class="source lang-java linenums">package Resource;
+
+import static org.junit.Assert.*;
+import org.junit.Test;
+import Exception.LessThanZeroException;
+
+
+<span class="fc" id="L8">public class CarriageTest {</span>
+
+	/* Testing strategy
+	 * 测试getcarriagenumber方法
+     * 测试车厢编号的返回值即可
+     */
+	@Test
+	public void getcarriagenumbertest() throws LessThanZeroException {
+<span class="fc" id="L16">		Carriage temp=new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;);</span>
+<span class="fc" id="L17">		assertEquals(&quot;AS02&quot;,temp.getcarriagenumber());</span>
+<span class="fc" id="L18">	}</span>
+	
+	/* Testing strategy
+	 * 测试getcarriagetype方法
+     * 测试车厢类型的返回值即可
+     */
+	@Test
+	public void getcarriagetypetest() throws LessThanZeroException {
+<span class="fc" id="L26">		Carriage temp=new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;);</span>
+<span class="fc" id="L27">		assertEquals(&quot;二等座&quot;,temp.getcarriagetype());</span>
+<span class="fc" id="L28">	}</span>
+	
+	/* Testing strategy
+	 * 测试getcarriageallseat方法
+     * 测试定员数的返回值即可
+     */
+	@Test
+	public void getcarriageallseattest() throws LessThanZeroException {
+<span class="fc" id="L36">		Carriage temp=new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;);</span>
+<span class="fc" id="L37">		assertEquals(100,temp.getcarriageallseat());</span>
+<span class="fc" id="L38">	}</span>
+	
+	/* Testing strategy
+	 * 测试getcarriagbirth方法
+     * 测试车厢出厂年份的返回值即可
+     */
+	@Test
+	public void getcarriagbirthtest() throws LessThanZeroException {
+<span class="fc" id="L46">		Carriage temp=new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;);</span>
+<span class="fc" id="L47">		assertEquals(&quot;2011&quot;,temp.getcarriagbirth());</span>
+<span class="fc" id="L48">	}</span>
+	
+	/* Testing strategy
+	 * 测试hashcode方法
+     * 测试两个相同的车厢类hashcode是否相同即可
+     */
+	@Test
+	public void hashcodetest() throws LessThanZeroException {
+<span class="fc" id="L56">		Carriage temp=new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;);</span>
+<span class="fc" id="L57">		Carriage temp1=new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;);</span>
+<span class="fc" id="L58">		assertEquals(temp.hashCode(),temp1.hashCode());</span>
+<span class="fc" id="L59">	}</span>
+	
+	/* Testing strategy
+	 * 测试equals方法
+     * 按照两个车厢类是否相同划分等价类：相同，不同
+     */
+	@Test
+	public void equalstest() throws LessThanZeroException {
+<span class="fc" id="L67">		Carriage temp=new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;);</span>
+<span class="fc" id="L68">		Carriage temp1=new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;);</span>
+<span class="fc" id="L69">		Carriage temp2=new Carriage(&quot;A02&quot;,&quot;一等座&quot;,100,&quot;2011&quot;);</span>
+<span class="fc" id="L70">		assertEquals(true,temp.equals(temp1));</span>
+<span class="fc" id="L71">		assertEquals(false,temp.equals(temp2));</span>
+<span class="fc" id="L72">	}</span>
+	
+	/* Testing strategy
+	 * 测试创建时的异常
+     */
+	 @Test(expected = LessThanZeroException.class)
+	 public void shouldGetLessThanZeroException() throws LessThanZeroException {
+<span class="nc" id="L79">		 Carriage temp=new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,-100,&quot;2011&quot;);</span>
+<span class="nc" id="L80">		 temp.hashCode();</span>
+<span class="nc" id="L81">	 }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

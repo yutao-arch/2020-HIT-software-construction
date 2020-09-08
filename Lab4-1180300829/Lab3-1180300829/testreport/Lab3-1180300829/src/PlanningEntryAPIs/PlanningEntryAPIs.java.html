@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>PlanningEntryAPIs.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">PlanningEntryAPIs</a> &gt; <span class="el_source">PlanningEntryAPIs.java</span></div><h1>PlanningEntryAPIs.java</h1><pre class="source lang-java linenums">package PlanningEntryAPIs;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import Location.*;
+import PlanningEntry.*;
+import Resource.*;
+import Timeslot.Timeslot;
+
+<span class="fc" id="L13">public class PlanningEntryAPIs&lt;R&gt; {</span>
+	
+	
+	private StrategycheckLocationConflict choice;
+	
+	    // mutability类
+		// Abstraction function:
+	    // AF(choice)=检查时间冲突的strategy方法接口
+		// Safety from rep exposure:
+		// 将choice设置为private
+	
+	/**
+	 * 检测一组计划项之间是否存在位置独占冲突
+	 * @param entries 计划项集合
+	 * @param a strategy模式的选择参数
+	 * @return 是否存在位置独占冲突
+	 */
+	public boolean checkLocationConflict(List&lt;PlanningEntry&gt; entries,String a) {
+<span class="fc bfc" id="L31" title="All 3 branches covered.">		switch(a) {</span>
+		case &quot;1&quot;:
+<span class="fc" id="L33">			choice=new Strategy1checkLocationConflict();</span>
+<span class="fc" id="L34">		    return choice.checkLocationConflict(entries);</span>
+		case &quot;2&quot;:
+<span class="fc" id="L36">			choice=new Strategy2checkLocationConflict();</span>
+<span class="fc" id="L37">		    return choice.checkLocationConflict(entries);</span>
+		default:
+<span class="fc" id="L39">		    System.out.println(&quot;请输入正确指令&quot;);</span>
+<span class="fc" id="L40">		    return false;</span>
+		}
+	}
+	
+	
+	/**
+	 * 检测一组计划项之间是否存在资源独占冲突
+	 * @param entries 计划项集合
+	 * @return 是否存在资源独占冲突
+	 */
+	public boolean checkResourceExclusiveConflict(List&lt;PlanningEntry&gt; entries) {
+		int i,j,k,l;
+		String m1,m2;
+		boolean flag;
+		Timeslot t1,t2;
+		List&lt;Timeslot&gt; changt1,changt2;
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		if(entries.get(0) instanceof CourseEntry) {</span>
+<span class="fc" id="L57">			flag=false;</span>
+			Teacher l1,l2;
+<span class="fc" id="L59">			List&lt;CourseEntry&lt;Teacher&gt;&gt; courseentries=new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			for(i=0;i&lt;entries.size();i++) {</span>
+<span class="fc" id="L61">				courseentries.add((CourseEntry&lt;Teacher&gt;)entries.get(i));</span>
+			}
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			for(i=0;i&lt;courseentries.size()-1;i++) {</span>
+<span class="fc" id="L64">				t1=courseentries.get(i).gettimeslot();</span>
+<span class="fc" id="L65">				m1=(String) courseentries.get(i).getplanningentryname();</span>
+<span class="fc" id="L66">				l1=(Teacher) courseentries.get(i).getresource();</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">				for(j=i+1;j&lt;courseentries.size();j++) {</span>
+<span class="fc" id="L68">					t2=courseentries.get(j).gettimeslot();</span>
+<span class="fc" id="L69">					m2=(String) courseentries.get(j).getplanningentryname();</span>
+<span class="fc" id="L70">					l2=(Teacher) courseentries.get(j).getresource();</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">					if(l1.equals(l2)) {</span>
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">						if(!(t1.getendtime().compareTo(t2.getbegintime())&lt;=0||t2.getendtime().compareTo(t1.getbegintime())&lt;=0)) {</span>
+<span class="fc" id="L73">							System.out.println(&quot;计划项“&quot;+m1+&quot;”与计划项“&quot;+m2+&quot;”存在时间冲突且使用了同一个老师&quot;+&quot;“&quot;+l2.getteachername()+&quot;”&quot;);</span>
+<span class="fc" id="L74">							flag=true;</span>
+						}
+					}
+				}
+			}
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			if(flag) {</span>
+<span class="fc" id="L80">				return true;</span>
+			}
+			else {
+<span class="fc" id="L83">				System.out.println(&quot;没有计划项在重叠时间使用同一老师&quot;);</span>
+<span class="fc" id="L84">				return false;</span>
+			}
+			
+		}
+		
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if(entries.get(0) instanceof FlightEntry) {</span>
+<span class="fc" id="L90">			flag=false;</span>
+			Flight f1,f2;
+<span class="fc" id="L92">			List&lt;FlightEntry&lt;Flight&gt;&gt; flightentries=new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			for(i=0;i&lt;entries.size();i++) {</span>
+<span class="fc" id="L94">				flightentries.add((FlightEntry&lt;Flight&gt;)entries.get(i));</span>
+			}
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			for(i=0;i&lt;flightentries.size()-1;i++) {</span>
+<span class="fc" id="L97">				t1=flightentries.get(i).gettimeslot();</span>
+<span class="fc" id="L98">				m1=(String) flightentries.get(i).getplanningentryname();</span>
+<span class="fc" id="L99">				f1=(Flight) flightentries.get(i).getresource();</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">				for(j=i+1;j&lt;flightentries.size();j++) {</span>
+<span class="fc" id="L101">					t2=flightentries.get(j).gettimeslot();</span>
+<span class="fc" id="L102">					m2=(String) flightentries.get(j).getplanningentryname();</span>
+<span class="fc" id="L103">					f2=(Flight) flightentries.get(j).getresource();</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">					if(f1.equals(f2)) {</span>
+<span class="pc bpc" id="L105" title="2 of 4 branches missed.">						if(!(t1.getendtime().compareTo(t2.getbegintime())&lt;=0||t2.getendtime().compareTo(t1.getbegintime())&lt;=0)) {</span>
+<span class="fc" id="L106">							System.out.println(&quot;计划项“&quot;+m1+&quot;”与计划项“&quot;+m2+&quot;”存在时间冲突且使用了同一个飞机&quot;+&quot;“&quot;+f2.getflightnumber()+&quot;”&quot;);</span>
+<span class="fc" id="L107">							flag=true;</span>
+						}
+					}
+				}
+			}
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			if(flag) {</span>
+<span class="fc" id="L113">				return true;</span>
+			}
+			else {
+<span class="fc" id="L116">				System.out.println(&quot;没有冲突资源&quot;);</span>
+<span class="fc" id="L117">				return false;</span>
+			}
+		}
+		
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		if(entries.get(0) instanceof TrainEntry) {</span>
+<span class="fc" id="L122">			flag=false;</span>
+<span class="fc" id="L123">			List&lt;Carriage&gt; b1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L124">			List&lt;Carriage&gt; b2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L125">			List&lt;TrainEntry&lt;Carriage&gt;&gt; trainentries=new ArrayList&lt;&gt;();</span>
+			Carriage c1,c2 ;          
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			for(i=0;i&lt;entries.size();i++) {</span>
+<span class="fc" id="L128">				trainentries.add((TrainEntry&lt;Carriage&gt;)entries.get(i));</span>
+			}
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			for(i=0;i&lt;trainentries.size()-1;i++) {</span>
+<span class="fc" id="L131">					changt1=trainentries.get(i).gettimeslot();</span>
+<span class="fc" id="L132">			        b1=trainentries.get(i).getresource();</span>
+<span class="fc" id="L133">					m1=(String) trainentries.get(i).getplanningentryname();</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">					for(j=i+1;j&lt;trainentries.size();j++) {</span>
+<span class="fc" id="L135">						changt2=trainentries.get(j).gettimeslot();</span>
+<span class="fc" id="L136">						b2=trainentries.get(j).getresource();</span>
+<span class="fc" id="L137">						m2=(String) trainentries.get(j).getplanningentryname();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">						for(k=0;k&lt;b1.size();k++) {</span>
+<span class="fc" id="L139">							c1=b1.get(k);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">							for(l=0;l&lt;b2.size();l++) {</span>
+<span class="fc" id="L141">								c2=b2.get(l);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">								if(c1.equals(c2)) {</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">									if(!(changt1.get(trainentries.size()-1).getendtime().compareTo(changt2.get(0).getbegintime())&lt;=0||</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">											changt2.get(trainentries.size()-1).getendtime().compareTo(changt1.get(0).getbegintime())&lt;=0)) { </span>
+<span class="fc" id="L145">										System.out.println(&quot;计划项“&quot;+m1+&quot;”与计划项“&quot;+m2+&quot;”存在时间冲突且使用了同一个车厢&quot;+&quot;“&quot;+c2.getcarriagenumber()+&quot;”&quot;);</span>
+<span class="fc" id="L146">										flag=true;</span>
+									}
+								}
+							}
+						}
+					}
+				}
+<span class="fc bfc" id="L153" title="All 2 branches covered.">			if(flag) {</span>
+<span class="fc" id="L154">				return true;</span>
+			}
+			else {
+<span class="fc" id="L157">				System.out.println(&quot;没有冲突资源&quot;);</span>
+<span class="fc" id="L158">				return false;</span>
+			}
+		}
+<span class="fc" id="L161">		System.out.println(&quot;请输入正确信息&quot;);</span>
+<span class="fc" id="L162">		return false;</span>
+	}
+	
+	
+	/**
+	 * 得到一组计划项中使用某一资源的所有计划项集合
+	 * @param r 待查找的资源
+	 * @param entries 计划项集合
+	 * @return 使用该资源的所有计划项集合
+	 */
+	public List&lt;PlanningEntry&gt; findEntryPerResource(R r,List&lt;PlanningEntry&gt; entries) {
+		String l1;
+		int i,k;
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		if(entries.get(0) instanceof CourseEntry) {</span>
+<span class="fc" id="L176">			List&lt;CourseEntry&lt;Teacher&gt;&gt; courseentries=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L177">			List&lt;PlanningEntry&gt; fanhuientries=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L178">			Teacher myteacher=(Teacher) r;</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">			for(i=0;i&lt;entries.size();i++) {</span>
+<span class="fc" id="L180">				courseentries.add((CourseEntry&lt;Teacher&gt;)entries.get(i));</span>
+			}
+			//Collections.sort(courseentries);
+<span class="fc bfc" id="L183" title="All 2 branches covered.">			for(i=0;i&lt;courseentries.size();i++) {</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">				if(courseentries.get(i).getresource().getteachername().equals(myteacher.getteachername())) {</span>
+<span class="fc" id="L185">					l1=(String)courseentries.get(i).getplanningentryname();</span>
+<span class="fc" id="L186">					System.out.println(&quot;计划项“&quot;+l1+&quot;”使用了该资源&quot;);</span>
+<span class="fc" id="L187">					fanhuientries.add(courseentries.get(i));</span>
+				}
+			}	
+<span class="fc" id="L190">			return fanhuientries;</span>
+		}
+<span class="fc bfc" id="L192" title="All 2 branches covered.">		if(entries.get(0) instanceof FlightEntry) {</span>
+<span class="fc" id="L193">			List&lt;FlightEntry&lt;Flight&gt;&gt; flightentries=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L194">			List&lt;PlanningEntry&gt; fanhuientries=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L195">			Flight myflight=(Flight) r;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			for(i=0;i&lt;entries.size();i++) {</span>
+<span class="fc" id="L197">				flightentries.add((FlightEntry&lt;Flight&gt;)entries.get(i));</span>
+			}
+			//Collections.sort(flightentries);
+<span class="fc bfc" id="L200" title="All 2 branches covered.">			for(i=0;i&lt;flightentries.size();i++) { </span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">				if(flightentries.get(i).getresource().getflightnumber().equals(myflight.getflightnumber())) {</span>
+<span class="fc" id="L202">					l1=(String)flightentries.get(i).getplanningentryname();</span>
+<span class="fc" id="L203">					System.out.println(&quot;计划项“&quot;+l1+&quot;”使用了该资源&quot;);</span>
+<span class="fc" id="L204">					fanhuientries.add(flightentries.get(i));</span>
+				}
+			}	
+<span class="fc" id="L207">			return fanhuientries;</span>
+		}
+<span class="fc bfc" id="L209" title="All 2 branches covered.">		if(entries.get(0) instanceof TrainEntry) {</span>
+<span class="fc" id="L210">			List&lt;TrainEntry&lt;Carriage&gt;&gt; trainentries=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L211">			List&lt;PlanningEntry&gt; fanhuientries=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L212">			Carriage mycarriage=(Carriage) r;</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">			for(i=0;i&lt;entries.size();i++) {</span>
+<span class="fc" id="L214">				trainentries.add((TrainEntry&lt;Carriage&gt;)entries.get(i));</span>
+			}
+			//Collections.sort(trainentries);
+<span class="fc bfc" id="L217" title="All 2 branches covered.">			for(i=0;i&lt;trainentries.size();i++) { </span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">				for(k=0;k&lt;trainentries.get(i).getresource().size();k++) {</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">						if(trainentries.get(i).getresource().get(k).getcarriagenumber().equals(mycarriage.getcarriagenumber())) {</span>
+<span class="fc" id="L220">							l1=(String)trainentries.get(i).getplanningentryname();</span>
+<span class="fc" id="L221">							System.out.println(&quot;计划项“&quot;+l1+&quot;”使用了该资源&quot;);</span>
+<span class="fc" id="L222">							fanhuientries.add(trainentries.get(i));</span>
+						
+					}
+				}
+			}
+<span class="fc" id="L227">			return fanhuientries;	</span>
+		}
+<span class="fc" id="L229">		System.out.println(&quot;请输入正确信息&quot;);</span>
+<span class="fc" id="L230">		   return null;</span>
+	}
+	
+	/**
+	 * 提取面向特定资源的一个前序计划项
+	 * @param r 资源
+	 * @param e 含有该资源的某个计划项
+	 * @param entries  计划项集合
+	 * @return 该计划项含有r的某个前序计划项，没有返回null
+	 */
+	public PlanningEntry findPreEntryPerResource(R r,PlanningEntry e,List&lt;PlanningEntry&gt; entries) {
+		String l1,l2;
+		int i,k,l;
+<span class="fc bfc" id="L243" title="All 2 branches covered.">		if(entries.get(0) instanceof CourseEntry) {</span>
+<span class="fc" id="L244">			List&lt;CourseEntry&lt;Teacher&gt;&gt; courseentries=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L245">			CourseEntry&lt;Teacher&gt; eentries=(CourseEntry&lt;Teacher&gt;)e;</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">			for(i=0;i&lt;entries.size();i++) {</span>
+<span class="fc" id="L247">				courseentries.add((CourseEntry&lt;Teacher&gt;)entries.get(i));</span>
+			}
+<span class="fc" id="L249">			Collections.sort(courseentries);</span>
+<span class="fc" id="L250">			int temp=courseentries.indexOf(eentries);</span>
+<span class="pc bfc" id="L251" title="All 2 branches covered.">			for(i=0;i&lt;temp;i++) { //找出e的所有前序项</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">				if(courseentries.get(i).getresource().equals(eentries.getresource())) {</span>
+<span class="fc" id="L253">					l1=(String)courseentries.get(i).getplanningentryname();</span>
+<span class="fc" id="L254">					l2=(String)eentries.getplanningentryname();</span>
+<span class="fc" id="L255">					System.out.println(&quot;前序计划项“&quot;+l1+&quot;”与计划项“&quot;+l2+&quot;”共享了资源&quot;+&quot;“&quot;+eentries.getresource().getteachername()+&quot;”&quot;);</span>
+<span class="fc" id="L256">					return courseentries.get(i);</span>
+				}
+			}	
+<span class="fc" id="L259">			System.out.println(&quot;没有前序计划项共享资源&quot;);</span>
+<span class="fc" id="L260">			return null;</span>
+		}
+<span class="fc bfc" id="L262" title="All 2 branches covered.">		if(entries.get(0) instanceof FlightEntry) {</span>
+<span class="fc" id="L263">			List&lt;FlightEntry&lt;Flight&gt;&gt; flightentries=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L264">			FlightEntry&lt;Flight&gt; eentries=(FlightEntry&lt;Flight&gt;)e;</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">			for(i=0;i&lt;entries.size();i++) {</span>
+<span class="fc" id="L266">				flightentries.add((FlightEntry&lt;Flight&gt;)entries.get(i));</span>
+			}
+<span class="fc" id="L268">			Collections.sort(flightentries);</span>
+<span class="fc" id="L269">			int temp=flightentries.indexOf(eentries);</span>
+<span class="pc bfc" id="L270" title="All 2 branches covered.">			for(i=0;i&lt;temp;i++) { //找出e的所有前序项</span>
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">				if(flightentries.get(i).getresource().equals(eentries.getresource())) {</span>
+<span class="fc" id="L272">					l1=(String)flightentries.get(i).getplanningentryname();</span>
+<span class="fc" id="L273">					l2=(String)eentries.getplanningentryname();</span>
+<span class="fc" id="L274">					System.out.println(&quot;前序计划项“&quot;+l1+&quot;”与计划项“&quot;+l2+&quot;”共享了资源&quot;+&quot;“&quot;+eentries.getresource().getflightnumber()+&quot;”&quot;);</span>
+<span class="fc" id="L275">					return flightentries.get(i);</span>
+				}
+			}	
+<span class="fc" id="L278">			System.out.println(&quot;没有前序计划项共享资源&quot;);</span>
+<span class="fc" id="L279">			return null;</span>
+		}
+<span class="fc bfc" id="L281" title="All 2 branches covered.">		if(entries.get(0) instanceof TrainEntry) {</span>
+<span class="fc" id="L282">			List&lt;TrainEntry&lt;Carriage&gt;&gt; trainentries=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L283">			TrainEntry&lt;Carriage&gt; eentries=(TrainEntry&lt;Carriage&gt;)e;</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">			for(i=0;i&lt;entries.size();i++) {</span>
+<span class="fc" id="L285">				trainentries.add((TrainEntry&lt;Carriage&gt;)entries.get(i));</span>
+			}
+<span class="fc" id="L287">			Carriage mycarriage=(Carriage) r;</span>
+<span class="fc" id="L288">			Collections.sort(trainentries);</span>
+<span class="fc" id="L289">			int temp=trainentries.indexOf(eentries);</span>
+<span class="pc bfc" id="L290" title="All 2 branches covered.">			for(i=0;i&lt;temp;i++) { //找出e的所有前序项</span>
+<span class="pc bpc" id="L291" title="1 of 2 branches missed.">				for(k=0;k&lt;trainentries.get(i).getresource().size();k++) {</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">						if(trainentries.get(i).getresource().get(k).equals(mycarriage)) {</span>
+<span class="fc" id="L293">							l1=(String)trainentries.get(i).getplanningentryname();</span>
+<span class="fc" id="L294">							l2=(String)eentries.getplanningentryname();</span>
+<span class="fc" id="L295">							System.out.println(&quot;前序计划项“&quot;+l1+&quot;”与计划项“&quot;+l2+&quot;”共享了该资源&quot;);</span>
+<span class="fc" id="L296">							return trainentries.get(i);</span>
+						}
+				}
+			}
+<span class="fc" id="L300">			System.out.println(&quot;没有前序计划项共享资源&quot;);</span>
+<span class="fc" id="L301">			return null;</span>
+		}
+<span class="fc" id="L303">		System.out.println(&quot;请输入正确信息&quot;);</span>
+<span class="fc" id="L304">		return null;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

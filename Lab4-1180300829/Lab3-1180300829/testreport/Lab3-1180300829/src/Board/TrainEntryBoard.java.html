@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TrainEntryBoard.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Board</a> &gt; <span class="el_source">TrainEntryBoard.java</span></div><h1>TrainEntryBoard.java</h1><pre class="source lang-java linenums">package Board;
+
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+
+import EntryState.TrainState;
+import Location.FlightTrainLocation;
+import PlanningEntry.TrainEntry;
+import Resource.Carriage;
+
+import javax.swing.JLabel;
+
+public class TrainEntryBoard extends JFrame {
+
+	private JPanel contentPane;
+	private JTable table,table_1;
+	private Timer time;
+	
+	private FlightTrainLocation railwaylocation;  //该board版的位置字符串
+<span class="nc" id="L38">	private List&lt;TrainEntry&lt;Carriage&gt;&gt; comeentry=new ArrayList&lt;&gt;(); //储存抵达的TrainEntry的一个集合</span>
+<span class="nc" id="L39">	private List&lt;TrainEntry&lt;Carriage&gt;&gt; toentry=new ArrayList&lt;&gt;(); //储存起飞的TrainEntry的一个集合</span>
+	private Calendar nowtime; //当前时间
+<span class="nc" id="L41">	private String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+	
+	// mutability类
+	// Abstraction function:
+	// AF(railwaylocation)=当前位置
+	// AF(comeentry)=该位置所有抵达计划项
+	// AF(toentry)=该位置所有起飞计划项
+	// AF(nowtime)=当前时间
+	// Representation invariant:
+	// 时间转字符串出问题抛出异常
+	// Safety from rep exposure:
+	// 将railwaylocation,comeentry,toentry,nowtime设置为private
+
+	
+	/**
+	 * 构造方法
+	 */
+<span class="nc" id="L58">	public TrainEntryBoard() {</span>
+<span class="nc" id="L59">	}</span>
+	
+	/**
+	 * 设置board的位置
+	 * @param mm 该board版的位置字符串
+	 */
+	public void setrailwaylocation(String mm) {
+<span class="nc" id="L66">		this.railwaylocation=new FlightTrainLocation(weidu,jingdu,mm);</span>
+<span class="nc" id="L67">	}</span>
+	
+	/**
+	 * 从TrainEntry的一个集合找到与railwaylocation位置相同的TrainEntry并按照每个计划项的抵达时间排序
+	 * @param courselist 待排序的TrainEntry集合
+	 */
+	public void getsortcomeentry(List&lt;TrainEntry&lt;Carriage&gt;&gt; trainlist) {
+		int i;
+<span class="nc bnc" id="L75" title="All 2 branches missed.">		for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc" id="L76">			comeentry.add(trainlist.get(i).clone());</span>
+		}
+<span class="nc" id="L78">		Iterator&lt;TrainEntry&lt;Carriage&gt;&gt; iterator=comeentry.iterator();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">		while(iterator.hasNext()) {</span>
+<span class="nc" id="L80">			TrainEntry&lt;Carriage&gt; pe=iterator.next();</span>
+<span class="nc bnc" id="L81" title="All 4 branches missed.">		    if((!pe.getlocations().contains(railwaylocation))||(pe.getlocations().indexOf(railwaylocation)==0)) {  //进来的entey需要除去该站为第一个站的</span>
+<span class="nc" id="L82">		    	iterator.remove();</span>
+		    }
+		}
+<span class="nc" id="L85">		Collections.sort(comeentry,new Comparator&lt;TrainEntry&lt;Carriage&gt;&gt;() {</span>
+
+			@Override
+			public int compare(TrainEntry&lt;Carriage&gt; o1, TrainEntry&lt;Carriage&gt; o2) {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">				if(o1.gettimeslot().get(o1.getlocations().indexOf(railwaylocation)-1).getendtime().compareTo(o2.gettimeslot().get(o2.getlocations().indexOf(railwaylocation)-1).getendtime())&gt;0) {</span>
+<span class="nc" id="L90">					return 1;</span>
+				}
+<span class="nc bnc" id="L92" title="All 2 branches missed.">				else if(o1.gettimeslot().get(o1.getlocations().indexOf(railwaylocation)-1).getendtime().compareTo(o2.gettimeslot().get(o2.getlocations().indexOf(railwaylocation)-1).getendtime())==0) {</span>
+<span class="nc" id="L93">					return 0;</span>
+				}
+<span class="nc" id="L95">				return -1;</span>
+			}
+		});
+<span class="nc" id="L98">	}</span>
+	
+	/**
+	 * 从TrainEntry的一个集合找到与railwaylocation位置相同的TrainEntry并按照每个计划项的离开时间排序
+	 * @param courselist 待排序的TrainEntry集合
+	 */
+	public void getsorttoentry(List&lt;TrainEntry&lt;Carriage&gt;&gt; trainlist) {
+		int i;
+<span class="nc bnc" id="L106" title="All 2 branches missed.">		for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc" id="L107">			toentry.add(trainlist.get(i).clone());</span>
+		}
+<span class="nc" id="L109">		Iterator&lt;TrainEntry&lt;Carriage&gt;&gt; iterator=toentry.iterator();</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">		while(iterator.hasNext()) {</span>
+<span class="nc" id="L111">			TrainEntry&lt;Carriage&gt; pe=iterator.next();</span>
+<span class="nc bnc" id="L112" title="All 4 branches missed.">		    if(!pe.getlocations().contains(railwaylocation)||(pe.getlocations().indexOf(railwaylocation)==pe.getlocations().size()-1)) {  ////除去的entey需要除去该站为最后一个站的</span>
+<span class="nc" id="L113">		    	iterator.remove();</span>
+		    }
+		}
+<span class="nc" id="L116">		Collections.sort(toentry,new Comparator&lt;TrainEntry&lt;Carriage&gt;&gt;() {</span>
+
+			@Override
+			public int compare(TrainEntry&lt;Carriage&gt; o1, TrainEntry&lt;Carriage&gt; o2) {
+<span class="nc bnc" id="L120" title="All 2 branches missed.">				if(o1.gettimeslot().get(o1.getlocations().indexOf(railwaylocation)).getbegintime().compareTo(o2.gettimeslot().get(o2.getlocations().indexOf(railwaylocation)).getbegintime())&gt;0) {</span>
+<span class="nc" id="L121">					return 1;</span>
+				}
+<span class="nc bnc" id="L123" title="All 2 branches missed.">				else if(o1.gettimeslot().get(o1.getlocations().indexOf(railwaylocation)).getbegintime().compareTo(o2.gettimeslot().get(o2.getlocations().indexOf(railwaylocation)).getbegintime())==0) {</span>
+<span class="nc" id="L124">					return 0;</span>
+				}
+<span class="nc" id="L126">				return -1;</span>
+			}
+		});
+<span class="nc" id="L129">	}</span>
+	
+	/**
+	 * 显示当前board
+	 */
+	public void visualize() {
+<span class="nc" id="L135">		EventQueue.invokeLater(new Runnable() {</span>
+			public void run() {
+				try {
+<span class="nc" id="L138">					setVisible(true);</span>
+<span class="nc" id="L139">				} catch (Exception e) {</span>
+<span class="nc" id="L140">					e.printStackTrace();</span>
+				}
+<span class="nc" id="L142">			}</span>
+		});
+<span class="nc" id="L144">	}</span>
+
+	/**
+	 * 创建frame并储存TrainEntry集合的各种信息
+	 * @throws ParseException 
+	 */
+	public List&lt;TrainEntry&lt;Carriage&gt;&gt; createTrainEntryBoard() throws ParseException {
+<span class="nc" id="L151">		setTitle(&quot;车次状态显示屏&quot;);</span>
+<span class="nc" id="L152">		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</span>
+<span class="nc" id="L153">		setBounds(100, 100, 630, 750);</span>
+<span class="nc" id="L154">		contentPane = new JPanel();</span>
+<span class="nc" id="L155">		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));</span>
+<span class="nc" id="L156">		setContentPane(contentPane);</span>
+<span class="nc" id="L157">		contentPane.setLayout(null);</span>
+		
+<span class="nc" id="L159">		JPanel panel = new JPanel();</span>
+<span class="nc" id="L160">		panel.setBounds(0, 0, 600, 730);</span>
+<span class="nc" id="L161">		contentPane.add(panel);</span>
+<span class="nc" id="L162">		panel.setLayout(null);</span>
+		
+<span class="nc" id="L164">		JLabel lblNewLabel = new JLabel(&quot;&quot;);   </span>
+<span class="nc" id="L165">		time = new Timer(1000,new ActionListener() {   </span>
+		 
+		public void actionPerformed(ActionEvent arg0) {  
+<span class="nc" id="L168">			lblNewLabel.setText(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;).format(new Date())+&quot;(当地时间)&quot;+&quot;,&quot;+railwaylocation.getlocationname());</span>
+<span class="nc" id="L169">		}  </span>
+		});  
+<span class="nc" id="L171">		time.start();   </span>
+<span class="nc" id="L172">		lblNewLabel.setBounds(0, 0, 600, 30);</span>
+<span class="nc" id="L173">		panel.add(lblNewLabel);</span>
+		
+<span class="nc" id="L175">		nowtime = Calendar.getInstance();  //当前时间</span>
+<span class="nc" id="L176">		String str = (new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(nowtime.getTime()); </span>
+<span class="nc" id="L177">	    nowtime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(str));</span>
+		
+		
+		int i,j;
+		TrainEntry&lt;Carriage&gt; train;
+<span class="nc" id="L182">		String[][] comebiao=new String[100][4];</span>
+<span class="nc" id="L183">		String[][] tobiao=new String[100][4];</span>
+		
+<span class="nc" id="L185">		Iterator&lt;TrainEntry&lt;Carriage&gt;&gt; iterator=comeentry.iterator();</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">		while(iterator.hasNext()) {</span>
+<span class="nc" id="L187">			TrainEntry&lt;Carriage&gt; pe=iterator.next();</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">			if(((pe.gettimeslot().get(pe.getlocations().indexOf(railwaylocation)-1).getendtime().getTime().getTime()-nowtime.getTime().getTime())/1000)&gt;3600</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">				||((nowtime.getTime().getTime()-pe.gettimeslot().get(pe.getlocations().indexOf(railwaylocation)-1).getendtime().getTime().getTime())/1000)&gt;3600) {</span>
+<span class="nc" id="L190">				iterator.remove();</span>
+		    }
+		
+		}
+			
+<span class="nc bnc" id="L195" title="All 2 branches missed.">		for(i=0;i&lt;100;i++) {</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">		    for(j=0;j&lt;4;j++) {</span>
+<span class="nc" id="L197">				comebiao[i][j]=null;</span>
+			}
+		}
+		
+<span class="nc bnc" id="L201" title="All 2 branches missed.">		for(i=0;i&lt;comeentry.size();i++) {</span>
+<span class="nc" id="L202">			train=comeentry.get(i);</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">			if(train!=null) {</span>
+<span class="nc" id="L204">				comebiao[i][0]=(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(train.gettimeslot().get(train.getlocations().indexOf(railwaylocation)-1).getendtime().getTime());  ;</span>
+<span class="nc" id="L205">				comebiao[i][1]=(String) train.getplanningentryname();</span>
+<span class="nc" id="L206">			    comebiao[i][2]=train.getlocations().get(0).getlocationname()+&quot;—&quot;+train.getlocations().get(train.getlocations().size()-1).getlocationname();</span>
+<span class="nc" id="L207">			    comebiao[i][3]=((TrainState)train.getcurrentstate()).gettrainstate();</span>
+			}
+		}
+		
+<span class="nc" id="L211">		JLabel lblNewLabel_1 = new JLabel(&quot;                                  抵达车次&quot;);</span>
+<span class="nc" id="L212">		lblNewLabel_1.setBounds(0, 30, 600, 30);</span>
+<span class="nc" id="L213">		panel.add(lblNewLabel_1);</span>
+		
+<span class="nc" id="L215">		JScrollPane scrollPane = new JScrollPane();</span>
+<span class="nc" id="L216">		scrollPane.setBounds(0, 60, 600, 200);</span>
+<span class="nc" id="L217">		panel.add(scrollPane);</span>
+		
+<span class="nc" id="L219">		table = new JTable();</span>
+<span class="nc" id="L220">		table.setModel(new DefaultTableModel(</span>
+<span class="nc" id="L221">			comebiao,</span>
+<span class="nc" id="L222">			new String[] {</span>
+<span class="nc" id="L223">				&quot;计划抵达时间&quot;, &quot;车次号&quot;, &quot;起始和终点&quot;, &quot;状态&quot;</span>
+			}
+		));
+<span class="nc" id="L226">		table.getColumnModel().getColumn(0).setPreferredWidth(150);</span>
+<span class="nc" id="L227">		table.getColumnModel().getColumn(1).setPreferredWidth(150);</span>
+<span class="nc" id="L228">		table.getColumnModel().getColumn(2).setPreferredWidth(150);</span>
+<span class="nc" id="L229">		table.getColumnModel().getColumn(3).setPreferredWidth(150);</span>
+<span class="nc" id="L230">		scrollPane.setViewportView(table);</span>
+		
+<span class="nc" id="L232">		JLabel lblNewLabel_2 = new JLabel(&quot;                                  出发车次&quot;);</span>
+<span class="nc" id="L233">		lblNewLabel_2.setBounds(0, 280, 600, 30);</span>
+<span class="nc" id="L234">		panel.add(lblNewLabel_2);</span>
+		
+<span class="nc" id="L236">		JScrollPane scrollPane_1 = new JScrollPane();</span>
+<span class="nc" id="L237">		scrollPane_1.setBounds(0, 310, 600, 200);</span>
+<span class="nc" id="L238">		panel.add(scrollPane_1);</span>
+		
+<span class="nc" id="L240">		Iterator&lt;TrainEntry&lt;Carriage&gt;&gt; iterator1=toentry.iterator();</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">		while(iterator1.hasNext()) {</span>
+<span class="nc" id="L242">			TrainEntry&lt;Carriage&gt; lpe=iterator1.next();</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">			if(((lpe.gettimeslot().get(lpe.getlocations().indexOf(railwaylocation)).getbegintime().getTime().getTime()-nowtime.getTime().getTime())/1000)&gt;3600</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">				||((nowtime.getTime().getTime()-lpe.gettimeslot().get(lpe.getlocations().indexOf(railwaylocation)).getbegintime().getTime().getTime())/1000)&gt;3600) {</span>
+<span class="nc" id="L245">				iterator1.remove();</span>
+			}
+			
+		}
+		
+<span class="nc bnc" id="L250" title="All 2 branches missed.">		for(i=0;i&lt;100;i++) {</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">		    for(j=0;j&lt;4;j++) {</span>
+<span class="nc" id="L252">				tobiao[i][j]=null;</span>
+			}
+		}
+		
+<span class="nc bnc" id="L256" title="All 2 branches missed.">		for(i=0;i&lt;toentry.size();i++) {</span>
+<span class="nc" id="L257">			train=toentry.get(i);</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">			if(train!=null) {</span>
+<span class="nc" id="L259">				tobiao[i][0]=(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(train.gettimeslot().get(train.getlocations().indexOf(railwaylocation)).getbegintime().getTime());  ;</span>
+<span class="nc" id="L260">				tobiao[i][1]=(String) train.getplanningentryname();</span>
+<span class="nc" id="L261">			    tobiao[i][2]=train.getlocations().get(0).getlocationname()+&quot;—&quot;+train.getlocations().get(train.getlocations().size()-1).getlocationname();</span>
+<span class="nc" id="L262">			    tobiao[i][3]=((TrainState)train.getcurrentstate()).gettrainstate();</span>
+			}
+		}
+		
+		
+		
+<span class="nc" id="L268">		table_1 = new JTable();</span>
+<span class="nc" id="L269">		table_1.setModel(new DefaultTableModel(</span>
+<span class="nc" id="L270">			tobiao,</span>
+<span class="nc" id="L271">			new String[] {</span>
+<span class="nc" id="L272">					&quot;计划出发时间&quot;, &quot;车次号&quot;, &quot;起始和终点&quot;, &quot;状态&quot;</span>
+			}
+		));
+<span class="nc" id="L275">		table_1.getColumnModel().getColumn(0).setPreferredWidth(150);</span>
+<span class="nc" id="L276">		table_1.getColumnModel().getColumn(1).setPreferredWidth(150);</span>
+<span class="nc" id="L277">		table_1.getColumnModel().getColumn(2).setPreferredWidth(150);</span>
+<span class="nc" id="L278">		table_1.getColumnModel().getColumn(3).setPreferredWidth(150);</span>
+<span class="nc" id="L279">		scrollPane_1.setViewportView(table_1);</span>
+		
+<span class="nc" id="L281">		List&lt;TrainEntry&lt;Carriage&gt;&gt; allentry=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L282">		allentry.addAll(comeentry);</span>
+<span class="nc" id="L283">		allentry.addAll(toentry);</span>
+<span class="nc" id="L284">		return allentry;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

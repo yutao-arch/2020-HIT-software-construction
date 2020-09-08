@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CommonPlanningEntryTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">PlanningEntry</a> &gt; <span class="el_source">CommonPlanningEntryTest.java</span></div><h1>CommonPlanningEntryTest.java</h1><pre class="source lang-java linenums">package PlanningEntry;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import EntryState.CourseWaitingState;
+import Resource.Carriage;
+
+<span class="fc" id="L10">public class CommonPlanningEntryTest {</span>
+
+	/* Testing strategy
+	 * 由于CommonPlanningEntry方法很简单，不需要分类
+	 * 直接创建一个CommonPlanningEntry类，完成对其中所有方法的测试
+     */
+	@Test
+	public void allmethodstest() {
+<span class="fc" id="L18">		CommonPlanningEntry tempentry=new CommonPlanningEntry&lt;&gt;();</span>
+<span class="fc" id="L19">		tempentry=tempentry.createplanningentry();</span>
+<span class="fc" id="L20">		tempentry.setplanningentryname(&quot;软件构造&quot;);</span>
+<span class="fc" id="L21">		CourseWaitingState haha=CourseWaitingState.instance;</span>
+<span class="fc" id="L22">		tempentry.setcurrentstate(haha);</span>
+		
+<span class="fc" id="L24">		assertEquals(true,tempentry.launch(&quot;启动&quot;));</span>
+<span class="fc" id="L25">		assertEquals(false,tempentry.launch(&quot;替他&quot;));</span>
+<span class="fc" id="L26">		assertEquals(true,tempentry.cancel(&quot;取消&quot;));</span>
+<span class="fc" id="L27">		assertEquals(false,tempentry.cancel(&quot;其他&quot;));</span>
+<span class="fc" id="L28">		assertEquals(true,tempentry.finish(&quot;结束&quot;));</span>
+<span class="fc" id="L29">		assertEquals(false,tempentry.finish(&quot;其他&quot;));</span>
+		
+<span class="fc" id="L31">		assertEquals(&quot;软件构造&quot;,tempentry.getplanningentryname());</span>
+<span class="fc" id="L32">		assertEquals(haha,tempentry.getcurrentstate());</span>
+<span class="fc" id="L33">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

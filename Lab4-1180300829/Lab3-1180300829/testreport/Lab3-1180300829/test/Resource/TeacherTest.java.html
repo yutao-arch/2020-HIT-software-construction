@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TeacherTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">Resource</a> &gt; <span class="el_source">TeacherTest.java</span></div><h1>TeacherTest.java</h1><pre class="source lang-java linenums">package Resource;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+<span class="fc" id="L7">public class TeacherTest {</span>
+
+	/* Testing strategy
+	 * 测试getidnumber方法
+     * 测试老师身份证号的返回值即可
+     */
+	@Test
+	public void getidnumbertest() {
+<span class="fc" id="L15">		Teacher temp=new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;);</span>
+<span class="fc" id="L16">		assertEquals(&quot;422823199812254452&quot;,temp.getidnumber());</span>
+<span class="fc" id="L17">	}</span>
+	
+	/* Testing strategy
+	 * 测试getteachername方法
+     * 测试教师姓名的返回值即可
+     */
+	@Test
+	public void getteachernametest() {
+<span class="fc" id="L25">		Teacher temp=new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;);</span>
+<span class="fc" id="L26">		assertEquals(&quot;余涛&quot;,temp.getteachername());</span>
+<span class="fc" id="L27">	}</span>
+	
+	/* Testing strategy
+	 * 测试getteachergender方法
+     * 测试教师性别的返回值即可
+     */
+	@Test
+	public void getteachergendertest() {
+<span class="fc" id="L35">		Teacher temp=new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;);</span>
+<span class="fc" id="L36">		assertEquals(&quot;男&quot;,temp.getteachergender());</span>
+<span class="fc" id="L37">	}</span>
+	
+	/* Testing strategy
+	 * 测试getteachertitle方法
+     * 测试教师职称的返回值即可
+     */
+	@Test
+	public void getteachertitletest() {
+<span class="fc" id="L45">		Teacher temp=new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;);</span>
+<span class="fc" id="L46">		assertEquals(&quot;讲师&quot;,temp.getteachertitle());</span>
+<span class="fc" id="L47">	}</span>
+	
+	/* Testing strategy
+	 * 测试hashcode方法
+     * 测试两个相同的教师类hashcode是否相同即可
+     */
+	@Test
+	public void hashcodetest() {
+<span class="fc" id="L55">		Teacher temp=new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;);</span>
+<span class="fc" id="L56">		Teacher temp1=new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;);</span>
+<span class="fc" id="L57">		assertEquals(temp.hashCode(),temp1.hashCode());</span>
+<span class="fc" id="L58">	}</span>
+	
+	/* Testing strategy
+	 * 测试equals方法
+     * 按照两个教师类是否相同划分等价类：相同，不同
+     */
+	@Test
+	public void equalstest() {
+<span class="fc" id="L66">		Teacher temp=new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;);</span>
+<span class="fc" id="L67">		Teacher temp1=new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;);</span>
+<span class="fc" id="L68">		Teacher temp2=new Teacher(&quot;422823199812222222&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;);</span>
+<span class="fc" id="L69">		assertEquals(true,temp.equals(temp1));</span>
+<span class="fc" id="L70">		assertEquals(false,temp.equals(temp2));</span>
+<span class="fc" id="L71">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

@@ -1,0 +1,888 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TrainScheduleApp.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">App</a> &gt; <span class="el_source">TrainScheduleApp.java</span></div><h1>TrainScheduleApp.java</h1><pre class="source lang-java linenums">package App;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import Board.TrainEntryBoard;
+import EntryState.*;
+import Exception.*;
+import Factory.TrainEntryFactory;
+import Location.*;
+import PlanningEntry.BlockableEntryImpl;
+import PlanningEntry.MultipleLacationEntryImpl;
+import PlanningEntry.MultipleSortedResourceEntryImpl;
+import PlanningEntry.PlanningEntry;
+import PlanningEntry.TrainEntry;
+import PlanningEntryAPIs.PlanningEntryAPIs;
+
+import Resource.Carriage;
+import Timeslot.Timeslot;
+
+<span class="nc" id="L38">public class TrainScheduleApp {</span>
+
+<span class="nc" id="L40">    private static List&lt;TrainEntry&lt;Carriage&gt;&gt; trainlist=new ArrayList&lt;&gt;(); //储存所有TrainEntry的集合</span>
+<span class="nc" id="L41">    private final static Logger logger = Logger.getLogger(TrainScheduleApp.class.getName());</span>
+	
+	 /**
+     * 菜单
+     */
+	public static void menu() {
+<span class="nc" id="L47">		System.out.println(&quot;1.创建一个新的高铁计划项并设置信息(为了方便在信息版检测，设置时间时请设置为当前时间一小时前后的时间)&quot;);</span>
+<span class="nc" id="L48">		System.out.println(&quot;2.为某个高铁计划项分配资源&quot;);</span>
+<span class="nc" id="L49">		System.out.println(&quot;3.变更某个高铁计划项的位置&quot;);</span>
+<span class="nc" id="L50">		System.out.println(&quot;4.变更某个高铁计划项的资源&quot;);</span>
+<span class="nc" id="L51">		System.out.println(&quot;5.增加某个高铁计划项的资源&quot;);</span>
+<span class="nc" id="L52">		System.out.println(&quot;6.删除某个高铁计划项的资源&quot;);</span>
+<span class="nc" id="L53">		System.out.println(&quot;7.(重新)启动某个高铁计划项&quot;);</span>
+<span class="nc" id="L54">		System.out.println(&quot;8.阻塞某个高铁计划项&quot;);</span>
+<span class="nc" id="L55">		System.out.println(&quot;9.结束某个高铁计划项&quot;);</span>
+<span class="nc" id="L56">		System.out.println(&quot;10.取消某个高铁计划项&quot;);</span>
+<span class="nc" id="L57">		System.out.println(&quot;11.查看某个高铁计划项的状态&quot;);</span>
+<span class="nc" id="L58">		System.out.println(&quot;****(注意：执行12,13,14的操作需要为每一个计划项分配资源后执行,否则异常)****&quot;);</span>
+<span class="nc" id="L59">		System.out.println(&quot;12.检测高铁计划项中是否存在位置和资源独占冲突&quot;);</span>
+<span class="nc" id="L60">		System.out.println(&quot;13.针对某个车厢资源，列出所有使用该资源的高铁计划项&quot;);</span>
+<span class="nc" id="L61">		System.out.println(&quot;14.针对某个车厢资源，选中含有该资源的某个高铁计划项，列出它的前序计划项(输出一个即可)&quot;);</span>
+<span class="nc" id="L62">		System.out.println(&quot;15.选定某个位置，展示当前时刻该位置的信息版&quot;);</span>
+<span class="nc" id="L63">		System.out.println(&quot;16.显示当前含有高铁计划项的个数&quot;);</span>
+<span class="nc" id="L64">		System.out.println(&quot;17.按照过滤条件进行日志查询&quot;);</span>
+<span class="nc" id="L65">		System.out.println(&quot;18.写入日志并结束程序&quot;);</span>
+<span class="nc" id="L66">	}</span>
+	
+	/**
+	 * 
+	 * @param args
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static void main(String[] args) {
+		MultipleLacationEntryImpl a;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b;
+		BlockableEntryImpl c;
+<span class="nc" id="L77">		String choice,weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+<span class="nc" id="L78">		Scanner scanner=new Scanner(System.in);</span>
+		TrainState state;
+		Carriage mycarriage;
+<span class="nc" id="L81">		List&lt;Carriage&gt; allcarriage=new ArrayList&lt;&gt;();</span>
+		Calendar canceltimeone;
+<span class="nc" id="L83">		PlanningEntryAPIs myapis=new PlanningEntryAPIs&lt;&gt;();</span>
+		int blockflag;
+		String[] temp;
+		String yixie;
+<span class="nc" id="L87">		System.out.println(&quot;最开始请执行第一步&quot;);</span>
+		
+<span class="nc" id="L89">		File file=new File(&quot;log/TrainScheduleLog.txt&quot;);</span>
+		try {
+<span class="nc bnc" id="L91" title="All 2 branches missed.">			if(!file.exists()) {</span>
+<span class="nc" id="L92">				file.createNewFile();</span>
+			}
+<span class="nc" id="L94">			FileWriter fileWriter=new FileWriter(file);</span>
+<span class="nc" id="L95">			fileWriter.write(&quot;&quot;);</span>
+<span class="nc" id="L96">			fileWriter.flush();</span>
+<span class="nc" id="L97">			fileWriter.close();</span>
+<span class="nc" id="L98">		}catch(IOException e) {</span>
+<span class="nc" id="L99">			System.out.println(&quot;创建文件失败&quot;);</span>
+		}
+		try {
+<span class="nc" id="L102">			while(true) {</span>
+<span class="nc" id="L103">				menu();</span>
+<span class="nc" id="L104">				Locale.setDefault(new Locale(&quot;en&quot;, &quot;EN&quot;));</span>
+<span class="nc" id="L105">				logger.setLevel(Level.INFO);</span>
+				FileHandler fileHandler;	
+<span class="nc" id="L107">				fileHandler = new FileHandler(&quot;log/TrainScheduleLog.txt&quot;, true);</span>
+<span class="nc" id="L108">				fileHandler.setFormatter(new SimpleFormatter());</span>
+<span class="nc" id="L109">				logger.addHandler(fileHandler);	</span>
+<span class="nc" id="L110">				logger.setUseParentHandlers(false);</span>
+<span class="nc" id="L111">				System.out.println(&quot;请输入你的操作：&quot;);</span>
+<span class="nc" id="L112">				choice=scanner.nextLine();</span>
+<span class="nc bnc" id="L113" title="All 19 branches missed.">				switch(choice) {</span>
+				case &quot;1&quot;:
+<span class="nc" id="L115">					a=new MultipleLacationEntryImpl();</span>
+<span class="nc" id="L116">					b=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="nc" id="L117">					c=new BlockableEntryImpl();</span>
+<span class="nc" id="L118">					PlanningEntry origintrain=new TrainEntryFactory().getTrainEntry(a, b, c); //用工厂方法创建对象</span>
+<span class="nc" id="L119">					TrainEntry&lt;Carriage&gt; train=(TrainEntry&lt;Carriage&gt;)origintrain;</span>
+<span class="nc" id="L120">					System.out.println(&quot;此高铁计划项已经创建完成,下面输入一些信息完成初始状态的建立：&quot;);</span>
+<span class="nc" id="L121">					System.out.println(&quot;请输入车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L122">					String trainname=scanner.nextLine();</span>
+<span class="nc" id="L123">					train.setplanningentryname(trainname);</span>
+<span class="nc" id="L124">					logger.log(Level.INFO,&quot;true:setplanningentryname,计划项&quot;+trainname);</span>
+<span class="nc" id="L125">					System.out.println(&quot;计划项名字设置成功&quot;);</span>
+<span class="nc" id="L126">					List&lt;Location&gt; alllocation=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L127">					int ll=0;</span>
+<span class="nc" id="L128">					System.out.println(&quot;请依次输入该行程所有高铁站名称，输入“结束”停止输入(每输入一个按一下回车)(eg 北京)：&quot;);</span>
+					String tempname;
+<span class="nc bnc" id="L130" title="All 2 branches missed.">					while(!(tempname=scanner.nextLine()).equals(&quot;结束&quot;)) {</span>
+<span class="nc" id="L131">						FlightTrainLocation from=new FlightTrainLocation(weidu,jingdu,tempname);</span>
+<span class="nc" id="L132">						alllocation.add(from);</span>
+<span class="nc" id="L133">						ll++;</span>
+					}
+	                try {
+<span class="nc bnc" id="L136" title="All 2 branches missed.">	                	if(train.setlocations(alllocation)){</span>
+<span class="nc" id="L137">	                		logger.log(Level.INFO,&quot;true:setlocation,计划项&quot;+trainname);</span>
+	                	}
+<span class="nc" id="L139">					} catch (SameLocationException e1) {</span>
+<span class="nc" id="L140">						logger.log(Level.SEVERE,&quot;flase:setlocation,SameLocationException-&gt;operation again,计划项&quot;+trainname,e1);</span>
+<span class="nc" id="L141">						System.out.println(&quot;存在重复位置，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L142">						break;</span>
+					}
+<span class="nc" id="L144">	                List&lt;Timeslot&gt; alltime=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L145">	                boolean hh=false;</span>
+<span class="nc" id="L146">					System.out.println(&quot;请依次输入该行程所有时间段(时间段数应该比高铁站数少一)(用逗号隔开，每输入一对按一下回车)(eg 2020-01-01 12:00,2020-01-01 14:00)：&quot;);</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">					for(int pp=0;pp&lt;ll-1;pp++) {</span>
+						try {
+<span class="nc" id="L149">							tempname=scanner.nextLine();</span>
+<span class="nc" id="L150">							temp=tempname.split(&quot;,&quot;);</span>
+<span class="nc" id="L151">							Timeslot mytime=new Timeslot(temp[0],temp[1]);</span>
+<span class="nc" id="L152">							alltime.add(mytime);</span>
+<span class="nc" id="L153">						}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L154">							 logger.log(Level.SEVERE,&quot;flase:settimeslot,ArrayIndexOutOfBoundsException-&gt;operation again,计划项&quot;+trainname,e);</span>
+<span class="nc" id="L155">							 System.out.println(&quot;未用,隔开，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L156">							 hh=true;</span>
+<span class="nc" id="L157">							 break;</span>
+<span class="nc" id="L158">						} catch (ParseException e) {</span>
+<span class="nc" id="L159">							logger.log(Level.SEVERE,&quot;flase:settimeslot,ParseException-&gt;operation again,计划项&quot;+trainname,e);</span>
+<span class="nc" id="L160">							System.out.println(&quot;时间不符合yyyy-MM-dd HH:mm的要求，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L161">							break;</span>
+<span class="nc" id="L162">						} catch (BeginEndTimeException e) {</span>
+<span class="nc" id="L163">							logger.log(Level.SEVERE,&quot;flase:settimeslot,BeginEndTimeException-&gt;operation again,计划项&quot;+trainname,e);</span>
+<span class="nc" id="L164">							System.out.println(&quot;某个时间段起始时间晚于终止时间，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L165">							hh=true;</span>
+<span class="nc" id="L166">							break;</span>
+						}	
+					}
+<span class="nc bnc" id="L169" title="All 2 branches missed.">					if(hh==true) {</span>
+<span class="nc" id="L170">						break;</span>
+					}
+					try {
+<span class="nc bnc" id="L173" title="All 2 branches missed.">						if(train.settimeslot(alltime)) {</span>
+<span class="nc" id="L174">							logger.log(Level.INFO,&quot;true:settimeslot,计划项&quot;+trainname);</span>
+						}
+<span class="nc" id="L176">					} catch (ConflictTimeException e2) {</span>
+<span class="nc" id="L177">						logger.log(Level.SEVERE,&quot;flase:settimeslot,ConflictTimeException-&gt;operation again,计划项&quot;+trainname,e2);</span>
+<span class="nc" id="L178">						System.out.println(&quot;某个站抵达时间晚于出发时间，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L179">						break;</span>
+					}
+<span class="nc" id="L181">					state = TrainWaitingState.instance;</span>
+<span class="nc" id="L182">					train.setcurrentstate(state);</span>
+<span class="nc" id="L183">					System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L184">					System.out.println(&quot;信息设置完成&quot;);</span>
+<span class="nc" id="L185">					trainlist.add(train);</span>
+<span class="nc" id="L186">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L187">					break;</span>
+				case &quot;2&quot;:
+<span class="nc" id="L189">					System.out.println(&quot;请输入你想加入资源的高铁计划项的车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L190">					tempname=scanner.nextLine();</span>
+					int i;
+<span class="nc bnc" id="L192" title="All 2 branches missed.">					for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">						if(trainlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L194">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L197" title="All 2 branches missed.">					if(i==trainlist.size()) {</span>
+<span class="nc" id="L198">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L199">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L200">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L201">						break;</span>
+					}
+<span class="nc" id="L203">					List&lt;TrainEntry&lt;Carriage&gt;&gt; temptrainlist=new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">					for(int oo=0;oo&lt;trainlist.size();oo++) {</span>
+<span class="nc" id="L205">						temptrainlist.add(trainlist.get(oo).clone());</span>
+					}
+<span class="nc" id="L207">					TrainEntry&lt;Carriage&gt; tempentry=trainlist.get(i).clone();</span>
+<span class="nc" id="L208">					boolean gg=false;</span>
+<span class="nc" id="L209">					allcarriage=new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">					if(((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁未分配车厢(Waiting)&quot;)) {</span>
+<span class="nc" id="L211">						System.out.println(&quot;请按照次序依次输入一组车厢的编号(不同车厢不同)，类型，定员数，出厂年份，输入“结束”停止输入(用逗号隔开，每输入一个车厢按一下回车)(eg A01,一等座,100,2012)：&quot;);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">						while(!(tempname=scanner.nextLine()).equals(&quot;结束&quot;)) {</span>
+							try {
+<span class="nc" id="L214">								temp=tempname.split(&quot;,&quot;);</span>
+<span class="nc" id="L215">								mycarriage=new Carriage(temp[0],temp[1],Integer.parseInt(temp[2]),temp[3]);</span>
+<span class="nc" id="L216">								allcarriage.add(mycarriage);</span>
+<span class="nc" id="L217">							}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L218">								 logger.log(Level.SEVERE,&quot;flase:setresource,ArrayIndexOutOfBoundsException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L219">								 System.out.println(&quot;未用,隔开，请重新执行2操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L220">								 gg=true;</span>
+<span class="nc" id="L221">								 break;</span>
+<span class="nc" id="L222">							} catch (NumberFormatException e) {</span>
+								// TODO 自动生成的 catch 块
+<span class="nc" id="L224">								e.printStackTrace();</span>
+<span class="nc" id="L225">							} catch (LessThanZeroException e) {</span>
+<span class="nc" id="L226">								logger.log(Level.SEVERE,&quot;flase:setresource,LessThanZeroException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L227">								 System.out.println(&quot;定员数为非正数，请重新执行2操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L228">								 gg=true;</span>
+<span class="nc" id="L229">								 break;</span>
+							}
+						}
+<span class="nc bnc" id="L232" title="All 2 branches missed.">						if(gg==true) {</span>
+<span class="nc" id="L233">							break;</span>
+						}
+						try {
+<span class="nc" id="L236">							tempentry.setresource(allcarriage);</span>
+<span class="nc" id="L237">						} catch (SameResourceException e1) {</span>
+<span class="nc" id="L238">							 logger.log(Level.SEVERE,&quot;flase:setresource,SameResourceException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e1);</span>
+<span class="nc" id="L239">							 System.out.println(&quot;存在相同的车厢，请重新执行2操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L240">							 break;</span>
+						}
+<span class="nc" id="L242">						state=((TrainState)tempentry.getcurrentstate()).move('a');</span>
+<span class="nc" id="L243">						tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L244">						System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L245">						temptrainlist.set(i, tempentry);</span>
+						try {
+<span class="nc bnc" id="L247" title="All 2 branches missed.">							if(myapis.checkResourceExclusiveConflict(temptrainlist)) {</span>
+<span class="nc" id="L248">								throw new ResourceExclusiveConflictException();</span>
+							}
+							else {
+<span class="nc" id="L251">								trainlist.set(i, tempentry);</span>
+<span class="nc" id="L252">								logger.log(Level.INFO,&quot;true:setresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L253">								System.out.println(&quot;飞机资源设置完成\n&quot;);</span>
+							}
+<span class="nc" id="L255">						}catch(ResourceExclusiveConflictException e) {</span>
+<span class="nc" id="L256">							logger.log(Level.SEVERE,&quot;flase:setresource,ResourceExclusiveConflictException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L257">							System.out.println(&quot;该资源分配后会与已有的其他计划项发生资源独占冲突，请重新分配资源\n&quot;);</span>
+						}
+<span class="nc" id="L259">					}</span>
+					else {
+<span class="nc" id="L261">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L262">						System.out.println(&quot;当前状态下不能执行设置飞机资源操作\n&quot;);</span>
+					}
+<span class="nc" id="L264">					break;</span>
+				case &quot;3&quot;:	
+<span class="nc" id="L266">					logger.log(Level.INFO,&quot;false:changelocation,no changeable location-&gt;operation again&quot;);</span>
+<span class="nc" id="L267">					System.out.println(&quot;高铁计划项位置不可变更&quot;);</span>
+<span class="nc" id="L268">					System.out.println();</span>
+<span class="nc" id="L269">					break;</span>
+				case &quot;4&quot;:	
+<span class="nc" id="L271">					System.out.println(&quot;请输入你想变更资源的高铁计划项的车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L272">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">					for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">						if(trainlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L275">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L278" title="All 2 branches missed.">					if(i==trainlist.size()) {</span>
+<span class="nc" id="L279">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L280">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L281">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L282">						break;</span>
+					}
+<span class="nc" id="L284">					tempentry=trainlist.get(i);</span>
+<span class="nc" id="L285">					allcarriage=tempentry.getresource();</span>
+					int j;
+<span class="nc bnc" id="L287" title="All 2 branches missed.">					if(((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁已分配一组车厢(Allocated)&quot;)) {</span>
+<span class="nc" id="L288">						System.out.println(&quot;请输入你需要变更的车厢的编号(eg A01)：&quot;);</span>
+<span class="nc" id="L289">						tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">						for(j=0;j&lt;allcarriage.size();j++) {</span>
+<span class="nc bnc" id="L291" title="All 2 branches missed.">							if(allcarriage.get(j).getcarriagenumber().equals(tempname)) {</span>
+<span class="nc" id="L292">								break;</span>
+							}
+						}
+<span class="nc bnc" id="L295" title="All 2 branches missed.">						if(j==allcarriage.size()) {</span>
+<span class="nc" id="L296">							logger.log(Level.INFO,&quot;false:can not find this carriage-&gt;operation again&quot;);</span>
+<span class="nc" id="L297">							System.out.println(&quot;没有该车厢&quot;);</span>
+<span class="nc" id="L298">							System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L299">							break;</span>
+						}
+<span class="nc" id="L301">						Carriage tempcarriage=allcarriage.get(j);</span>
+<span class="nc" id="L302">						System.out.println(&quot;请输入变更后的车厢的编号，类型，定员数，出厂年份(用逗号隔开)(eg NB02,二等座,100,2011)：&quot;);</span>
+						try {
+<span class="nc" id="L304">							temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L305">							mycarriage=new Carriage(temp[0],temp[1],Integer.parseInt(temp[2]),temp[3]);</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">							if(tempentry.changeresource(tempcarriage,mycarriage)) {</span>
+<span class="nc" id="L307">								logger.log(Level.INFO,&quot;true:changeresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L308">							}</span>
+							else {
+<span class="nc" id="L310">								logger.log(Level.INFO,&quot;false:changeresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L311">								break;</span>
+							}
+<span class="nc" id="L313">							trainlist.set(i, tempentry);</span>
+<span class="nc" id="L314">						}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L315">							 logger.log(Level.SEVERE,&quot;flase:changeresource,ArrayIndexOutOfBoundsException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L316">							 System.out.println(&quot;未用,隔开，请重新执行4操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L317">							 break;</span>
+<span class="nc" id="L318">						} catch (NumberFormatException e) {</span>
+							// TODO 自动生成的 catch 块
+<span class="nc" id="L320">							e.printStackTrace();</span>
+<span class="nc" id="L321">						} catch (LessThanZeroException e) {</span>
+<span class="nc" id="L322">							 logger.log(Level.SEVERE,&quot;flase:changeresource,LessThanZeroException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L323">							 System.out.println(&quot;定员数为非正数，请重新执行4操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L324">							 break;</span>
+						}
+					}
+					else {
+<span class="nc" id="L328">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L329">						System.out.println(&quot;当前状态下不能执行变更车厢操作\n&quot;);</span>
+					}
+<span class="nc" id="L331">					break;</span>
+				case &quot;5&quot;:
+<span class="nc" id="L333">					System.out.println(&quot;请输入你想增加资源的高铁计划项的车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L334">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L335" title="All 2 branches missed.">					for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">						if(trainlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L337">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L340" title="All 2 branches missed.">					if(i==trainlist.size()) {</span>
+<span class="nc" id="L341">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L342">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L343">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L344">						break;</span>
+					}
+<span class="nc" id="L346">					tempentry=trainlist.get(i);</span>
+<span class="nc" id="L347">					allcarriage=tempentry.getresource();</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">					if(((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁已分配一组车厢(Allocated)&quot;)) {</span>
+<span class="nc" id="L349">						System.out.println(&quot;请输入增加的车厢的编号，类型，定员数，出厂年份(用逗号隔开)(eg AS02,二等座,100,2011)：&quot;);</span>
+						try {
+<span class="nc" id="L351">							temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L352">							mycarriage=new Carriage(temp[0],temp[1],Integer.parseInt(temp[2]),temp[3]);</span>
+<span class="nc" id="L353">							System.out.println(&quot;请输入增加的车厢在一组车厢中的位置(第一节车厢默认位置为1)(eg 3)：&quot;);</span>
+<span class="nc" id="L354">							tempname=scanner.nextLine();</span>
+<span class="nc" id="L355">							int weizhi=Integer.parseInt(tempname);</span>
+<span class="nc bnc" id="L356" title="All 4 branches missed.">							if(weizhi&gt;tempentry.getresource().size()+1||weizhi&lt;1) {</span>
+<span class="nc" id="L357">								logger.log(Level.INFO,&quot;false:addresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L358">								System.out.println(&quot;增加的车厢位置不合法\n&quot;);</span>
+<span class="nc" id="L359">								break;</span>
+							}
+<span class="nc bnc" id="L361" title="All 2 branches missed.">							if(tempentry.addresource(mycarriage,weizhi-1)) {</span>
+<span class="nc" id="L362">								logger.log(Level.INFO,&quot;true:addresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L363">							}</span>
+							else {
+<span class="nc" id="L365">								logger.log(Level.INFO,&quot;false:addresource,计划项&quot;+tempentry.getplanningentryname());</span>
+							}
+<span class="nc" id="L367">							trainlist.set(i, tempentry);</span>
+<span class="nc" id="L368">						}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L369">							 logger.log(Level.SEVERE,&quot;flase:addresource,ArrayIndexOutOfBoundsException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L370">							 System.out.println(&quot;未用,隔开，请重新执行5操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L371">							 break;</span>
+<span class="nc" id="L372">						} catch (NumberFormatException e) {</span>
+							// TODO 自动生成的 catch 块
+<span class="nc" id="L374">							e.printStackTrace();</span>
+<span class="nc" id="L375">						} catch (LessThanZeroException e) {</span>
+<span class="nc" id="L376">							 logger.log(Level.SEVERE,&quot;flase:addresource,LessThanZeroException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L377">							 System.out.println(&quot;定员数为非正数，请重新执行5操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L378">							 break;</span>
+						}
+					}
+					else {
+<span class="nc" id="L382">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L383">						System.out.println(&quot;当前状态下不能执行增加资源操作\n&quot;);</span>
+					}
+<span class="nc" id="L385">					break;</span>
+				case &quot;6&quot;:
+<span class="nc" id="L387">					System.out.println(&quot;请输入你想删除资源的高铁计划项的车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L388">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">					for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">						if(trainlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L391">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L394" title="All 2 branches missed.">					if(i==trainlist.size()) {</span>
+<span class="nc" id="L395">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L396">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L397">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L398">						break;</span>
+					}
+<span class="nc" id="L400">					tempentry=trainlist.get(i);</span>
+<span class="nc" id="L401">					allcarriage=tempentry.getresource();</span>
+<span class="nc bnc" id="L402" title="All 2 branches missed.">					if(((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁已分配一组车厢(Allocated)&quot;)) {</span>
+<span class="nc" id="L403">						System.out.println(&quot;请输入你需要删除的车厢的编号(eg A01)：&quot;);</span>
+<span class="nc" id="L404">						tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L405" title="All 2 branches missed.">						for(j=0;j&lt;allcarriage.size();j++) {</span>
+<span class="nc bnc" id="L406" title="All 2 branches missed.">							if(allcarriage.get(j).getcarriagenumber().equals(tempname)) {</span>
+<span class="nc" id="L407">								break;</span>
+							}
+						}
+<span class="nc bnc" id="L410" title="All 2 branches missed.">						if(j==allcarriage.size()) {</span>
+<span class="nc" id="L411">							logger.log(Level.INFO,&quot;false:can not find this carriage-&gt;operation again&quot;);</span>
+<span class="nc" id="L412">							System.out.println(&quot;没有该车厢&quot;);</span>
+<span class="nc" id="L413">							System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L414">							break;</span>
+						}
+<span class="nc" id="L416">						Carriage tempcarriage=allcarriage.get(j);</span>
+						try {
+<span class="nc bnc" id="L418" title="All 2 branches missed.">							for(int kk=0;kk&lt;trainlist.size();kk++) {</span>
+<span class="nc bnc" id="L419" title="All 2 branches missed.">								if(trainlist.get(kk).getresource().contains(tempcarriage)&amp;&amp;</span>
+<span class="nc bnc" id="L420" title="All 2 branches missed.">										!((TrainState)trainlist.get(kk).getcurrentstate()).gettrainstate().equals(&quot;高铁已抵达终点站(Ended)&quot;)) {</span>
+<span class="nc" id="L421">									throw new NoendedCarriageException();</span>
+								}
+							}
+<span class="nc" id="L424">						}catch(NoendedCarriageException e) {</span>
+<span class="nc" id="L425">							logger.log(Level.SEVERE,&quot;deleteresource,NoendedCarriageException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L426">							System.out.println(&quot;有尚未结束的计划项正在占用该资源，无法删除该资源\n&quot;);</span>
+<span class="nc" id="L427">							break;</span>
+						}
+<span class="nc bnc" id="L429" title="All 2 branches missed.">						if(tempentry.deleteresource(tempcarriage)) {</span>
+<span class="nc" id="L430">							logger.log(Level.INFO,&quot;true:deleteresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L431">						}</span>
+						else {
+<span class="nc" id="L433">							logger.log(Level.INFO,&quot;false:deleteresource,计划项&quot;+tempentry.getplanningentryname());</span>
+						}
+<span class="nc" id="L435">						trainlist.set(i, tempentry);</span>
+<span class="nc" id="L436">					}</span>
+					else {
+<span class="nc" id="L438">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L439">						System.out.println(&quot;当前状态下不能执行删除资源操作\n&quot;);</span>
+					}
+<span class="nc" id="L441">					break;</span>
+				case &quot;7&quot;:
+<span class="nc" id="L443">					System.out.println(&quot;请输入你想要启动的高铁计划项的车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L444">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L445" title="All 2 branches missed.">					for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc bnc" id="L446" title="All 2 branches missed.">						if(trainlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L447">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L450" title="All 2 branches missed.">					if(i==trainlist.size()) {</span>
+<span class="nc" id="L451">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L452">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L453">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L454">						break;</span>
+					}
+<span class="nc" id="L456">					tempentry=trainlist.get(i);</span>
+<span class="nc bnc" id="L457" title="All 2 branches missed.">					if(((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁已分配一组车厢(Allocated)&quot;)||</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">							((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁中途阻塞(Blocked)&quot;)) {	</span>
+<span class="nc" id="L459">						System.out.println(&quot;请输入指令：启动&quot;);</span>
+<span class="nc" id="L460">						yixie=scanner.nextLine();</span>
+<span class="nc bnc" id="L461" title="All 2 branches missed.">						if(tempentry.launch(yixie)) {</span>
+<span class="nc" id="L462">						logger.log(Level.INFO,&quot;true:launch,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L463">						state=((TrainState)tempentry.getcurrentstate()).move('a');</span>
+<span class="nc" id="L464">						tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L465">						System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L466">						trainlist.set(i, tempentry);</span>
+<span class="nc" id="L467">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L468">						}</span>
+						else {
+<span class="nc" id="L470">							logger.log(Level.INFO,&quot;false:launch,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L471">							System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L472">							break;</span>
+						}
+					}
+					else {
+<span class="nc" id="L476">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L477">						System.out.println(&quot;当前状态下不能执行启动高铁操作\n&quot;);</span>
+					}
+<span class="nc" id="L479">					break;</span>
+				case &quot;8&quot;:
+<span class="nc" id="L481">					System.out.println(&quot;请输入你想要阻塞的高铁计划项的车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L482">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L483" title="All 2 branches missed.">					for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc bnc" id="L484" title="All 2 branches missed.">						if(trainlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L485">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L488" title="All 2 branches missed.">					if(i==trainlist.size()) {</span>
+<span class="nc" id="L489">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L490">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L491">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L492">						break;</span>
+					}
+<span class="nc" id="L494">					tempentry=trainlist.get(i);</span>
+<span class="nc bnc" id="L495" title="All 2 branches missed.">					if(((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁已从起始站发车(Running)&quot;)) {	</span>
+<span class="nc" id="L496">						System.out.println(&quot;请输入你需要阻塞的高铁站位置：(eg 武汉)&quot;);</span>
+<span class="nc" id="L497">						yixie=scanner.nextLine();</span>
+<span class="nc" id="L498">						blockflag=tempentry.trainblock(yixie);</span>
+<span class="nc bnc" id="L499" title="All 2 branches missed.">						if(blockflag==-1) {</span>
+<span class="nc" id="L500">							logger.log(Level.INFO,&quot;false:trainblock,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L501">							break;</span>
+						}
+<span class="nc" id="L503">						logger.log(Level.INFO,&quot;true:trainblock,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L504">						state=((TrainState)tempentry.getcurrentstate()).move('b');</span>
+<span class="nc" id="L505">						tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L506">						System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L507">						trainlist.set(i, tempentry);</span>
+<span class="nc" id="L508">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L509">					}</span>
+					else {
+<span class="nc" id="L511">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L512">						System.out.println(&quot;当前状态下不能执行阻塞高铁操作\n&quot;);</span>
+					}
+<span class="nc" id="L514">					break;</span>
+				case &quot;9&quot;:
+<span class="nc" id="L516">					System.out.println(&quot;请输入你想要结束的高铁计划项的车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L517">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L518" title="All 2 branches missed.">					for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc bnc" id="L519" title="All 2 branches missed.">						if(trainlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L520">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L523" title="All 2 branches missed.">					if(i==trainlist.size()) {</span>
+<span class="nc" id="L524">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L525">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L526">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L527">						break;</span>
+					}
+<span class="nc" id="L529">					tempentry=trainlist.get(i);</span>
+<span class="nc bnc" id="L530" title="All 2 branches missed.">						if(((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁已从起始站发车(Running)&quot;)) {	</span>
+<span class="nc" id="L531">							System.out.println(&quot;请输入指令：结束&quot;);</span>
+<span class="nc" id="L532">							yixie=scanner.nextLine();</span>
+<span class="nc bnc" id="L533" title="All 2 branches missed.">							if(tempentry.finish(yixie)) {</span>
+<span class="nc" id="L534">							logger.log(Level.INFO,&quot;true:finish,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L535">							state=((TrainState)tempentry.getcurrentstate()).move('a');</span>
+<span class="nc" id="L536">							tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L537">							System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L538">							trainlist.set(i, tempentry);</span>
+<span class="nc" id="L539">							System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L540">							}</span>
+							else {
+<span class="nc" id="L542">								logger.log(Level.INFO,&quot;false:finish,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L543">								System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L544">								break;</span>
+							}
+						}
+						else {
+<span class="nc" id="L548">							logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L549">							System.out.println(&quot;当前状态下不能执行结束高铁操作\n&quot;);</span>
+<span class="nc" id="L550">							break;</span>
+						}	
+					break;
+				case &quot;10&quot;:
+<span class="nc" id="L554">					System.out.println(&quot;请输入你想要取消的高铁计划项的车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L555">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L556" title="All 2 branches missed.">					for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc bnc" id="L557" title="All 2 branches missed.">						if(trainlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L558">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L561" title="All 2 branches missed.">					if(i==trainlist.size()) {</span>
+<span class="nc" id="L562">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L563">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L564">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L565">						break;</span>
+					}
+<span class="nc" id="L567">					tempentry=trainlist.get(i);</span>
+					try {
+<span class="nc bnc" id="L569" title="All 2 branches missed.">						if(((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁已分配一组车厢(Allocated)&quot;)||</span>
+<span class="nc bnc" id="L570" title="All 2 branches missed.">								((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁中途阻塞(Blocked)&quot;)||</span>
+<span class="nc bnc" id="L571" title="All 2 branches missed.">								((TrainState)tempentry.getcurrentstate()).gettrainstate().equals(&quot;高铁未分配车厢(Waiting)&quot;)) {	</span>
+<span class="nc" id="L572">									System.out.println(&quot;请输入指令：取消&quot;);</span>
+<span class="nc" id="L573">									yixie=scanner.nextLine();	</span>
+<span class="nc bnc" id="L574" title="All 2 branches missed.">									if(tempentry.cancel(yixie)) {</span>
+<span class="nc" id="L575">									canceltimeone=Calendar.getInstance();</span>
+<span class="nc" id="L576">									String str = (new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(canceltimeone.getTime()); </span>
+									try {
+<span class="nc" id="L578">										canceltimeone.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(str));</span>
+<span class="nc" id="L579">										logger.log(Level.INFO,&quot;true:cancel,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L580">									} catch (ParseException e) {</span>
+<span class="nc" id="L581">										logger.log(Level.SEVERE,&quot;false:cancel,ParseException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L582">										System.out.println(&quot;取消时间出错\n&quot;);</span>
+<span class="nc" id="L583">										break;					</span>
+										}
+<span class="nc" id="L585">									System.out.println(&quot;该航班计划项取消的时间为&quot;+str);</span>
+<span class="nc" id="L586">									state=((TrainState)tempentry.getcurrentstate()).move('b');</span>
+<span class="nc" id="L587">									tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L588">									System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L589">									trainlist.remove(i);</span>
+<span class="nc" id="L590">									System.out.println(&quot;\n&quot;);</span>
+									}
+<span class="nc" id="L592">						}</span>
+						else {
+<span class="nc" id="L594">							throw new NoCancelStateException();</span>
+						}	
+<span class="nc" id="L596">					}catch(NoCancelStateException e) {</span>
+<span class="nc" id="L597">						logger.log(Level.SEVERE,&quot;false:cancel,NoCancelStateException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L598">						System.out.println(&quot;当前状态下不能执行取消高铁操作\n&quot;);</span>
+<span class="nc" id="L599">						break;</span>
+					}
+					break;
+	             case &quot;11&quot;:
+<span class="nc" id="L603">	            	System.out.println(&quot;请输入你想要查看的高铁计划项的车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L604">	 				tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L605" title="All 2 branches missed.">	 				for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc bnc" id="L606" title="All 2 branches missed.">						if(trainlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L607">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L610" title="All 2 branches missed.">					if(i==trainlist.size()) {</span>
+<span class="nc" id="L611">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L612">						System.out.println(&quot;没有该计划项或者已被取消&quot;);</span>
+<span class="nc" id="L613">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L614">						break;</span>
+					}
+<span class="nc" id="L616">					tempentry=trainlist.get(i);</span>
+<span class="nc" id="L617">	 				System.out.println(&quot;该高铁计划项的状态为：&quot;+((TrainState)tempentry.getcurrentstate()).gettrainstate());</span>
+<span class="nc" id="L618">	 				logger.log(Level.INFO,&quot;true:getcurrentstate,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L619">	 				System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L620">					break;</span>
+	             case &quot;12&quot;:
+<span class="nc" id="L622">	            	System.out.println(&quot;对于位置独占冲突，你可以选择两种算法来进行判断(输入1使用第一种，输入2使用第二种)，请选择输入(eg 1)&quot;);</span>
+<span class="nc" id="L623">	    			tempname=scanner.nextLine();</span>
+<span class="nc" id="L624">	            	System.out.println(&quot;所有计划项中位置独占冲突结果如下：&quot;);</span>
+<span class="nc bnc" id="L625" title="All 2 branches missed.">	    			if(myapis.checkLocationConflict(trainlist,tempname)) {</span>
+<span class="nc" id="L626">	    				logger.log(Level.INFO,&quot;true:LocationConflict&quot;);</span>
+<span class="nc" id="L627">	    			}</span>
+	    			else {
+<span class="nc" id="L629">	    				logger.log(Level.INFO,&quot;false:LocationConflict&quot;);</span>
+	    			}
+<span class="nc" id="L631">	    			System.out.println(&quot;所有计划项中资源独占冲突结果如下：&quot;);</span>
+<span class="nc bnc" id="L632" title="All 2 branches missed.">	    			if(myapis.checkResourceExclusiveConflict(trainlist)) {</span>
+<span class="nc" id="L633">	    				logger.log(Level.INFO,&quot;true:ResourceExclusiveConflict&quot;);</span>
+<span class="nc" id="L634">	    			}</span>
+	    			else {
+<span class="nc" id="L636">	    				logger.log(Level.INFO,&quot;false:ResourceExclusiveConflict&quot;);</span>
+	    			}
+<span class="nc" id="L638">	    			System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L639">	            	 break;</span>
+	             case &quot;13&quot;:
+<span class="nc" id="L641">	            	System.out.println(&quot;请输入你想要查看的车厢资源的车厢的编号，类型，定员数，出厂年份(用逗号隔开)(eg A01,二等座,100,2011)：&quot;);</span>
+	            	try {
+<span class="nc" id="L643">	            		temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L644">	    				mycarriage=new Carriage(temp[0],temp[1],Integer.parseInt(temp[2]),temp[3]);</span>
+<span class="nc" id="L645">	    				myapis.findEntryPerResource(mycarriage, trainlist);</span>
+<span class="nc" id="L646">		 				logger.log(Level.INFO,&quot;findEntryPerResource&quot;);</span>
+<span class="nc" id="L647">					}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L648">						logger.log(Level.SEVERE,&quot;flase:setresource,ArrayIndexOutOfBoundsException-&gt;operation again&quot;);</span>
+<span class="nc" id="L649">						 System.out.println(&quot;未用,隔开，请重新执行13操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L650">						 break;</span>
+<span class="nc" id="L651">					} catch (NumberFormatException e) {</span>
+						// TODO 自动生成的 catch 块
+<span class="nc" id="L653">						e.printStackTrace();</span>
+<span class="nc" id="L654">					} catch (LessThanZeroException e) {</span>
+<span class="nc" id="L655">						logger.log(Level.SEVERE,&quot;flase:setresource,LessThanZeroException-&gt;operation again&quot;);</span>
+<span class="nc" id="L656">						 System.out.println(&quot;定员数为非正数，请重新执行13操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L657">						 break;</span>
+					}
+<span class="nc" id="L659">	 				System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L660">	            	break;</span>
+	             case &quot;14&quot;:
+<span class="nc" id="L662">	            	System.out.println(&quot;请输入你想要查看其前序计划项的车次号(eg G1020)：&quot;);</span>
+<span class="nc" id="L663">	            	tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L664" title="All 2 branches missed.">	  				for(i=0;i&lt;trainlist.size();i++) {</span>
+<span class="nc bnc" id="L665" title="All 2 branches missed.">	 					if(trainlist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L666">	 						break;</span>
+	 					}
+	 				}
+<span class="nc bnc" id="L669" title="All 2 branches missed.">	 				if(i==trainlist.size()) {</span>
+<span class="nc" id="L670">	 					logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L671">	 					System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L672">	 					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L673">	 					break;</span>
+	 				}
+<span class="nc" id="L675">	 				tempentry=trainlist.get(i);</span>
+<span class="nc" id="L676">	 				System.out.println(&quot;请输入需要查看前序计划项的该高铁计划项中拥有的车厢资源的编号(eg A01)：&quot;);</span>
+<span class="nc" id="L677">	 				tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L678" title="All 2 branches missed.">	 				for(j=0;j&lt;tempentry.getresource().size();j++) {</span>
+<span class="nc bnc" id="L679" title="All 2 branches missed.">	 					if(tempentry.getresource().get(j).getcarriagenumber().equals(tempname)) {</span>
+<span class="nc" id="L680">	 						break;</span>
+	 					}
+	 				}
+<span class="nc bnc" id="L683" title="All 2 branches missed.">	 				if(j==tempentry.getresource().size()) {</span>
+<span class="nc" id="L684">	 					logger.log(Level.INFO,&quot;false:can not find this carriage-&gt;operation again&quot;);</span>
+<span class="nc" id="L685">	 					System.out.println(&quot;没有该车厢资源&quot;);</span>
+<span class="nc" id="L686">	 					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L687">	 					break;</span>
+	 				}
+<span class="nc" id="L689">	 				mycarriage=tempentry.getresource().get(j);</span>
+<span class="nc" id="L690">	                myapis.findPreEntryPerResource(mycarriage,tempentry,trainlist);	</span>
+<span class="nc" id="L691">	                logger.log(Level.INFO,&quot;findPreEntryPerResource&quot;);</span>
+<span class="nc" id="L692">	                System.out.println(&quot;\n&quot;);	</span>
+<span class="nc" id="L693">	            	break;</span>
+	             case &quot;15&quot;:
+<span class="nc" id="L695">	            	System.out.println(&quot;请输入你想要展示当前时刻的信息版的位置(eg 北京)&quot;);</span>
+<span class="nc" id="L696">	    			tempname=scanner.nextLine();</span>
+<span class="nc" id="L697">	    			TrainEntryBoard trainboard=new TrainEntryBoard();	</span>
+<span class="nc" id="L698">	    			trainboard.setrailwaylocation(tempname);</span>
+<span class="nc" id="L699">	    			trainboard.getsortcomeentry(trainlist);</span>
+<span class="nc" id="L700">	    			trainboard.getsorttoentry(trainlist);</span>
+	    			try {
+<span class="nc" id="L702">						trainboard.createTrainEntryBoard();</span>
+<span class="nc" id="L703">						logger.log(Level.INFO,&quot;true:TrainEntryBoard&quot;);</span>
+<span class="nc" id="L704">					} catch (ParseException e) {</span>
+<span class="nc" id="L705">						logger.log(Level.SEVERE,&quot;false:FlightEntryBoard,ParseException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L706">						System.out.println(&quot;时间格式出错&quot;);</span>
+<span class="nc" id="L707">						break;</span>
+					}
+<span class="nc" id="L709">	    			trainboard.visualize();	</span>
+<span class="nc" id="L710">	    			System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L711">	            	 break;</span>
+	             case &quot;16&quot;:
+<span class="nc" id="L713">	            	logger.log(Level.INFO,&quot;true:get the number of allentrys&quot;);</span>
+<span class="nc" id="L714">	                System.out.println(&quot;当前含有高铁计划项的个数为：&quot;+trainlist.size()+&quot;\n&quot;);</span>
+<span class="nc" id="L715">	 				break;</span>
+	             case &quot;17&quot;:
+<span class="nc" id="L717">	            	 fileHandler.close();</span>
+						BufferedReader thisfile;
+						String fileoneline;
+						try {
+<span class="nc" id="L721">							thisfile = new BufferedReader(new FileReader(&quot;log/TrainScheduleLog.txt&quot;));</span>
+<span class="nc" id="L722">						} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L723">							logger.log(Level.SEVERE,&quot;false:findfile,FileNotFoundException-&gt;operation again&quot;,e1);</span>
+<span class="nc" id="L724">							System.out.println(&quot;文件不存在\n&quot;);</span>
+<span class="nc" id="L725">							break;</span>
+						}
+<span class="nc" id="L727">						fileoneline=null;</span>
+<span class="nc" id="L728">						List&lt;String&gt; alllog=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L729">						String onelog=&quot;&quot;;</span>
+						try {
+<span class="nc bnc" id="L731" title="All 2 branches missed.">							while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="nc" id="L732">								onelog=onelog+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+<span class="nc bnc" id="L733" title="All 4 branches missed.">								if(fileoneline.contains(&quot;INFO&quot;)||fileoneline.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L734">									alllog.add(onelog);</span>
+<span class="nc" id="L735">									onelog=&quot;&quot;;</span>
+								}
+							}
+<span class="nc" id="L738">						} catch (IOException e1) {</span>
+<span class="nc" id="L739">							System.out.println(&quot;读入文件异常\n&quot;);</span>
+						}finally{
+<span class="nc" id="L741">							thisfile.close();</span>
+						}
+						String mychoice;
+						int lll;
+<span class="nc" id="L745">						System.out.println(&quot;你可以选择三种过滤条件，第一种为按操作类型查询，第二种为按计划项名字查询，第三种为按照时间段查询(输入1使用第一种，输入2使用第二种，输入3使用第三种)，请选择输入(eg 1)&quot;);</span>
+<span class="nc" id="L746">						tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L747" title="All 2 branches missed.">						if(tempname.equals(&quot;1&quot;)) {</span>
+<span class="nc" id="L748">							System.out.println(&quot;一共有以下操作类型，请任选一种进行查询：(eg setlocation)&quot;);</span>
+<span class="nc" id="L749">							System.out.println(&quot;setplanningentryname,setlocation,settimeslot,setresource,changelocation,changeresource,addresource,deleteresource,launch,trainblock,finish&quot;</span>
+									+ &quot;,cancel,getcurrentstate,LocationConflict,ResourceExclusiveConflict,findEntryPerResource,findPreEntryPerResource,&quot;
+									+ &quot;TrainEntryBoard,get the number of allentrys&quot;);
+<span class="nc" id="L752">							mychoice=scanner.nextLine();</span>
+<span class="nc" id="L753">							lll=1;</span>
+<span class="nc" id="L754">							System.out.println(&quot;该操作的所有日志为：&quot;);</span>
+<span class="nc bnc" id="L755" title="All 2 branches missed.">							for(String h:alllog) {</span>
+<span class="nc bnc" id="L756" title="All 2 branches missed.">								if(h.contains(mychoice)) {</span>
+<span class="nc" id="L757">									 System.out.print(&quot;日志&quot;+lll+&quot;为：&quot;+h+&quot;\n&quot;);</span>
+<span class="nc" id="L758">									 lll++;</span>
+								}
+							}
+<span class="nc bnc" id="L761" title="All 2 branches missed.">							if(lll==1) {</span>
+<span class="nc" id="L762">								System.out.print(&quot;没有该操作的日志\n&quot;);</span>
+							}
+						}
+<span class="nc bnc" id="L765" title="All 2 branches missed.">						if(tempname.equals(&quot;2&quot;)) {</span>
+<span class="nc" id="L766">							System.out.println(&quot;请输入计划项名字：(eg G1020)&quot;);</span>
+<span class="nc" id="L767">							mychoice=scanner.nextLine();</span>
+<span class="nc" id="L768">							System.out.println(&quot;与该计划项有关的所有日志为：&quot;);</span>
+<span class="nc" id="L769">							lll=1;</span>
+<span class="nc bnc" id="L770" title="All 2 branches missed.">							for(String h:alllog) {</span>
+<span class="nc bnc" id="L771" title="All 2 branches missed.">								if(h.contains(mychoice)) {</span>
+<span class="nc" id="L772">									 System.out.print(&quot;日志&quot;+lll+&quot;为：&quot;+h+&quot;\n&quot;);</span>
+<span class="nc" id="L773">									 lll++;</span>
+								}
+							}
+<span class="nc bnc" id="L776" title="All 2 branches missed.">							if(lll==1) {</span>
+<span class="nc" id="L777">								System.out.print(&quot;没有该计划项的日志\n&quot;);</span>
+							}
+						}
+<span class="nc bnc" id="L780" title="All 2 branches missed.">						if(tempname.equals(&quot;3&quot;)) {</span>
+<span class="nc" id="L781">							Pattern pattern1 = Pattern.compile(&quot;([A-Z|a-z][A-Z|a-z][A-Z|a-z])\\s(\\d{2}),\\s(\\d{4})\\s(\\d{2}|[1-9]):(\\d{2}):(\\d{2})\\s(PM|AM)&quot;);</span>
+							Matcher tomatcher;
+							String month,day,year,hour,minute,panduan,time;
+<span class="nc" id="L784">							System.out.println(&quot;请输入你想查找的时间段(用逗号隔开)(eg 2020-06-04 19:00,2020-06-04 19:01)：&quot;);</span>
+							try {
+<span class="nc" id="L786">								temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L787">								Timeslot mytime=new Timeslot(temp[0],temp[1]);</span>
+<span class="nc" id="L788">								lll=1;</span>
+<span class="nc" id="L789">								System.out.println(&quot;该操作的所有日志为：&quot;);</span>
+<span class="nc bnc" id="L790" title="All 2 branches missed.">								for(String h:alllog) {</span>
+<span class="nc" id="L791">									tomatcher=pattern1.matcher(h);</span>
+<span class="nc bnc" id="L792" title="All 2 branches missed.">									if(tomatcher.find()) {  //获得所有时间信息</span>
+<span class="nc" id="L793">										month=tomatcher.group(1);</span>
+<span class="nc" id="L794">										day=tomatcher.group(2);</span>
+<span class="nc" id="L795">										year=tomatcher.group(3);</span>
+<span class="nc" id="L796">										hour=tomatcher.group(4);</span>
+<span class="nc" id="L797">										minute=tomatcher.group(5);</span>
+<span class="nc" id="L798">										panduan=tomatcher.group(7);</span>
+<span class="nc bnc" id="L799" title="All 13 branches missed.">										switch(month) {   //将月份转化为数字形式</span>
+										case &quot;Jan&quot;:
+<span class="nc" id="L801">											month=&quot;01&quot;;</span>
+<span class="nc" id="L802">											break;</span>
+										case &quot;Feb&quot;:
+<span class="nc" id="L804">											month=&quot;02&quot;;</span>
+<span class="nc" id="L805">											break;</span>
+										case &quot;Mar&quot;:
+<span class="nc" id="L807">											month=&quot;03&quot;;</span>
+<span class="nc" id="L808">											break;</span>
+										case &quot;Apr&quot;:
+<span class="nc" id="L810">											month=&quot;04&quot;;</span>
+<span class="nc" id="L811">											break;</span>
+										case &quot;May&quot;:
+<span class="nc" id="L813">											month=&quot;05&quot;;</span>
+<span class="nc" id="L814">											break;</span>
+										case &quot;Jun&quot;:
+<span class="nc" id="L816">											month=&quot;06&quot;;</span>
+<span class="nc" id="L817">											break;</span>
+										case &quot;Jul&quot;:
+<span class="nc" id="L819">											month=&quot;07&quot;;</span>
+<span class="nc" id="L820">											break;</span>
+										case &quot;Aug&quot;:
+<span class="nc" id="L822">											month=&quot;08&quot;;</span>
+<span class="nc" id="L823">											break;</span>
+										case &quot;Sep&quot;:
+<span class="nc" id="L825">											month=&quot;09&quot;;</span>
+<span class="nc" id="L826">											break;</span>
+										case &quot;Oct&quot;:
+<span class="nc" id="L828">											month=&quot;10&quot;;</span>
+<span class="nc" id="L829">											break;</span>
+										case &quot;Nov&quot;:
+<span class="nc" id="L831">											month=&quot;11&quot;;</span>
+<span class="nc" id="L832">											break;</span>
+										case &quot;Dec&quot;:
+<span class="nc" id="L834">											month=&quot;12&quot;;</span>
+											break;	
+										}
+<span class="nc bnc" id="L837" title="All 2 branches missed.">										if(panduan.equals(&quot;PM&quot;)) {  //对于PM的，小时数加12</span>
+<span class="nc" id="L838">											hour=Integer.toString(Integer.parseInt(hour)+12);</span>
+										}
+<span class="nc bnc" id="L840" title="All 4 branches missed.">										if(panduan.equals(&quot;AM&quot;)&amp;&amp;Integer.parseInt(hour)&lt;10) {  //对于AM的，小时数小于10的，前面加个0</span>
+<span class="nc" id="L841">											hour=&quot;0&quot;+hour;</span>
+										}
+<span class="nc" id="L843">										time=year+&quot;-&quot;+month+&quot;-&quot;+day+&quot; &quot;+hour+&quot;:&quot;+minute;</span>
+<span class="nc" id="L844">										Calendar temptime= Calendar.getInstance(); </span>
+<span class="nc" id="L845">										temptime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(time));</span>
+<span class="nc bnc" id="L846" title="All 4 branches missed.">										if(temptime.compareTo(mytime.getbegintime())&gt;0&amp;&amp;temptime.compareTo(mytime.getendtime())&lt;0) {  </span>
+<span class="nc" id="L847">											System.out.print(&quot;日志&quot;+lll+&quot;为：&quot;+h+&quot;\n&quot;);</span>
+<span class="nc" id="L848">											lll++;</span>
+										}
+										
+									}
+								}
+<span class="nc bnc" id="L853" title="All 2 branches missed.">								if(lll==1) {</span>
+<span class="nc" id="L854">									System.out.print(&quot;没有该时间段的日志\n&quot;);</span>
+								}
+<span class="nc" id="L856">							}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L857">								 System.out.println(&quot;未用,隔开，请重新执行操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L858">								 break;</span>
+<span class="nc" id="L859">							}catch(ParseException e) {</span>
+<span class="nc" id="L860">								System.out.println(&quot;时间不符合yyyy-MM-dd HH:mm的要求，请重新执行操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L861">								break;</span>
+<span class="nc" id="L862">							} catch (BeginEndTimeException e) {</span>
+<span class="nc" id="L863">								System.out.println(&quot;起始时间晚于终止时间，请重新执行操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L864">								break;</span>
+							}
+						}
+<span class="nc" id="L867">						System.out.print(&quot;\n&quot;);</span>
+<span class="nc" id="L868">						break;</span>
+	         	 case &quot;18&quot;:
+<span class="nc" id="L870">	         		logger.log(Level.INFO,&quot;true:over program&quot;);</span>
+<span class="nc" id="L871">					fileHandler.close();</span>
+<span class="nc" id="L872">					System.out.println(&quot;日志已写入且程序已结束&quot;);</span>
+<span class="nc" id="L873">					System.exit(0);</span>
+<span class="nc" id="L874">					break;</span>
+	             default:
+<span class="nc" id="L876">	 				System.out.println(&quot;请输入正确指令\n&quot;);</span>
+	 				break;		
+				}	
+<span class="nc" id="L879">				fileHandler.close();</span>
+			}
+<span class="nc" id="L881">		}catch (SecurityException e3) {</span>
+<span class="nc" id="L882">			e3.printStackTrace();</span>
+<span class="nc" id="L883">		} catch (IOException e3) {</span>
+<span class="nc" id="L884">			e3.printStackTrace();</span>
+		}
+<span class="nc" id="L886">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

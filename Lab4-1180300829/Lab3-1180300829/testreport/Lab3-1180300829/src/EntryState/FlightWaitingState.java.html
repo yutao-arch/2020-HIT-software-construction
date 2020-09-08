@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>FlightWaitingState.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">EntryState</a> &gt; <span class="el_source">FlightWaitingState.java</span></div><h1>FlightWaitingState.java</h1><pre class="source lang-java linenums">package EntryState;
+
+
+public class FlightWaitingState implements FlightState{
+
+<span class="fc" id="L6">	public static FlightWaitingState instance=new FlightWaitingState();</span>
+<span class="fc" id="L7">	private String nowstate=&quot;航班未分配飞机(Waiting)&quot;;</span>
+	
+	// inmutability类
+	// Abstraction function:
+	// AF(instance)=该状态的类
+	// AF(nowstate)=描述计划项当前状态的字符串
+	// Representation invariant:
+	// 对输入的指令进行检查，不符合要求抛出异常
+	// Safety from rep exposure:
+	// 将instance,nowstate设置为private
+	
+<span class="fc" id="L18">	private FlightWaitingState() {</span>
+<span class="fc" id="L19">	};</span>
+	
+	/**
+	 * 改变当前状态
+	 * @param c 改变指令
+	 * @return 新的状态
+	 */
+	@Override
+	public FlightState move(char c) {
+<span class="pc bpc" id="L28" title="1 of 3 branches missed.">		switch(c) {</span>
+		case 'a':
+<span class="fc" id="L30">			return FlightAllocatedState.instance;</span>
+		case 'b':
+<span class="fc" id="L32">			return FlightCancelledState.instance;</span>
+		default:
+<span class="nc" id="L34">			throw new IllegalArgumentException();</span>
+		}
+	}
+
+	/**
+	 * 得到当前状态
+	 * @return 描述当前状态的字符串
+	 */
+	@Override
+	public String getflightstate() {
+<span class="fc" id="L44">		return this.nowstate;</span>
+	}	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

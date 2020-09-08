@@ -1,0 +1,25 @@
+Jun 07, 2020 2:54:17 AM App.CourseCalendarApp main
+INFO: true:setplanningentryname
+Jun 07, 2020 2:54:18 AM App.CourseCalendarApp main
+INFO: true:setlocation,计划项软件构造
+Jun 07, 2020 2:54:22 AM App.CourseCalendarApp main
+INFO: true:settimeslot,计划项软件构造
+Jun 07, 2020 2:54:29 AM App.CourseCalendarApp main
+SEVERE: false:setresource,ArrayIndexOutOfBoundsException->operation again,计划项软件构造
+java.lang.ArrayIndexOutOfBoundsException: 2
+	at App.CourseCalendarApp.main(CourseCalendarApp.java:194)
+
+Jun 07, 2020 2:54:36 AM App.CourseCalendarApp main
+INFO: true:setresource,计划项计算机系统
+Jun 07, 2020 2:54:42 AM App.CourseCalendarApp main
+INFO: true:setplanningentryname
+Jun 07, 2020 2:54:43 AM App.CourseCalendarApp main
+INFO: true:setlocation,计划项计算机系统
+Jun 07, 2020 2:54:49 AM App.CourseCalendarApp main
+SEVERE: false:settimeslot,BeginEndTimeException->operation again,计划项计算机系统
+Exception.BeginEndTimeException
+	at Timeslot.Timeslot.<init>(Timeslot.java:42)
+	at App.CourseCalendarApp.main(CourseCalendarApp.java:132)
+
+Jun 07, 2020 2:54:51 AM App.CourseCalendarApp main
+INFO: true:over program

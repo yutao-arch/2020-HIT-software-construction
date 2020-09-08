@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TrainEntry.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">PlanningEntry</a> &gt; <span class="el_source">TrainEntry.java</span></div><h1>TrainEntry.java</h1><pre class="source lang-java linenums">package PlanningEntry;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+
+import Exception.ConflictTimeException;
+import Exception.SameLocationException;
+import Exception.SameResourceException;
+import Location.Location;
+import Resource.Carriage;
+import Timeslot.Timeslot;
+
+public class TrainEntry&lt;Carriage&gt; extends CommonPlanningEntry implements Cloneable,TrainPlanningEntry&lt;Carriage&gt;,Comparable&lt;TrainEntry&lt;Carriage&gt;&gt; {
+
+	private MultipleLacationEntryImpl a;
+	private MultipleSortedResourceEntryImpl&lt;Carriage&gt; b;
+	private BlockableEntryImpl c;
+	
+	// mutability类
+	// Abstraction function:
+	// AF(a)=多个位置
+	// AF(b)=多个车厢资源
+	// AF(c)=能阻塞的时间对
+	// Safety from rep exposure:
+	// 将a,b,c设置为private
+	
+	/**
+	 * 构造方法
+	 * @param a 多个位置的类
+	 * @param b 多个车厢资源的类
+	 * @param c 能阻塞的时间对的类
+	 */
+<span class="fc" id="L34">	public TrainEntry(MultipleLacationEntryImpl a,MultipleSortedResourceEntryImpl&lt;Carriage&gt; b,BlockableEntryImpl c) {</span>
+<span class="fc" id="L35">		this.a=a;</span>
+<span class="fc" id="L36">		this.b=b;</span>
+<span class="fc" id="L37">		this.c=c;</span>
+<span class="fc" id="L38">	}</span>
+
+	/**
+	 * 设置一组位置
+	 * @param locations 待设置的一组位置
+	 * @return 是否成功设置这一组位置
+	 * @throws SameLocationException 存在相同的位置
+	 */
+	@Override
+	public boolean setlocations(List&lt;Location&gt; mylocations) throws SameLocationException {
+<span class="fc" id="L48">		return a.setlocations(mylocations);</span>
+	}
+
+	/**
+	 * 更改这一组位置
+	 * @param mylocations 更改后的位置
+	 * @return 是都成功更改该位置
+	 */
+	@Override
+	public boolean changelocations(List&lt;Location&gt; mylocations) {
+<span class="fc" id="L58">		return a.changelocations(mylocations);</span>
+	}
+	
+	/**
+	 * 得到这一组位置
+	 * @return 这一组该位置
+	 */
+	@Override
+	public List&lt;Location&gt; getlocations() {
+<span class="fc" id="L67">		return a.getlocations();</span>
+	}
+
+	/**
+	 * 设置该高铁资源
+	 * @param train 车厢资源集合
+	 * @return 是否成功设置该高铁资源
+	 * @throws SameResourceException 
+	 */
+	@Override
+	public boolean setresource(List&lt;Carriage&gt; train) throws SameResourceException {
+<span class="fc" id="L78">		return b.setresource(train);</span>
+	}
+
+	/**
+	 * 得到该高铁资源
+	 * @return 该高铁资源
+	 */
+	@Override
+	public List&lt;Carriage&gt; getresource() {
+<span class="fc" id="L87">		return b.getresource();</span>
+	}
+
+	/**
+	 * 更改某车厢资源
+	 * @param precarriage 待更改的车厢资源
+	 * @param aftercarriage 更改后的车厢资源
+	 * @return 是否成功更改车厢资源
+	 */
+	@Override
+	public boolean changeresource(Carriage mycarriage,Carriage aftercarriage) {
+<span class="fc" id="L98">		return b.changeresource(mycarriage,aftercarriage);</span>
+	}
+
+	/**
+	 * 向高铁资源里面加入一节车厢
+	 * @param mycarriage 待加入的车厢
+	 * @param temp 加入车厢的位置
+	 * @return 是否成功加入车厢
+	 */
+	@Override
+	public boolean addresource(Carriage mycarriage,int temp) {
+<span class="fc" id="L109">		return b.addresource(mycarriage,temp);</span>
+	}
+
+	/**
+	 * 删除高铁资源中的某车厢
+	 * @param mycarriage 待删除的车厢
+	 * @return 是否成功删除车厢
+	 */
+	@Override
+	public boolean deleteresource(Carriage mycarriage) {
+<span class="fc" id="L119">		return b.deleteresource(mycarriage);</span>
+	}
+
+	/**
+	 * 判断是否可阻塞
+	 * @return 是否可阻塞
+	 */
+	@Override
+	public boolean whetherblockable() {
+<span class="fc" id="L128">		return c.whetherblockable();</span>
+	}
+
+	/**
+     * 设置这一组时间对
+     * @param alltime 一组时间对 
+     * @return 是否成功设置这一组时间对
+	 * @throws ConflictTimeException 
+     */
+	@Override
+	public boolean settimeslot(List&lt;Timeslot&gt; alltime) throws ConflictTimeException {
+<span class="fc" id="L139">		return c.settimeslot(alltime);</span>
+	}
+
+	/**
+	 * 得到这一组时间对
+	 * @return 这一组时间对
+	 */
+	@Override
+	public List&lt;Timeslot&gt; gettimeslot() {
+<span class="fc" id="L148">		return c.gettimeslot();</span>
+	}
+	
+	/**
+	 * 对某个站点进行阻塞
+	 * @param toblocklocation 待阻塞的站点名称
+	 * @return 阻塞站点在所有站点中的位置
+	 */
+	public int trainblock(String toblocklocation) {
+		int i;
+<span class="fc bfc" id="L158" title="All 2 branches covered.">		if(a.getlocations().size()&lt;=2) {</span>
+<span class="fc" id="L159">			System.out.println(&quot;没有中间站点可供阻塞\n&quot;);</span>
+<span class="fc" id="L160">			return -1;</span>
+		}
+		else {
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">			for(i=0;i&lt;a.getlocations().size();i++) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">				if(a.getlocations().get(i).getlocationname().equals(toblocklocation) ){</span>
+<span class="fc" id="L165">					break;</span>
+				}
+			}
+<span class="fc bfc" id="L168" title="All 4 branches covered.">			if(i&gt;0&amp;&amp;i&lt;a.getlocations().size()-1) {</span>
+<span class="fc" id="L169">				Calendar nowtime = Calendar.getInstance();  //当前时间</span>
+<span class="fc" id="L170">				String kpr = (new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(nowtime.getTime()); </span>
+<span class="fc" id="L171">				System.out.println(&quot;在&quot;+toblocklocation+&quot;发生了阻塞，现在时间为&quot;+kpr);	</span>
+<span class="fc" id="L172">				return i;</span>
+			}
+<span class="fc" id="L174">			System.out.println(&quot;不能在起点站或终点站阻塞\n&quot;);</span>
+<span class="fc" id="L175">			return -1;</span>
+		} 
+	}
+
+    /**
+     * 重写compareTo方法，完成按照时间对起始时间的升序对计划项集合排序
+     */
+	@Override
+	public int compareTo(TrainEntry&lt;Carriage&gt; o) {
+<span class="fc bfc" id="L184" title="All 2 branches covered.">		if(c.gettimeslot().get(0).getbegintime().compareTo(o.gettimeslot().get(0).getbegintime())&gt;0) {</span>
+<span class="fc" id="L185">			return 1;</span>
+		}
+<span class="fc bfc" id="L187" title="All 2 branches covered.">		else if(c.gettimeslot().get(0).getbegintime().compareTo(o.gettimeslot().get(0).getbegintime())==0) {</span>
+<span class="fc" id="L188">			return 0;</span>
+		}
+<span class="fc" id="L190">		return -1;</span>
+	}
+
+	@Override
+	  public TrainEntry&lt;Carriage&gt; clone() { 
+<span class="nc" id="L195">		TrainEntry&lt;Carriage&gt; stu = null; </span>
+	    try{ 
+<span class="nc" id="L197">	      stu = (TrainEntry&lt;Carriage&gt;)super.clone(); </span>
+<span class="nc" id="L198">	    }catch(CloneNotSupportedException e) { </span>
+<span class="nc" id="L199">	      e.printStackTrace(); </span>
+	    } 
+<span class="nc" id="L201">	    stu.a=(MultipleLacationEntryImpl)a.clone();</span>
+<span class="nc" id="L202">	    stu.b=(MultipleSortedResourceEntryImpl&lt;Carriage&gt;)b.clone();</span>
+<span class="nc" id="L203">	    stu.c=(BlockableEntryImpl)c.clone();</span>
+<span class="nc" id="L204">	    return stu; </span>
+	  } 
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

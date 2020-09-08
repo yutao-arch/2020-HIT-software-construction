@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CourseStateTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">EntryState</a> &gt; <span class="el_source">CourseStateTest.java</span></div><h1>CourseStateTest.java</h1><pre class="source lang-java linenums">package EntryState;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+<span class="fc" id="L7">public class CourseStateTest {</span>
+
+	/* Testing strategy
+	 * 通过状态的转换中完成所有Course的state的方法的测试
+     */
+	@Test
+	public void allmethodtest() {
+<span class="fc" id="L14">		CourseState state=CourseWaitingState.instance;</span>
+<span class="fc" id="L15">	    assertEquals(&quot;课程未分配老师(Waiting)&quot;,state.getcoursestate());</span>
+	    
+<span class="fc" id="L17">	    state=state.move('a');</span>
+<span class="fc" id="L18">	    assertEquals(&quot;课程已分配老师(Allocated)&quot;,state.getcoursestate());</span>
+	    
+<span class="fc" id="L20">	    state=state.move('a');</span>
+<span class="fc" id="L21">	    assertEquals(&quot;课程已开始上课(Running)&quot;,state.getcoursestate());</span>
+	    
+<span class="fc" id="L23">	    state=state.move('a');</span>
+<span class="fc" id="L24">	    assertEquals(&quot;课程已下课(Ended)&quot;,state.getcoursestate());</span>
+	    
+<span class="fc" id="L26">	    assertEquals(null,state.move('a'));</span>
+	    
+<span class="fc" id="L28">	    state=CourseWaitingState.instance;</span>
+<span class="fc" id="L29">	    state=state.move('b');</span>
+<span class="fc" id="L30">	    assertEquals(&quot;课程已取消(Cancelled)&quot;,state.getcoursestate());</span>
+	    
+<span class="fc" id="L32">	    assertEquals(null,state.move('a'));</span>
+	    
+<span class="fc" id="L34">	    state=CourseWaitingState.instance;</span>
+<span class="fc" id="L35">	    state=state.move('a');</span>
+<span class="fc" id="L36">	    state=state.move('b');</span>
+<span class="fc" id="L37">	    assertEquals(&quot;课程已取消(Cancelled)&quot;,state.getcoursestate());</span>
+<span class="fc" id="L38">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

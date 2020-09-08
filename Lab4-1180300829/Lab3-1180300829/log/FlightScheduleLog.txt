@@ -1,0 +1,17 @@
+Jun 06, 2020 3:54:35 PM App.FlightScheduleApp main
+INFO: true:setplanningentryname,计划项AA0374
+Jun 06, 2020 3:54:38 PM App.FlightScheduleApp main
+SEVERE: flase:setlocation,SameLocationException->operation again,计划项AA0374
+Exception.SameLocationException
+	at PlanningEntry.TwoLocationEntryImpl.setlocations(TwoLocationEntryImpl.java:38)
+	at PlanningEntry.FlightEntry.setlocations(FlightEntry.java:44)
+	at App.FlightScheduleApp.main(FlightScheduleApp.java:130)
+
+Jun 06, 2020 3:54:40 PM App.FlightScheduleApp main
+INFO: true:setplanningentryname,计划项AA0374
+Jun 06, 2020 3:54:42 PM App.FlightScheduleApp main
+INFO: true:setlocation,计划项AA0374
+Jun 06, 2020 3:54:47 PM App.FlightScheduleApp main
+INFO: true:settimeslot,计划项AA0374
+Jun 06, 2020 3:55:37 PM App.FlightScheduleApp main
+INFO: true:over program

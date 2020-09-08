@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ParserTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">Parser</a> &gt; <span class="el_source">ParserTest.java</span></div><h1>ParserTest.java</h1><pre class="source lang-java linenums">package Parser;
+
+import static org.junit.Assert.*;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.junit.Test;
+
+import Exception.ComponentsNumberException;
+import Exception.DateException;
+import Exception.FlightNumberException;
+import Exception.FromTimeException;
+import Exception.PlaneAgeException;
+import Exception.PlaneIdException;
+import Exception.PlaneSeatsException;
+import Exception.PlaneTypeException;
+import Exception.ToTimeException;
+
+<span class="fc" id="L22">public class ParserTest {</span>
+
+	/* Testing strategy
+	 * 测试checkwhethercorrect方法
+	 * 按照字符串是否符合要求划分：测试所有异常
+     * 覆盖每个取值如下：
+     */
+	
+	String fileoneline,fileentry;
+	BufferedReader thisfile;
+	 
+	 @Test(expected = ArrayIndexOutOfBoundsException.class)
+	 public void shouldGetArrayIndexOutOfBoundsException() throws ArrayIndexOutOfBoundsException, ComponentsNumberException, DateException, FlightNumberException, FromTimeException, ToTimeException, PlaneIdException, PlaneTypeException, PlaneSeatsException, PlaneAgeException{
+<span class="fc" id="L35">		 fileentry=&quot;&quot;;</span>
+		 try {
+<span class="fc" id="L37">				thisfile = new BufferedReader(new FileReader(&quot;src/txt/ArrayIndexOutOfBoundsException.txt&quot;));</span>
+<span class="pc" id="L38">			} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L39">				System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+			}
+		 try {
+<span class="pc bfc" id="L42" title="All 2 branches covered.">				while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="fc" id="L43">						fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+				}
+<span class="pc" id="L45">			} catch (IOException e1) {</span>
+<span class="nc" id="L46">				System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+			}
+			try {
+<span class="fc" id="L49">				thisfile.close();</span>
+<span class="pc" id="L50">			} catch (IOException e1) {</span>
+<span class="nc" id="L51">				e1.printStackTrace();</span>
+			}
+<span class="fc" id="L53">		 Parser temp=new Parser();</span>
+<span class="nc" id="L54">		 temp.checkwhethercorrect(fileentry);</span>
+<span class="nc" id="L55">	}</span>
+	 
+	 @Test(expected = DateException.class)
+	 public void shouldGetDateException1() throws ArrayIndexOutOfBoundsException, ComponentsNumberException, DateException, FlightNumberException, FromTimeException, ToTimeException, PlaneIdException, PlaneTypeException, PlaneSeatsException, PlaneAgeException{
+<span class="fc" id="L59">		 fileentry=&quot;&quot;;</span>
+		 try {
+<span class="fc" id="L61">				thisfile = new BufferedReader(new FileReader(&quot;src/txt/DateException1.txt&quot;));</span>
+<span class="pc" id="L62">			} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L63">				System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+			}
+		 try {
+<span class="pc bfc" id="L66" title="All 2 branches covered.">				while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="fc" id="L67">						fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+				}
+<span class="pc" id="L69">			} catch (IOException e1) {</span>
+<span class="nc" id="L70">				System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+			}
+			try {
+<span class="fc" id="L73">				thisfile.close();</span>
+<span class="pc" id="L74">			} catch (IOException e1) {</span>
+<span class="nc" id="L75">				e1.printStackTrace();</span>
+			}
+<span class="fc" id="L77">		 Parser temp=new Parser();</span>
+<span class="nc" id="L78">		 temp.checkwhethercorrect(fileentry);</span>
+<span class="nc" id="L79">	 }</span>
+	 
+	 @Test(expected = DateException.class)
+	 public void shouldGetDateException2() throws ArrayIndexOutOfBoundsException, ComponentsNumberException, DateException, FlightNumberException, FromTimeException, ToTimeException, PlaneIdException, PlaneTypeException, PlaneSeatsException, PlaneAgeException{
+<span class="fc" id="L83">		 fileentry=&quot;&quot;;</span>
+		 try {
+<span class="fc" id="L85">				thisfile = new BufferedReader(new FileReader(&quot;src/txt/DateException2.txt&quot;));</span>
+<span class="pc" id="L86">			} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L87">				System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+			}
+		 try {
+<span class="pc bfc" id="L90" title="All 2 branches covered.">				while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="fc" id="L91">						fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+				}
+<span class="pc" id="L93">			} catch (IOException e1) {</span>
+<span class="nc" id="L94">				System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+			}
+			try {
+<span class="fc" id="L97">				thisfile.close();</span>
+<span class="pc" id="L98">			} catch (IOException e1) {</span>
+<span class="nc" id="L99">				e1.printStackTrace();</span>
+			}
+<span class="fc" id="L101">		 Parser temp=new Parser();</span>
+<span class="nc" id="L102">		 temp.checkwhethercorrect(fileentry);</span>
+<span class="nc" id="L103">	 }</span>
+	
+	 @Test(expected = FlightNumberException.class)
+	 public void shouldGetFlightNumberException() throws ArrayIndexOutOfBoundsException, ComponentsNumberException, DateException, FlightNumberException, FromTimeException, ToTimeException, PlaneIdException, PlaneTypeException, PlaneSeatsException, PlaneAgeException{
+<span class="fc" id="L107">		 fileentry=&quot;&quot;;</span>
+		 try {
+<span class="fc" id="L109">				thisfile = new BufferedReader(new FileReader(&quot;src/txt/FlightNumberException.txt&quot;));</span>
+<span class="pc" id="L110">			} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L111">				System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+			}
+		 try {
+<span class="pc bfc" id="L114" title="All 2 branches covered.">				while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="fc" id="L115">						fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+				}
+<span class="pc" id="L117">			} catch (IOException e1) {</span>
+<span class="nc" id="L118">				System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+			}
+			try {
+<span class="fc" id="L121">				thisfile.close();</span>
+<span class="pc" id="L122">			} catch (IOException e1) {</span>
+<span class="nc" id="L123">				e1.printStackTrace();</span>
+			}
+<span class="fc" id="L125">		 Parser temp=new Parser();</span>
+<span class="nc" id="L126">		 temp.checkwhethercorrect(fileentry);</span>
+<span class="nc" id="L127">	 }</span>
+	 
+	 @Test(expected = FromTimeException.class)
+	 public void shouldGetFromTimeException() throws ArrayIndexOutOfBoundsException, ComponentsNumberException, DateException, FlightNumberException, FromTimeException, ToTimeException, PlaneIdException, PlaneTypeException, PlaneSeatsException, PlaneAgeException{
+<span class="fc" id="L131">		 fileentry=&quot;&quot;;</span>
+		 try {
+<span class="fc" id="L133">				thisfile = new BufferedReader(new FileReader(&quot;src/txt/FromTimeException.txt&quot;));</span>
+<span class="pc" id="L134">			} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L135">				System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+			}
+		 try {
+<span class="pc bfc" id="L138" title="All 2 branches covered.">				while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="fc" id="L139">						fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+				}
+<span class="pc" id="L141">			} catch (IOException e1) {</span>
+<span class="nc" id="L142">				System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+			}
+			try {
+<span class="fc" id="L145">				thisfile.close();</span>
+<span class="pc" id="L146">			} catch (IOException e1) {</span>
+<span class="nc" id="L147">				e1.printStackTrace();</span>
+			}
+<span class="fc" id="L149">		 Parser temp=new Parser();</span>
+<span class="nc" id="L150">		 temp.checkwhethercorrect(fileentry);</span>
+<span class="nc" id="L151">	 }</span>
+	 
+	 @Test(expected = ToTimeException.class)
+	 public void shouldGetToTimeException() throws ArrayIndexOutOfBoundsException, ComponentsNumberException, DateException, FlightNumberException, FromTimeException, ToTimeException, PlaneIdException, PlaneTypeException, PlaneSeatsException, PlaneAgeException{
+<span class="fc" id="L155">		 fileentry=&quot;&quot;;</span>
+		 try {
+<span class="fc" id="L157">				thisfile = new BufferedReader(new FileReader(&quot;src/txt/ToTimeException.txt&quot;));</span>
+<span class="pc" id="L158">			} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L159">				System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+			}
+		 try {
+<span class="pc bfc" id="L162" title="All 2 branches covered.">				while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="fc" id="L163">						fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+				}
+<span class="pc" id="L165">			} catch (IOException e1) {</span>
+<span class="nc" id="L166">				System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+			}
+			try {
+<span class="fc" id="L169">				thisfile.close();</span>
+<span class="pc" id="L170">			} catch (IOException e1) {</span>
+<span class="nc" id="L171">				e1.printStackTrace();</span>
+			}
+<span class="fc" id="L173">		 Parser temp=new Parser();</span>
+<span class="nc" id="L174">		 temp.checkwhethercorrect(fileentry);</span>
+<span class="nc" id="L175">	 }</span>
+	 
+	 @Test(expected = PlaneIdException.class)
+	 public void shouldGetPlaneIdException() throws ArrayIndexOutOfBoundsException, ComponentsNumberException, DateException, FlightNumberException, FromTimeException, ToTimeException, PlaneIdException, PlaneTypeException, PlaneSeatsException, PlaneAgeException{
+<span class="fc" id="L179">		 fileentry=&quot;&quot;;</span>
+		 try {
+<span class="fc" id="L181">				thisfile = new BufferedReader(new FileReader(&quot;src/txt/PlaneIdException.txt&quot;));</span>
+<span class="pc" id="L182">			} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L183">				System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+			}
+		 try {
+<span class="pc bfc" id="L186" title="All 2 branches covered.">				while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="fc" id="L187">						fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+				}
+<span class="pc" id="L189">			} catch (IOException e1) {</span>
+<span class="nc" id="L190">				System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+			}
+			try {
+<span class="fc" id="L193">				thisfile.close();</span>
+<span class="pc" id="L194">			} catch (IOException e1) {</span>
+<span class="nc" id="L195">				e1.printStackTrace();</span>
+			}
+<span class="fc" id="L197">		 Parser temp=new Parser();</span>
+<span class="nc" id="L198">		 temp.checkwhethercorrect(fileentry);</span>
+<span class="nc" id="L199">	 }</span>
+	 
+	 
+	 @Test(expected = PlaneTypeException.class)
+	 public void shouldGetPlaneTypeException() throws ArrayIndexOutOfBoundsException, ComponentsNumberException, DateException, FlightNumberException, FromTimeException, ToTimeException, PlaneIdException, PlaneTypeException, PlaneSeatsException, PlaneAgeException{
+<span class="fc" id="L204">		 fileentry=&quot;&quot;;</span>
+		 try {
+<span class="fc" id="L206">				thisfile = new BufferedReader(new FileReader(&quot;src/txt/PlaneTypeException.txt&quot;));</span>
+<span class="pc" id="L207">			} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L208">				System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+			}
+		 try {
+<span class="pc bfc" id="L211" title="All 2 branches covered.">				while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="fc" id="L212">						fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+				}
+<span class="pc" id="L214">			} catch (IOException e1) {</span>
+<span class="nc" id="L215">				System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+			}
+			try {
+<span class="fc" id="L218">				thisfile.close();</span>
+<span class="pc" id="L219">			} catch (IOException e1) {</span>
+<span class="nc" id="L220">				e1.printStackTrace();</span>
+			}
+<span class="fc" id="L222">		 Parser temp=new Parser();</span>
+<span class="nc" id="L223">		 temp.checkwhethercorrect(fileentry);</span>
+<span class="nc" id="L224">	 }</span>
+	 
+	 @Test(expected = PlaneSeatsException.class)
+	 public void shouldGetPlaneSeatsException() throws ArrayIndexOutOfBoundsException, ComponentsNumberException, DateException, FlightNumberException, FromTimeException, ToTimeException, PlaneIdException, PlaneTypeException, PlaneSeatsException, PlaneAgeException{
+<span class="fc" id="L228">		 fileentry=&quot;&quot;;</span>
+		 try {
+<span class="fc" id="L230">				thisfile = new BufferedReader(new FileReader(&quot;src/txt/PlaneSeatsException.txt&quot;));</span>
+<span class="pc" id="L231">			} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L232">				System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+			}
+		 try {
+<span class="pc bfc" id="L235" title="All 2 branches covered.">				while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="fc" id="L236">						fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+				}
+<span class="pc" id="L238">			} catch (IOException e1) {</span>
+<span class="nc" id="L239">				System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+			}
+			try {
+<span class="fc" id="L242">				thisfile.close();</span>
+<span class="pc" id="L243">			} catch (IOException e1) {</span>
+<span class="nc" id="L244">				e1.printStackTrace();</span>
+			}
+<span class="fc" id="L246">		 Parser temp=new Parser();</span>
+<span class="nc" id="L247">		 temp.checkwhethercorrect(fileentry);</span>
+<span class="nc" id="L248">	 }</span>
+	 
+	 @Test(expected = PlaneAgeException.class)
+	 public void shouldGetPlaneAgeException() throws ArrayIndexOutOfBoundsException, ComponentsNumberException, DateException, FlightNumberException, FromTimeException, ToTimeException, PlaneIdException, PlaneTypeException, PlaneSeatsException, PlaneAgeException{
+<span class="fc" id="L252">		 fileentry=&quot;&quot;;</span>
+		 try {
+<span class="fc" id="L254">				thisfile = new BufferedReader(new FileReader(&quot;src/txt/PlaneAgeException.txt&quot;));</span>
+<span class="pc" id="L255">			} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L256">				System.out.println(&quot;文件不存在，请重新输入文件名\n&quot;);</span>
+			}
+		 try {
+<span class="pc bfc" id="L259" title="All 2 branches covered.">				while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="fc" id="L260">						fileentry=fileentry+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+				}
+<span class="pc" id="L262">			} catch (IOException e1) {</span>
+<span class="nc" id="L263">				System.out.println(&quot;文件读入出现错误\n&quot;);</span>
+			}
+			try {
+<span class="fc" id="L266">				thisfile.close();</span>
+<span class="pc" id="L267">			} catch (IOException e1) {</span>
+<span class="nc" id="L268">				e1.printStackTrace();</span>
+			}
+<span class="fc" id="L270">		 Parser temp=new Parser();</span>
+<span class="nc" id="L271">		 temp.checkwhethercorrect(fileentry);</span>
+<span class="nc" id="L272">	 }</span>
+	 
+	/* Testing strategy
+	 * 测试getAllinformation方法
+	 * 测试某个字符串的返回值即可
+     */
+	@Test
+	public void getAllinformationtest() {
+<span class="fc" id="L280">		Parser temp=new Parser();</span>
+<span class="fc" id="L281">		assertEquals(&quot;2020-01-16,AA018&quot;,temp.getAllinformation(&quot;Flight:&quot;, &quot;Flight:2020-01-16,AA018&quot;+&quot;\n&quot;+</span>
+		&quot;{&quot;+&quot;\n&quot;+&quot;DepartureAirport:Hongkong&quot;+&quot;\n&quot;+&quot;ArrivalAirport:Shenyang&quot;+&quot;\n&quot;+&quot;DepatureTime:2020-01-16 22:40&quot;
+				+&quot;\n&quot;+&quot;ArrivalTime:2020-01-17 03:51&quot;+&quot;\n&quot;+&quot;Plane:B6967&quot;+&quot;\n&quot;+&quot;{&quot;+&quot;\n&quot;+&quot;Type:A340&quot;+&quot;\n&quot;+&quot;Seats:332&quot;
+		+&quot;\n&quot;+&quot;Age:23.7&quot;+&quot;\n&quot;+&quot;}&quot;+&quot;\n&quot;+&quot;}&quot;+&quot;\n&quot;));
+<span class="fc" id="L285">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

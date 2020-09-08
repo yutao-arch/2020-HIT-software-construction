@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Flight.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Resource</a> &gt; <span class="el_source">Flight.java</span></div><h1>Flight.java</h1><pre class="source lang-java linenums">package Resource;
+
+import Exception.LessThanZeroException;
+
+<span class="pc bpc" id="L5" title="1 of 2 branches missed.">public class Flight {</span>
+
+	private final String flightnumber;  //飞机编号
+	private final String flighttype;    //飞机机型号
+	private final int flightallseat;    //座位数
+	private final double flightage;     //机龄
+	
+	    // immutability类
+		// Abstraction function:
+	    // AF(flightnumber)=飞机编号
+		// AF(flighttype)=飞机机型号
+		// AF(flightallseat)=座位数
+		// AF(flightage)=机龄
+		// Representation invariant:
+	    // 座位数是正数，机龄是非负数，飞机编号，飞机机型号不为空
+		// Safety from rep exposure:
+		// 将flightnumber,flighttype,flightallseat,flightage设置为private final
+	
+	// TODO checkRep
+    private void checkRep() {  //座位数是正数，机龄是非负数,飞机编号,飞机机型号不为空
+<span class="pc bpc" id="L25" title="2 of 4 branches missed.">          assert flightallseat&gt;0:&quot;座位数不为正数\n&quot;;</span>
+<span class="pc bpc" id="L26" title="2 of 4 branches missed.">          assert flightage&gt;=0.0:&quot;机龄为负数\n&quot;;</span>
+<span class="pc bpc" id="L27" title="2 of 4 branches missed.">          assert flightnumber!=null;</span>
+<span class="pc bpc" id="L28" title="2 of 4 branches missed.">          assert flighttype!=null;</span>
+<span class="fc" id="L29">    }</span>
+	
+	/**
+	 * 初始化构造方法
+	 * @param a 飞机编号
+	 * @param b 飞机机型号
+	 * @param c 座位数:正数
+	 * @param d 机龄:非负数
+	 * @throws LessThanZeroException 座位数或机龄为负数
+	 */
+<span class="fc" id="L39">	public Flight(String a,String b,int c,double d) throws LessThanZeroException {</span>
+<span class="pc bpc" id="L40" title="1 of 4 branches missed.">		if(c&lt;=0||d&lt;0) {</span>
+<span class="fc" id="L41">			throw new LessThanZeroException();</span>
+		}
+<span class="fc" id="L43">		this.flightnumber=a;</span>
+<span class="fc" id="L44">		this.flighttype=b;</span>
+<span class="fc" id="L45">		this.flightallseat=c;</span>
+<span class="fc" id="L46">		this.flightage=d;</span>
+<span class="fc" id="L47">		checkRep();</span>
+<span class="fc" id="L48">	}</span>
+	
+	/**
+	 * 返回飞机编号
+	 * @return 飞机编号
+	 */
+	public String getflightnumber() {
+<span class="fc" id="L55">		checkRep();</span>
+<span class="fc" id="L56">		return flightnumber;</span>
+	}
+	
+	/**
+	 * 返回飞机机型号
+	 * @return 飞机机型号
+	 */
+	public String getflighttype() {
+<span class="fc" id="L64">		checkRep();</span>
+<span class="fc" id="L65">		return flighttype;</span>
+	}
+	
+	/**
+	 * 返回飞机座位数
+	 * @return 飞机座位数
+	 */
+	public int getflightallseat() {
+<span class="fc" id="L73">		checkRep();</span>
+<span class="fc" id="L74">		return flightallseat;</span>
+	}
+	
+	/**
+	 * 返回飞机机龄
+	 * @return 飞机机龄
+	 */
+	public double getflightage() {
+<span class="fc" id="L82">		checkRep();</span>
+<span class="fc" id="L83">		return flightage;</span>
+	}
+
+	/**
+	 * 重写hashcode方法
+	 */
+	@Override
+	public int hashCode() {
+<span class="fc" id="L91">		final int prime = 31;</span>
+<span class="fc" id="L92">		int result = 1;</span>
+		long temp;
+<span class="fc" id="L94">		temp = Double.doubleToLongBits(flightage);</span>
+<span class="fc" id="L95">		result = prime * result + (int) (temp ^ (temp &gt;&gt;&gt; 32));</span>
+<span class="fc" id="L96">		result = prime * result + flightallseat;</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">		result = prime * result + ((flightnumber == null) ? 0 : flightnumber.hashCode());</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">		result = prime * result + ((flighttype == null) ? 0 : flighttype.hashCode());</span>
+<span class="fc" id="L99">		return result;</span>
+	}
+
+	/**
+	 * 重写equals方法
+	 */
+	@Override
+	public boolean equals(Object obj) {
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">		if (this == obj)</span>
+<span class="nc" id="L108">			return true;</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">		if (obj == null)</span>
+<span class="nc" id="L110">			return false;</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="nc" id="L112">			return false;</span>
+<span class="fc" id="L113">		Flight other = (Flight) obj;</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">		if (Double.doubleToLongBits(flightage) != Double.doubleToLongBits(other.flightage))</span>
+<span class="nc" id="L115">			return false;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (flightallseat != other.flightallseat)</span>
+<span class="nc" id="L117">			return false;</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">		if (flightnumber == null) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">			if (other.flightnumber != null)</span>
+<span class="nc" id="L120">				return false;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		} else if (!flightnumber.equals(other.flightnumber))</span>
+<span class="fc" id="L122">			return false;</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">		if (flighttype == null) {</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">			if (other.flighttype != null)</span>
+<span class="nc" id="L125">				return false;</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">		} else if (!flighttype.equals(other.flighttype))</span>
+<span class="nc" id="L127">			return false;</span>
+<span class="fc" id="L128">		return true;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

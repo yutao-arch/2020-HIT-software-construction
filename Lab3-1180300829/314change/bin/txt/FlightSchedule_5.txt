@@ -1,0 +1,365 @@
+Flight:2020-01-01,AA72
+{
+DepartureAirport:Tianjin
+ArrivalAirport:Sanya
+DepatureTime:2020-01-01 03:15
+ArrivalTime:2020-01-01 05:25
+Plane:B6863
+{
+Type:A319
+Seats:140
+Age:8.5
+}
+}
+Flight:2020-01-01,AA79
+{
+DepartureAirport:Tianjin
+ArrivalAirport:Nanjing
+DepatureTime:2020-01-01 08:42
+ArrivalTime:2020-01-01 13:47
+Plane:N1705
+{
+Type:A380
+Seats:468
+Age:1.5
+}
+}
+Flight:2020-01-02,AA79
+{
+DepartureAirport:Tianjin
+ArrivalAirport:Nanjing
+DepatureTime:2020-01-02 08:42
+ArrivalTime:2020-01-02 13:47
+Plane:B8639
+{
+Type:B757
+Seats:261
+Age:19.2
+}
+}
+Flight:2020-01-01,CX388
+{
+DepartureAirport:Hefei
+ArrivalAirport:Shenyang
+DepatureTime:2020-01-01 14:13
+ArrivalTime:2020-01-01 20:12
+Plane:N3330
+{
+Type:B767
+Seats:289
+Age:3.1
+}
+}
+Flight:2020-01-02,CX388
+{
+DepartureAirport:Hefei
+ArrivalAirport:Shenyang
+DepatureTime:2020-01-02 14:13
+ArrivalTime:2020-01-02 20:12
+Plane:B6863
+{
+Type:A319
+Seats:140
+Age:8.5
+}
+}
+Flight:2020-01-01,CZ325
+{
+DepartureAirport:Tianjin
+ArrivalAirport:Nanning
+DepatureTime:2020-01-01 16:47
+ArrivalTime:2020-01-01 20:35
+Plane:N3330
+{
+Type:B767
+Seats:289
+Age:3.1
+}
+}
+Flight:2020-01-02,CZ325
+{
+DepartureAirport:Tianjin
+ArrivalAirport:Nanning
+DepatureTime:2020-01-02 16:47
+ArrivalTime:2020-01-02 20:35
+Plane:N7984
+{
+Type:B757
+Seats:261
+Age:3.4
+}
+}
+Flight:2020-01-01,CZ9463
+{
+DepartureAirport:Haikou
+ArrivalAirport:Nanjing
+DepatureTime:2020-01-01 03:23
+ArrivalTime:2020-01-01 07:05
+Plane:B8639
+{
+Type:B757
+Seats:261
+Age:19.2
+}
+}
+Flight:2020-01-01,GS122
+{
+DepartureAirport:Zhengzhou
+ArrivalAirport:Nanjing
+DepatureTime:2020-01-01 12:46
+ArrivalTime:2020-01-01 14:12
+Plane:N3330
+{
+Type:B767
+Seats:289
+Age:3.1
+}
+}
+Flight:2020-01-02,GS122
+{
+DepartureAirport:Zhengzhou
+ArrivalAirport:Nanjing
+DepatureTime:2020-01-02 12:46
+ArrivalTime:2020-01-02 14:12
+Plane:N3330
+{
+Type:B767
+Seats:289
+Age:3.1
+}
+}
+Flight:2020-01-01,HO98
+{
+DepartureAirport:Kunming
+ArrivalAirport:Urumuqi
+DepatureTime:2020-01-01 11:14
+ArrivalTime:2020-01-01 13:27
+Plane:B8639
+{
+Type:B757
+Seats:261
+Age:19.2
+}
+}
+Flight:2020-01-02,HO98
+{
+DepartureAirport:Kunming
+ArrivalAirport:Urumuqi
+DepatureTime:2020-01-02 11:14
+ArrivalTime:2020-01-02 13:27
+Plane:N1705
+{
+Type:A380
+Seats:468
+Age:1.5
+}
+}
+Flight:2020-01-01,KL07
+{
+DepartureAirport:Macau
+ArrivalAirport:Xining
+DepatureTime:2020-01-01 23:03
+ArrivalTime:2020-01-02 03:10
+Plane:N5959
+{
+Type:A320
+Seats:165
+Age:10.3
+}
+}
+Flight:2020-01-02,LH28
+{
+DepartureAirport:Tianjin
+ArrivalAirport:Nanchang
+DepatureTime:2020-01-02 16:04
+ArrivalTime:2020-01-02 20:17
+Plane:B4223
+{
+Type:A330
+Seats:318
+Age:10.3
+}
+}
+Flight:2020-01-02,MU66
+{
+DepartureAirport:Chengdu
+ArrivalAirport:Nanchang
+DepatureTime:2020-01-02 06:14
+ArrivalTime:2020-01-02 11:57
+Plane:B6863
+{
+Type:A319
+Seats:140
+Age:8.5
+}
+}
+Flight:2020-01-01,MU819
+{
+DepartureAirport:Beijing
+ArrivalAirport:Hongkong
+DepatureTime:2020-01-01 16:10
+ArrivalTime:2020-01-01 21:26
+Plane:B8639
+{
+Type:B757
+Seats:261
+Age:19.2
+}
+}
+Flight:2020-01-02,MU819
+{
+DepartureAirport:Beijing
+ArrivalAirport:Hongkong
+DepatureTime:2020-01-02 16:10
+ArrivalTime:2020-01-02 21:26
+Plane:N4804
+{
+Type:B757
+Seats:261
+Age:15.4
+}
+}
+Flight:2020-01-02,NX259
+{
+DepartureAirport:Yantai
+ArrivalAirport:Jinan
+DepatureTime:2020-01-02 17:09
+ArrivalTime:2020-01-02 18:48
+Plane:N7984
+{
+Type:B757
+Seats:261
+Age:3.4
+}
+}
+Flight:2020-01-01,NX605
+{
+DepartureAirport:Weihai
+ArrivalAirport:Nanjing
+DepatureTime:2020-01-01 10:28
+ArrivalTime:2020-01-01 11:52
+Plane:N5295
+{
+Type:A319
+Seats:140
+Age:1.9
+}
+}
+Flight:2020-01-02,NX605
+{
+DepartureAirport:Weihai
+ArrivalAirport:Nanjing
+DepatureTime:2020-01-02 10:28
+ArrivalTime:2020-01-02 11:52
+Plane:B8639
+{
+Type:B757
+Seats:261
+Age:19.2
+}
+}
+Flight:2020-01-01,SC30
+{
+DepartureAirport:Shijiazhuang
+ArrivalAirport:Nanjing
+DepatureTime:2020-01-01 13:25
+ArrivalTime:2020-01-01 16:18
+Plane:B6863
+{
+Type:A319
+Seats:140
+Age:8.5
+}
+}
+Flight:2020-01-02,SC30
+{
+DepartureAirport:Shijiazhuang
+ArrivalAirport:Nanjing
+DepatureTime:2020-01-02 13:25
+ArrivalTime:2020-01-02 16:18
+Plane:B4223
+{
+Type:A330
+Seats:318
+Age:10.3
+}
+}
+Flight:2020-01-01,SC5928
+{
+DepartureAirport:Kunming
+ArrivalAirport:Yantai
+DepatureTime:2020-01-01 01:44
+ArrivalTime:2020-01-01 06:08
+Plane:N4804
+{
+Type:B757
+Seats:261
+Age:15.4
+}
+}
+Flight:2020-01-02,SC5928
+{
+DepartureAirport:Kunming
+ArrivalAirport:Yantai
+DepatureTime:2020-01-02 01:44
+ArrivalTime:2020-01-02 06:08
+Plane:N7984
+{
+Type:B757
+Seats:261
+Age:3.4
+}
+}
+Flight:2020-01-01,ZH050
+{
+DepartureAirport:Zhengzhou
+ArrivalAirport:Jinan
+DepatureTime:2020-01-01 11:27
+ArrivalTime:2020-01-01 16:08
+Plane:N3330
+{
+Type:B767
+Seats:289
+Age:3.1
+}
+}
+Flight:2020-01-02,ZH050
+{
+DepartureAirport:Zhengzhou
+ArrivalAirport:Jinan
+DepatureTime:2020-01-02 11:27
+ArrivalTime:2020-01-02 16:08
+Plane:N7984
+{
+Type:B757
+Seats:261
+Age:3.4
+}
+}
+Flight:2020-01-01,ZH16
+{
+DepartureAirport:Guangzhou
+ArrivalAirport:Macau
+DepatureTime:2020-01-01 03:59
+ArrivalTime:2020-01-01 07:42
+Plane:B4223
+{
+Type:A330
+Seats:318
+Age:10.3
+}
+}
+Flight:2020-01-02,ZH16
+{
+DepartureAirport:Guangzhou
+ArrivalAirport:Macau
+DepatureTime:2020-01-02 03:59
+ArrivalTime:2020-01-02 07:42
+Plane:B4223
+{
+Type:A330
+Seats:318
+Age:10.3
+}
+}
+

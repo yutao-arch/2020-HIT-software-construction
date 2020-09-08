@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CourseCalendarApp.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">App</a> &gt; <span class="el_source">CourseCalendarApp.java</span></div><h1>CourseCalendarApp.java</h1><pre class="source lang-java linenums">package App;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import Board.CourseEntryBoard;
+import EntryState.*;
+import Exception.*;
+import Factory.CourseEntryFactory;
+import Location.CourseLocation;
+import PlanningEntry.*;
+
+import PlanningEntryAPIs.PlanningEntryAPIs;
+import Resource.*;
+import Timeslot.Timeslot;
+
+<span class="nc" id="L34">public class CourseCalendarApp {</span>
+
+<span class="nc" id="L36">    private static List&lt;CourseEntry&lt;Teacher&gt;&gt; courselist=new ArrayList&lt;&gt;();  //储存所有CourseEntry的集合</span>
+<span class="nc" id="L37">    private final static Logger logger = Logger.getLogger(CourseCalendarApp.class.getName());</span>
+   	
+    /**
+     * 菜单
+     */
+	public static void menu() {
+<span class="nc" id="L43">		System.out.println(&quot;1.创建一个新的课程计划项并设置信息(为了方便在信息版检测，设置时间时请设置为当天的时间)&quot;);</span>
+<span class="nc" id="L44">		System.out.println(&quot;2.为某个课程计划项分配资源&quot;);</span>
+<span class="nc" id="L45">		System.out.println(&quot;3.变更(删除位置后重新设置)某个课程计划项的位置&quot;);</span>
+<span class="nc" id="L46">		System.out.println(&quot;4.删除某个课程计划项的位置(删除位置后必须重新设置位置然后执行下面的步骤)&quot;);	</span>
+<span class="nc" id="L47">		System.out.println(&quot;5.变更某个课程计划项的资源&quot;);</span>
+<span class="nc" id="L48">		System.out.println(&quot;6.启动某个课程计划项&quot;);</span>
+<span class="nc" id="L49">		System.out.println(&quot;7.结束某个课程计划项&quot;);</span>
+<span class="nc" id="L50">		System.out.println(&quot;8.取消某个课程计划项&quot;);</span>
+<span class="nc" id="L51">		System.out.println(&quot;9.查看某个课程计划项的状态&quot;);</span>
+<span class="nc" id="L52">		System.out.println(&quot;****(注意：执行10,11,12的操作需要为每一个计划项分配资源后执行,否则异常)****&quot;);</span>
+<span class="nc" id="L53">		System.out.println(&quot;10.检测课程计划项中是否存在位置和资源独占冲突&quot;);</span>
+<span class="nc" id="L54">		System.out.println(&quot;11.针对某个老师资源，列出所有使用该资源的课程计划项&quot;);</span>
+<span class="nc" id="L55">		System.out.println(&quot;12.针对某个老师资源，选中含有该资源的某个课程计划项，列出它的前序计划项(输出一个即可)&quot;);</span>
+<span class="nc" id="L56">		System.out.println(&quot;13.选定某个位置，展示当前时刻该位置的信息版&quot;);</span>
+<span class="nc" id="L57">		System.out.println(&quot;14.显示当前含有课程计划项的个数&quot;);</span>
+<span class="nc" id="L58">		System.out.println(&quot;15.按照过滤条件进行日志查询&quot;);</span>
+<span class="nc" id="L59">		System.out.println(&quot;16.写入日志到文件并结束程序&quot;);</span>
+<span class="nc" id="L60">	}</span>
+	
+	/**
+	 * 
+	 * @param args
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static void main(String[] args)  {
+		OneLocationEntryImpl a;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b;
+		NoBlockableEntryImpl c;
+<span class="nc" id="L71">		String choice,weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+<span class="nc" id="L72">		Scanner scanner=new Scanner(System.in);</span>
+		CourseState state;
+		Teacher myteacher;
+		Calendar canceltimeone;
+<span class="nc" id="L76">		PlanningEntryAPIs myapis=new PlanningEntryAPIs&lt;&gt;();</span>
+<span class="nc" id="L77">		System.out.println(&quot;最开始请执行第一步&quot;);</span>
+		
+<span class="nc" id="L79">		File file=new File(&quot;log/CourseCalendarLog.txt&quot;);</span>
+		try {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">			if(!file.exists()) {</span>
+<span class="nc" id="L82">				file.createNewFile();</span>
+			}
+<span class="nc" id="L84">			FileWriter fileWriter=new FileWriter(file);</span>
+<span class="nc" id="L85">			fileWriter.write(&quot;&quot;);</span>
+<span class="nc" id="L86">			fileWriter.flush();</span>
+<span class="nc" id="L87">			fileWriter.close();</span>
+<span class="nc" id="L88">		}catch(IOException e) {</span>
+<span class="nc" id="L89">			System.out.println(&quot;创建文件失败&quot;);</span>
+		}
+		
+		try {
+<span class="nc" id="L93">			while(true) {</span>
+				String[] temp;
+				String yixie;
+<span class="nc" id="L96">				menu();</span>
+<span class="nc" id="L97">				Locale.setDefault(new Locale(&quot;en&quot;, &quot;EN&quot;));</span>
+<span class="nc" id="L98">				logger.setLevel(Level.INFO);</span>
+				FileHandler fileHandler;	
+<span class="nc" id="L100">				fileHandler = new FileHandler(&quot;log/CourseCalendarLog.txt&quot;, true);</span>
+<span class="nc" id="L101">				fileHandler.setFormatter(new SimpleFormatter());</span>
+<span class="nc" id="L102">				logger.addHandler(fileHandler);	</span>
+<span class="nc" id="L103">				logger.setUseParentHandlers(false);</span>
+<span class="nc" id="L104">				System.out.println(&quot;请输入你的操作：&quot;);</span>
+<span class="nc" id="L105">				choice=scanner.nextLine();</span>
+<span class="nc bnc" id="L106" title="All 17 branches missed.">				switch(choice) {</span>
+				case &quot;1&quot;:
+<span class="nc" id="L108">					a=new OneLocationEntryImpl();</span>
+<span class="nc" id="L109">					b=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="nc" id="L110">					c=new NoBlockableEntryImpl();</span>
+<span class="nc" id="L111">					PlanningEntry origincourse=new CourseEntryFactory().getCourseEntry(a, b, c); //用工厂方法创建对象</span>
+<span class="nc" id="L112">					CourseEntry&lt;Teacher&gt; course=(CourseEntry&lt;Teacher&gt;)origincourse;</span>
+<span class="nc" id="L113">					System.out.println(&quot;此课程计划项已经创建完成,下面输入一些信息完成初始状态的建立：&quot;);</span>
+<span class="nc" id="L114">					System.out.println(&quot;请输入课程名(eg 软件构造)：&quot;);</span>
+<span class="nc" id="L115">					String coursename=scanner.nextLine();</span>
+<span class="nc" id="L116">					course.setplanningentryname(coursename);</span>
+<span class="nc" id="L117">					logger.log(Level.INFO,&quot;true:setplanningentryname&quot;);</span>
+<span class="nc" id="L118">					System.out.println(&quot;计划项名字设置成功&quot;);</span>
+<span class="nc" id="L119">					System.out.println(&quot;请输入教室名称(eg 正心楼32)：&quot;);</span>
+					String tempname;
+<span class="nc" id="L121">					tempname=scanner.nextLine();</span>
+<span class="nc" id="L122">					CourseLocation from=new CourseLocation(weidu,jingdu,tempname);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">					if(course.setlocations(from)) {</span>
+<span class="nc" id="L124">						logger.log(Level.INFO,&quot;true:setlocation,计划项&quot;+coursename);</span>
+<span class="nc" id="L125">					}</span>
+					else {
+<span class="nc" id="L127">						logger.log(Level.INFO,&quot;false:setlocation,计划项&quot;+coursename);</span>
+					}
+<span class="nc" id="L129">					System.out.println(&quot;请输入课程的上课和下课时间(用逗号隔开)(eg 2020-01-01 15:45,2020-01-01 17:30)：&quot;);</span>
+					try {
+<span class="nc" id="L131">						temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L132">						Timeslot mytime=new Timeslot(temp[0],temp[1]);</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">						if(course.settimeslot(mytime)) {</span>
+<span class="nc" id="L134">							logger.log(Level.INFO,&quot;true:settimeslot,计划项&quot;+coursename);</span>
+						}
+<span class="nc" id="L136">					}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L137">						 logger.log(Level.SEVERE,&quot;false:settimeslot,ArrayIndexOutOfBoundsException-&gt;operation again,计划项&quot;+coursename,e);</span>
+<span class="nc" id="L138">						 System.out.println(&quot;未用,隔开，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L139">						 break;</span>
+<span class="nc" id="L140">					} catch (ParseException e) {</span>
+<span class="nc" id="L141">						logger.log(Level.SEVERE,&quot;false:settimeslot,ParseException-&gt;operation again,计划项&quot;+coursename,e);</span>
+<span class="nc" id="L142">						System.out.println(&quot;时间不符合yyyy-MM-dd HH:mm的要求，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L143">						break;</span>
+<span class="nc" id="L144">					} catch (BeginEndTimeException e) {</span>
+<span class="nc" id="L145">						logger.log(Level.SEVERE,&quot;false:settimeslot,BeginEndTimeException-&gt;operation again,计划项&quot;+coursename,e);</span>
+<span class="nc" id="L146">						System.out.println(&quot;起始时间晚于终止时间，请重新执行1操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L147">						break;</span>
+					}
+<span class="nc" id="L149">					state = CourseWaitingState.instance;</span>
+<span class="nc" id="L150">					course.setcurrentstate(state);</span>
+<span class="nc" id="L151">					System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L152">					List&lt;CourseEntry&lt;Teacher&gt;&gt; tempcourselist=new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">					for(int oo=0;oo&lt;courselist.size();oo++) {</span>
+<span class="nc" id="L154">						tempcourselist.add(courselist.get(oo).clone());</span>
+					}
+<span class="nc" id="L156">					tempcourselist.add(course.clone());</span>
+					try {
+<span class="nc bnc" id="L158" title="All 2 branches missed.">						if(myapis.checkLocationConflict(tempcourselist,&quot;1&quot;)) {</span>
+<span class="nc" id="L159">							throw new LocationConflictException();</span>
+						}
+<span class="nc" id="L161">					}catch(LocationConflictException e) {</span>
+<span class="nc" id="L162">						logger.log(Level.SEVERE,&quot;false:setlocation,LocationConflictException-&gt;operation again,计划项&quot;+coursename,e);</span>
+<span class="nc" id="L163">						System.out.println(&quot;该位置分配后会与已有的其他计划项发生位置独占冲突，请重新执行1操作\n&quot;);</span>
+<span class="nc" id="L164">						break;</span>
+					}
+<span class="nc" id="L166">					System.out.println(&quot;信息设置完成&quot;);</span>
+<span class="nc" id="L167">					courselist.add(course);</span>
+<span class="nc" id="L168">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L169">					break;</span>
+				case &quot;2&quot;:
+<span class="nc" id="L171">					System.out.println(&quot;请输入你想加入资源的的课程名(eg 软件构造)：&quot;);</span>
+<span class="nc" id="L172">					tempname=scanner.nextLine();</span>
+					int i;
+<span class="nc bnc" id="L174" title="All 2 branches missed.">					for(i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">						if(courselist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L176">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L179" title="All 2 branches missed.">					if(i==courselist.size()) {</span>
+<span class="nc" id="L180">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L181">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L182">						System.out.println();</span>
+<span class="nc" id="L183">						break;</span>
+					}
+<span class="nc" id="L185">					tempcourselist=new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">					for(int oo=0;oo&lt;courselist.size();oo++) {</span>
+<span class="nc" id="L187">						tempcourselist.add(courselist.get(oo).clone());</span>
+					}
+<span class="nc" id="L189">					CourseEntry&lt;Teacher&gt; tempentry=tempcourselist.get(i).clone();</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">					if(((CourseState)tempentry.getcurrentstate()).getcoursestate().equals(&quot;课程未分配老师(Waiting)&quot;)) {</span>
+<span class="nc" id="L191">						System.out.println(&quot;请输入待加入老师的身份证号，姓名，性别，职称(eg 422823199812254452,余涛,男,讲师)：&quot;);</span>
+						try {
+<span class="nc" id="L193">							temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L194">							myteacher=new Teacher(temp[0],temp[1],temp[2],temp[3]);</span>
+<span class="nc" id="L195">							tempentry.setresource(myteacher);</span>
+<span class="nc" id="L196">						}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L197">							 logger.log(Level.SEVERE,&quot;false:setresource,ArrayIndexOutOfBoundsException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L198">							 System.out.println(&quot;未用,隔开，请重新执行2操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L199">							 break;</span>
+						}	
+<span class="nc" id="L201">						state=((CourseState)tempentry.getcurrentstate()).move('a');</span>
+<span class="nc" id="L202">						tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L203">						System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L204">						tempcourselist.set(i, tempentry);</span>
+						try {
+<span class="nc bnc" id="L206" title="All 2 branches missed.">							if(myapis.checkResourceExclusiveConflict(tempcourselist)) {</span>
+<span class="nc" id="L207">								throw new ResourceExclusiveConflictException();</span>
+							}
+							else {
+<span class="nc" id="L210">								courselist.set(i, tempentry);</span>
+<span class="nc" id="L211">								logger.log(Level.INFO,&quot;true:setresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L212">								System.out.println(&quot;老师资源设置完成\n&quot;);</span>
+							}
+<span class="nc" id="L214">						}catch(ResourceExclusiveConflictException e) {</span>
+<span class="nc" id="L215">							logger.log(Level.SEVERE,&quot;false:setresource,ResourceExclusiveConflictException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L216">							System.out.println(&quot;该资源分配后会与已有的其他计划项发生资源独占冲突，请重新分配资源\n&quot;);</span>
+						}
+<span class="nc" id="L218">					}</span>
+					else {
+<span class="nc" id="L220">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L221">						System.out.println(&quot;当前状态下不能执行设置老师资源操作\n&quot;);</span>
+					}
+<span class="nc" id="L223">					break;</span>
+				case &quot;3&quot;:
+<span class="nc" id="L225">					System.out.println(&quot;请输入你想变更(重新设置)位置的课程名称(eg 软件构造)：&quot;);</span>
+<span class="nc" id="L226">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">					for(i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">						if(courselist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L229">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L232" title="All 2 branches missed.">					if(i==courselist.size()) {</span>
+<span class="nc" id="L233">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L234">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L235">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L236">						break;</span>
+					}
+<span class="nc" id="L238">					tempcourselist=new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">					for(int oo=0;oo&lt;courselist.size();oo++) {</span>
+<span class="nc" id="L240">						tempcourselist.add(courselist.get(oo).clone());</span>
+					}
+<span class="nc" id="L242">	                tempentry=tempcourselist.get(i).clone();</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">					if(((CourseState)tempentry.getcurrentstate()).getcoursestate().equals(&quot;课程未分配老师(Waiting)&quot;)</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">							||((CourseState)tempentry.getcurrentstate()).getcoursestate().equals(&quot;课程已分配老师(Allocated)&quot;)) {</span>
+<span class="nc" id="L245">						System.out.println(&quot;请输入变更后(重新设置的)位置教室的名称(eg 致知楼15)：&quot;);</span>
+<span class="nc" id="L246">						tempname=scanner.nextLine();</span>
+<span class="nc" id="L247">						from=new CourseLocation(weidu,jingdu,tempname);</span>
+<span class="nc" id="L248">						tempentry.changelocations(from);</span>
+<span class="nc" id="L249">						tempcourselist.set(i, tempentry);</span>
+						try {
+<span class="nc bnc" id="L251" title="All 2 branches missed.">							if(myapis.checkLocationConflict(tempcourselist,&quot;1&quot;)) {</span>
+<span class="nc" id="L252">								throw new LocationConflictException();</span>
+							}
+							else {
+<span class="nc" id="L255">								logger.log(Level.INFO,&quot;true:changelocation,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L256">								courselist.set(i, tempentry);</span>
+<span class="nc" id="L257">								System.out.println(&quot;\n&quot;);</span>
+							}
+<span class="nc" id="L259">						}catch(LocationConflictException e) {</span>
+<span class="nc" id="L260">							logger.log(Level.SEVERE,&quot;false:changelocations,LocationConflictException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L261">							System.out.println(&quot;该位置变更后会与已有的其他计划项发生位置独占冲突，请重新分配位置\n&quot;);</span>
+						}
+<span class="nc" id="L263">					}</span>
+					else {
+<span class="nc" id="L265">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L266">						System.out.println(&quot;当前状态下不能执行变更(重新设置)位置操作\n&quot;);</span>
+					}
+<span class="nc" id="L268">					break;</span>
+				case &quot;4&quot;:
+<span class="nc" id="L270">					System.out.println(&quot;请输入你想删除位置的课程名称(eg 软件构造)：&quot;);</span>
+<span class="nc" id="L271">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">					for(i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">						if(courselist.get(i).getplanningentryname().equals(tempname) ){</span>
+<span class="nc" id="L274">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L277" title="All 2 branches missed.">					if(i==courselist.size()) {</span>
+<span class="nc" id="L278">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L279">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L280">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L281">						break;</span>
+					}
+<span class="nc" id="L283">					tempentry=courselist.get(i);</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">					if(((CourseState)tempentry.getcurrentstate()).getcoursestate().equals(&quot;课程未分配老师(Waiting)&quot;)</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">							||((CourseState)tempentry.getcurrentstate()).getcoursestate().equals(&quot;课程已分配老师(Allocated)&quot;)) {</span>
+<span class="nc" id="L286">						System.out.println(&quot;请输入你想删除位置教室的名称(eg 致知楼15)：&quot;);</span>
+<span class="nc" id="L287">						tempname=scanner.nextLine();</span>
+<span class="nc" id="L288">						from=new CourseLocation(weidu,jingdu,tempname);</span>
+						try {
+<span class="nc bnc" id="L290" title="All 2 branches missed.">							for(int kk=0;kk&lt;courselist.size();kk++) {</span>
+<span class="nc bnc" id="L291" title="All 2 branches missed.">								if(courselist.get(kk).getlocations().equals(from)&amp;&amp;</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">										!((CourseState)courselist.get(kk).getcurrentstate()).getcoursestate().equals(&quot;课程已下课(Ended)&quot;)) {</span>
+<span class="nc" id="L293">									throw new NoendedLocationException();</span>
+								}
+							}
+<span class="nc" id="L296">						}catch(NoendedLocationException e) {</span>
+<span class="nc" id="L297">							logger.log(Level.SEVERE,&quot;false:deletelocation,NoendedLocationException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L298">							System.out.println(&quot;有尚未结束的计划项在该位置执行，无法删除该位置\n&quot;);</span>
+<span class="nc" id="L299">							break;</span>
+						}
+<span class="nc bnc" id="L301" title="All 2 branches missed.">						if(tempentry.deletelocations(from)) {</span>
+<span class="nc" id="L302">							logger.log(Level.INFO,&quot;true:deletelocation,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L303">						}</span>
+						else {
+<span class="nc" id="L305">							logger.log(Level.INFO,&quot;false:deletelocation,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L306">							break;</span>
+						}
+<span class="nc" id="L308">						courselist.set(i, tempentry);</span>
+<span class="nc" id="L309">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L310">					}</span>
+					else {
+<span class="nc" id="L312">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L313">						System.out.println(&quot;当前状态下不能执行删除位置操作\n&quot;);</span>
+					}
+<span class="nc" id="L315">					break;</span>
+				case &quot;5&quot;:
+<span class="nc" id="L317">					System.out.println(&quot;请输入你想变更资源的课程名称(eg 软件构造)：&quot;);</span>
+<span class="nc" id="L318">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L319" title="All 2 branches missed.">					for(i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">						if(courselist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L321">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L324" title="All 2 branches missed.">					if(i==courselist.size()) {</span>
+<span class="nc" id="L325">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L326">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L327">						System.out.println();</span>
+<span class="nc" id="L328">						break;</span>
+					}
+<span class="nc" id="L330">					tempentry=courselist.get(i);</span>
+<span class="nc bnc" id="L331" title="All 2 branches missed.">					if(((CourseState)tempentry.getcurrentstate()).getcoursestate().equals(&quot;课程已分配老师(Allocated)&quot;)) {</span>
+<span class="nc" id="L332">						System.out.println(&quot;请输入新老师的身份证号，姓名，性别，职称(eg 422823199812257777,王宁,男,讲师)：&quot;);</span>
+						try {
+<span class="nc" id="L334">							temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L335">							myteacher=new Teacher(temp[0],temp[1],temp[2],temp[3]);</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">							if(tempentry.changeresource(myteacher)) {</span>
+<span class="nc" id="L337">								logger.log(Level.INFO,&quot;true:changeresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L338">							}</span>
+							else {
+<span class="nc" id="L340">								logger.log(Level.INFO,&quot;false:changeresource,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L341">								break;</span>
+							}
+<span class="nc" id="L343">						}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L344">							 logger.log(Level.SEVERE,&quot;false:changeresource,ArrayIndexOutOfBoundsException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L345">							 System.out.println(&quot;未用,隔开，请重新执行5操作，用正确格式输入\n&quot;);</span>
+							 //e.printStackTrace();
+<span class="nc" id="L347">							 break;</span>
+						}	
+<span class="nc" id="L349">						courselist.set(i, tempentry);</span>
+<span class="nc" id="L350">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L351">					}</span>
+					else {
+<span class="nc" id="L353">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L354">						System.out.println(&quot;当前状态下不能执行变更资源操作\n&quot;);</span>
+					}
+<span class="nc" id="L356">					break;</span>
+				case &quot;6&quot;:
+<span class="nc" id="L358">					System.out.println(&quot;请输入你想要启动的课程计划项的课程名称(eg 软件构造)：&quot;);</span>
+<span class="nc" id="L359">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L360" title="All 2 branches missed.">					for(i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc bnc" id="L361" title="All 2 branches missed.">						if(courselist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L362">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L365" title="All 2 branches missed.">					if(i==courselist.size()) {</span>
+<span class="nc" id="L366">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L367">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L368">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L369">						break;</span>
+					}
+<span class="nc" id="L371">					tempentry=courselist.get(i);</span>
+<span class="nc bnc" id="L372" title="All 2 branches missed.">					if(((CourseState)tempentry.getcurrentstate()).getcoursestate().equals(&quot;课程已分配老师(Allocated)&quot;)) {	</span>
+<span class="nc" id="L373">						System.out.println(&quot;请输入指令：启动&quot;);</span>
+<span class="nc" id="L374">						yixie=scanner.nextLine();</span>
+<span class="nc bnc" id="L375" title="All 2 branches missed.">						if(tempentry.launch(yixie)) {</span>
+<span class="nc" id="L376">						logger.log(Level.INFO,&quot;true:launch,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L377">						state=((CourseState)tempentry.getcurrentstate()).move('a');</span>
+<span class="nc" id="L378">						tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L379">						System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L380">						courselist.set(i, tempentry);</span>
+<span class="nc" id="L381">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L382">						}</span>
+						else {
+<span class="nc" id="L384">							logger.log(Level.INFO,&quot;false:launch,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L385">							System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L386">							break;</span>
+						}
+					}
+					else {
+<span class="nc" id="L390">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L391">						System.out.println(&quot;当前状态下不能执行上课操作\n&quot;);</span>
+					}
+<span class="nc" id="L393">					break;</span>
+				case &quot;7&quot;:
+<span class="nc" id="L395">					System.out.println(&quot;请输入你想要结束的课程计划项的课程名称(eg 软件构造)：&quot;);</span>
+<span class="nc" id="L396">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L397" title="All 2 branches missed.">					for(i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc bnc" id="L398" title="All 2 branches missed.">						if(courselist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L399">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L402" title="All 2 branches missed.">					if(i==courselist.size()) {</span>
+<span class="nc" id="L403">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L404">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L405">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L406">						break;</span>
+					}
+<span class="nc" id="L408">					tempentry=courselist.get(i);</span>
+<span class="nc bnc" id="L409" title="All 2 branches missed.">					if(((CourseState)tempentry.getcurrentstate()).getcoursestate().equals(&quot;课程已开始上课(Running)&quot;)) {</span>
+<span class="nc" id="L410">						System.out.println(&quot;请输入指令：结束&quot;);</span>
+<span class="nc" id="L411">						yixie=scanner.nextLine();</span>
+<span class="nc bnc" id="L412" title="All 2 branches missed.">						if(tempentry.finish(yixie)) {</span>
+<span class="nc" id="L413">						logger.log(Level.INFO,&quot;true:finish,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L414">						state=((CourseState)tempentry.getcurrentstate()).move('a');</span>
+<span class="nc" id="L415">						tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L416">						System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L417">						courselist.set(i, tempentry);</span>
+<span class="nc" id="L418">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L419">						}</span>
+						else {
+<span class="nc" id="L421">							logger.log(Level.INFO,&quot;false:finish,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L422">							System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L423">							break;</span>
+						}
+					}
+					else {
+<span class="nc" id="L427">						logger.log(Level.INFO,&quot;false:no correct state-&gt;operation again,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L428">						System.out.println(&quot;当前状态下不能执行下课操作\n&quot;);</span>
+					}
+<span class="nc" id="L430">					break;</span>
+				case &quot;8&quot;:
+<span class="nc" id="L432">					System.out.println(&quot;请输入你想要取消的课程计划项的课程名称(eg 软件构造)：&quot;);</span>
+<span class="nc" id="L433">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L434" title="All 2 branches missed.">					for(i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc bnc" id="L435" title="All 2 branches missed.">						if(courselist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L436">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L439" title="All 2 branches missed.">					if(i==courselist.size()) {</span>
+<span class="nc" id="L440">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L441">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L442">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L443">						break;</span>
+					}
+<span class="nc" id="L445">					tempentry=courselist.get(i);</span>
+					try {
+<span class="nc bnc" id="L447" title="All 2 branches missed.">						if(((CourseState)tempentry.getcurrentstate()).getcoursestate().equals(&quot;课程未分配老师(Waiting)&quot;)</span>
+<span class="nc bnc" id="L448" title="All 2 branches missed.">								||((CourseState)tempentry.getcurrentstate()).getcoursestate().equals(&quot;课程已分配老师(Allocated)&quot;)) {</span>
+<span class="nc" id="L449">							System.out.println(&quot;请输入指令：取消&quot;);</span>
+<span class="nc" id="L450">							yixie=scanner.nextLine();	</span>
+<span class="nc bnc" id="L451" title="All 2 branches missed.">							if(tempentry.cancel(yixie)) {</span>
+<span class="nc" id="L452">							canceltimeone=Calendar.getInstance();</span>
+<span class="nc" id="L453">							String str = (new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;)).format(canceltimeone.getTime()); </span>
+							try {
+<span class="nc" id="L455">								canceltimeone.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(str));</span>
+<span class="nc" id="L456">								logger.log(Level.INFO,&quot;true:cancel,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L457">							} catch (ParseException e) {</span>
+<span class="nc" id="L458">								logger.log(Level.SEVERE,&quot;false:cancel,ParseException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L459">								System.out.println(&quot;取消时间出错\n&quot;);</span>
+<span class="nc" id="L460">								break;</span>
+							}
+<span class="nc" id="L462">							System.out.println(&quot;该课程计划项取消的时间为&quot;+str);</span>
+<span class="nc" id="L463">							state=((CourseState)tempentry.getcurrentstate()).move('b');</span>
+<span class="nc" id="L464">							tempentry.setcurrentstate(state);</span>
+<span class="nc" id="L465">							System.out.println(&quot;计划项当前状态设置成功&quot;);</span>
+<span class="nc" id="L466">							courselist.remove(i);</span>
+<span class="nc" id="L467">							System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L468">							}</span>
+							else {
+<span class="nc" id="L470">								System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L471">								break;</span>
+							}
+						}
+						else {
+<span class="nc" id="L475">							throw new NoCancelStateException();</span>
+						}
+<span class="nc" id="L477">					}catch(NoCancelStateException e) {</span>
+<span class="nc" id="L478">						logger.log(Level.SEVERE,&quot;false:cancel,NoCancelStateException-&gt;operation again,计划项&quot;+tempentry.getplanningentryname(),e);</span>
+<span class="nc" id="L479">						System.out.println(&quot;课程已上课，无法取消\n&quot;);</span>
+<span class="nc" id="L480">						break;</span>
+					}
+
+				case &quot;9&quot;:
+<span class="nc" id="L484">					System.out.println(&quot;请输入你想要查看的课程计划项的课程名称(eg 软件构造)：&quot;);</span>
+<span class="nc" id="L485">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L486" title="All 2 branches missed.">					for(i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc bnc" id="L487" title="All 2 branches missed.">						if(courselist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L488">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L491" title="All 2 branches missed.">					if(i==courselist.size()) {</span>
+<span class="nc" id="L492">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L493">						System.out.println(&quot;没有该计划项或者已被取消&quot;);</span>
+<span class="nc" id="L494">						System.out.println();</span>
+<span class="nc" id="L495">						break;</span>
+					}
+<span class="nc" id="L497">					tempentry=courselist.get(i);</span>
+<span class="nc" id="L498">					System.out.println(&quot;该课程计划项的状态为：&quot;+((CourseState)tempentry.getcurrentstate()).getcoursestate());</span>
+<span class="nc" id="L499">					logger.log(Level.INFO,&quot;true:getcurrentstate,计划项&quot;+tempentry.getplanningentryname());</span>
+<span class="nc" id="L500">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L501">					break;</span>
+				case &quot;10&quot;:
+<span class="nc" id="L503">					System.out.println(&quot;对于位置独占冲突，你可以选择两种算法来进行判断(输入1使用第一种，输入2使用第二种)，请选择输入(eg 1)&quot;);</span>
+<span class="nc" id="L504">					tempname=scanner.nextLine();</span>
+<span class="nc" id="L505">					System.out.println(&quot;所有计划项中位置独占冲突结果如下：&quot;);</span>
+<span class="nc bnc" id="L506" title="All 2 branches missed.">					if(myapis.checkLocationConflict(courselist,tempname)) {</span>
+<span class="nc" id="L507">						logger.log(Level.INFO,&quot;true:LocationConflict&quot;);</span>
+<span class="nc" id="L508">					}</span>
+					else {
+<span class="nc" id="L510">						logger.log(Level.INFO,&quot;false:LocationConflict&quot;);</span>
+					}
+<span class="nc" id="L512">					System.out.println(&quot;所有计划项中资源独占冲突结果如下：&quot;);</span>
+<span class="nc bnc" id="L513" title="All 2 branches missed.">					if(myapis.checkResourceExclusiveConflict(courselist)) {</span>
+<span class="nc" id="L514">						logger.log(Level.INFO,&quot;true:ResourceExclusiveConflict&quot;);</span>
+<span class="nc" id="L515">					}</span>
+					else {
+<span class="nc" id="L517">						logger.log(Level.INFO,&quot;false:ResourceExclusiveConflict&quot;);</span>
+					}
+<span class="nc" id="L519">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L520">					break;</span>
+				case &quot;11&quot;:
+<span class="nc" id="L522">					System.out.println(&quot;请输入你想要查看的老师资源的姓名(eg 余涛)：&quot;);</span>
+<span class="nc" id="L523">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L524" title="All 2 branches missed.">					for(i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc bnc" id="L525" title="All 2 branches missed.">						if(courselist.get(i).getresource().getteachername().equals(tempname)) {</span>
+<span class="nc" id="L526">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L529" title="All 2 branches missed.">					if(i==courselist.size()) {</span>
+<span class="nc" id="L530">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L531">						System.out.println(&quot;没有该计划项拥有该资源&quot;);</span>
+<span class="nc" id="L532">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L533">						break;</span>
+					}
+<span class="nc" id="L535">					tempentry=courselist.get(i);</span>
+<span class="nc" id="L536">					myapis.findEntryPerResource(tempentry.getresource(), courselist);</span>
+<span class="nc" id="L537">					logger.log(Level.INFO,&quot;findEntryPerResource&quot;);</span>
+<span class="nc" id="L538">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L539">					break;</span>
+				case &quot;12&quot;:
+<span class="nc" id="L541">					System.out.println(&quot;请输入你想要查看其前序计划项的课程名称(eg 软件构造)：&quot;);</span>
+<span class="nc" id="L542">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L543" title="All 2 branches missed.">					for(i=0;i&lt;courselist.size();i++) {</span>
+<span class="nc bnc" id="L544" title="All 2 branches missed.">						if(courselist.get(i).getplanningentryname().equals(tempname)) {</span>
+<span class="nc" id="L545">							break;</span>
+						}
+					}
+<span class="nc bnc" id="L548" title="All 2 branches missed.">					if(i==courselist.size()) {</span>
+<span class="nc" id="L549">						logger.log(Level.INFO,&quot;false:can not find this entry-&gt;operation again&quot;);</span>
+<span class="nc" id="L550">						System.out.println(&quot;没有该计划项&quot;);</span>
+<span class="nc" id="L551">						System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L552">						break;</span>
+					}
+<span class="nc" id="L554">					tempentry=courselist.get(i);</span>
+<span class="nc" id="L555">					myapis.findPreEntryPerResource(tempentry.getresource(),tempentry,courselist);</span>
+<span class="nc" id="L556">					logger.log(Level.INFO,&quot;findPreEntryPerResource&quot;);</span>
+<span class="nc" id="L557">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L558">					break;</span>
+				case &quot;13&quot;:
+<span class="nc" id="L560">					System.out.println(&quot;请输入你想要展示当前时刻的信息版的位置(eg 正心楼32)&quot;);</span>
+<span class="nc" id="L561">					tempname=scanner.nextLine();</span>
+<span class="nc" id="L562">					CourseEntryBoard flightboard=new CourseEntryBoard();</span>
+<span class="nc" id="L563">					flightboard.setclassroomlocation(tempname);</span>
+<span class="nc" id="L564">					flightboard.getsortallentry(courselist);</span>
+					try {
+<span class="nc" id="L566">						flightboard.createCourseEntryBoard();</span>
+<span class="nc" id="L567">						logger.log(Level.INFO,&quot;true:CourseEntryBoard&quot;);</span>
+<span class="nc" id="L568">					} catch (ParseException e) {</span>
+<span class="nc" id="L569">						logger.log(Level.SEVERE,&quot;false:CourseEntryBoard,ParseException-&gt;operation again&quot;,e);</span>
+<span class="nc" id="L570">						System.out.println(&quot;时间格式出错&quot;);</span>
+<span class="nc" id="L571">						break;</span>
+					}
+<span class="nc" id="L573">					flightboard.visualize();</span>
+<span class="nc" id="L574">					System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L575">					break;</span>
+				case &quot;14&quot;:
+<span class="nc" id="L577">					logger.log(Level.INFO,&quot;true:get the number of allentrys&quot;);</span>
+<span class="nc" id="L578">					 System.out.println(&quot;当前含有课程计划项的个数为：&quot;+courselist.size()+&quot;\n&quot;);</span>
+<span class="nc" id="L579">		 			break;</span>
+				case &quot;15&quot;:
+<span class="nc" id="L581">					fileHandler.close();</span>
+					BufferedReader thisfile;
+					String fileoneline;
+					try {
+<span class="nc" id="L585">						thisfile = new BufferedReader(new FileReader(&quot;log/CourseCalendarLog.txt&quot;));</span>
+<span class="nc" id="L586">					} catch (FileNotFoundException e1) {</span>
+<span class="nc" id="L587">						logger.log(Level.SEVERE,&quot;false:findfile,FileNotFoundException-&gt;operation again&quot;,e1);</span>
+<span class="nc" id="L588">						System.out.println(&quot;文件不存在\n&quot;);</span>
+<span class="nc" id="L589">						break;</span>
+					}
+<span class="nc" id="L591">					fileoneline=null;</span>
+<span class="nc" id="L592">					List&lt;String&gt; alllog=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L593">					String onelog=&quot;&quot;;</span>
+					try {
+<span class="nc bnc" id="L595" title="All 2 branches missed.">						while((fileoneline=thisfile.readLine())!=null) { </span>
+<span class="nc" id="L596">							onelog=onelog+fileoneline+&quot;\n&quot;; //记得加上换行符</span>
+<span class="nc bnc" id="L597" title="All 4 branches missed.">							if(fileoneline.contains(&quot;INFO&quot;)||fileoneline.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L598">								alllog.add(onelog);</span>
+<span class="nc" id="L599">								onelog=&quot;&quot;;</span>
+							}
+						}
+<span class="nc" id="L602">					} catch (IOException e1) {</span>
+<span class="nc" id="L603">						System.out.println(&quot;读入文件异常\n&quot;);</span>
+					}finally{
+<span class="nc" id="L605">						thisfile.close();</span>
+					}
+					String mychoice;
+					int ll;
+<span class="nc" id="L609">					System.out.println(&quot;你可以选择三种过滤条件，第一种为按操作类型查询，第二种为按计划项名字查询，第三种为按照时间段查询(输入1使用第一种，输入2使用第二种，输入3使用第三种)，请选择输入(eg 1)&quot;);</span>
+<span class="nc" id="L610">					tempname=scanner.nextLine();</span>
+<span class="nc bnc" id="L611" title="All 2 branches missed.">					if(tempname.equals(&quot;1&quot;)) {</span>
+<span class="nc" id="L612">						System.out.println(&quot;一共有以下操作类型，请任选一种进行查询：(eg setlocation)&quot;);</span>
+<span class="nc" id="L613">						System.out.println(&quot;setplanningentryname,setlocation,settimeslot,setresource,changelocation,deletelocation,changeresource,launch,finish&quot;</span>
+								+ &quot;,cancel,getcurrentstate,LocationConflict,ResourceExclusiveConflict,findEntryPerResource,findPreEntryPerResource,&quot;
+								+ &quot;CourseEntryBoard,get the number of allentrys&quot;);
+<span class="nc" id="L616">						mychoice=scanner.nextLine();</span>
+<span class="nc" id="L617">						ll=1;</span>
+<span class="nc" id="L618">						System.out.println(&quot;该操作的所有日志为：&quot;);</span>
+<span class="nc bnc" id="L619" title="All 2 branches missed.">						for(String h:alllog) {</span>
+<span class="nc bnc" id="L620" title="All 2 branches missed.">							if(h.contains(mychoice)) {</span>
+<span class="nc" id="L621">								 System.out.print(&quot;日志&quot;+ll+&quot;为：&quot;+h+&quot;\n&quot;);</span>
+<span class="nc" id="L622">								 ll++;</span>
+							}
+						}
+<span class="nc bnc" id="L625" title="All 2 branches missed.">						if(ll==1) {</span>
+<span class="nc" id="L626">							System.out.print(&quot;没有该操作的日志\n&quot;);</span>
+						}
+					}
+<span class="nc bnc" id="L629" title="All 2 branches missed.">					if(tempname.equals(&quot;2&quot;)) {</span>
+<span class="nc" id="L630">						System.out.println(&quot;请输入计划项名字：(eg 软件构造)&quot;);</span>
+<span class="nc" id="L631">						mychoice=scanner.nextLine();</span>
+<span class="nc" id="L632">						System.out.println(&quot;与该计划项有关的所有日志为：&quot;);</span>
+<span class="nc" id="L633">						ll=1;</span>
+<span class="nc bnc" id="L634" title="All 2 branches missed.">						for(String h:alllog) {</span>
+<span class="nc bnc" id="L635" title="All 2 branches missed.">							if(h.contains(mychoice)) {</span>
+<span class="nc" id="L636">								 System.out.print(&quot;日志&quot;+ll+&quot;为：&quot;+h+&quot;\n&quot;);</span>
+<span class="nc" id="L637">								 ll++;</span>
+							}
+						}
+<span class="nc bnc" id="L640" title="All 2 branches missed.">						if(ll==1) {</span>
+<span class="nc" id="L641">							System.out.print(&quot;没有该计划项的日志\n&quot;);</span>
+						}
+					}
+<span class="nc bnc" id="L644" title="All 2 branches missed.">					if(tempname.equals(&quot;3&quot;)) {</span>
+<span class="nc" id="L645">						Pattern pattern1 = Pattern.compile(&quot;([A-Z|a-z][A-Z|a-z][A-Z|a-z])\\s(\\d{2}),\\s(\\d{4})\\s(\\d{2}|[1-9]):(\\d{2}):(\\d{2})\\s(PM|AM)&quot;);</span>
+						Matcher tomatcher;
+						String month,day,year,hour,minute,panduan,time;
+<span class="nc" id="L648">						System.out.println(&quot;请输入你想查找的时间段(用逗号隔开)(eg 2020-06-04 19:00,2020-06-04 19:01)：&quot;);</span>
+						try {
+<span class="nc" id="L650">							temp=(scanner.nextLine()).split(&quot;,&quot;);</span>
+<span class="nc" id="L651">							Timeslot mytime=new Timeslot(temp[0],temp[1]);</span>
+<span class="nc" id="L652">							ll=1;</span>
+<span class="nc" id="L653">							System.out.println(&quot;该操作的所有日志为：&quot;);</span>
+<span class="nc bnc" id="L654" title="All 2 branches missed.">							for(String h:alllog) {</span>
+<span class="nc" id="L655">								tomatcher=pattern1.matcher(h);</span>
+<span class="nc bnc" id="L656" title="All 2 branches missed.">								if(tomatcher.find()) {  //获得所有时间信息</span>
+<span class="nc" id="L657">									month=tomatcher.group(1);</span>
+<span class="nc" id="L658">									day=tomatcher.group(2);</span>
+<span class="nc" id="L659">									year=tomatcher.group(3);</span>
+<span class="nc" id="L660">									hour=tomatcher.group(4);</span>
+<span class="nc" id="L661">									minute=tomatcher.group(5);</span>
+<span class="nc" id="L662">									panduan=tomatcher.group(7);</span>
+<span class="nc bnc" id="L663" title="All 13 branches missed.">									switch(month) {   //将月份转化为数字形式</span>
+									case &quot;Jan&quot;:
+<span class="nc" id="L665">										month=&quot;01&quot;;</span>
+<span class="nc" id="L666">										break;</span>
+									case &quot;Feb&quot;:
+<span class="nc" id="L668">										month=&quot;02&quot;;</span>
+<span class="nc" id="L669">										break;</span>
+									case &quot;Mar&quot;:
+<span class="nc" id="L671">										month=&quot;03&quot;;</span>
+<span class="nc" id="L672">										break;</span>
+									case &quot;Apr&quot;:
+<span class="nc" id="L674">										month=&quot;04&quot;;</span>
+<span class="nc" id="L675">										break;</span>
+									case &quot;May&quot;:
+<span class="nc" id="L677">										month=&quot;05&quot;;</span>
+<span class="nc" id="L678">										break;</span>
+									case &quot;Jun&quot;:
+<span class="nc" id="L680">										month=&quot;06&quot;;</span>
+<span class="nc" id="L681">										break;</span>
+									case &quot;Jul&quot;:
+<span class="nc" id="L683">										month=&quot;07&quot;;</span>
+<span class="nc" id="L684">										break;</span>
+									case &quot;Aug&quot;:
+<span class="nc" id="L686">										month=&quot;08&quot;;</span>
+<span class="nc" id="L687">										break;</span>
+									case &quot;Sep&quot;:
+<span class="nc" id="L689">										month=&quot;09&quot;;</span>
+<span class="nc" id="L690">										break;</span>
+									case &quot;Oct&quot;:
+<span class="nc" id="L692">										month=&quot;10&quot;;</span>
+<span class="nc" id="L693">										break;</span>
+									case &quot;Nov&quot;:
+<span class="nc" id="L695">										month=&quot;11&quot;;</span>
+<span class="nc" id="L696">										break;</span>
+									case &quot;Dec&quot;:
+<span class="nc" id="L698">										month=&quot;12&quot;;</span>
+										break;	
+									}
+<span class="nc bnc" id="L701" title="All 2 branches missed.">									if(panduan.equals(&quot;PM&quot;)) {  //对于PM的，小时数加12</span>
+<span class="nc" id="L702">										hour=Integer.toString(Integer.parseInt(hour)+12);</span>
+									}
+<span class="nc bnc" id="L704" title="All 4 branches missed.">									if(panduan.equals(&quot;AM&quot;)&amp;&amp;Integer.parseInt(hour)&lt;10) {  //对于AM的，小时数小于10的，前面加个0</span>
+<span class="nc" id="L705">										hour=&quot;0&quot;+hour;</span>
+									}
+<span class="nc" id="L707">									time=year+&quot;-&quot;+month+&quot;-&quot;+day+&quot; &quot;+hour+&quot;:&quot;+minute;</span>
+<span class="nc" id="L708">									Calendar temptime= Calendar.getInstance(); </span>
+<span class="nc" id="L709">									temptime.setTime(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm&quot;).parse(time));</span>
+<span class="nc bnc" id="L710" title="All 4 branches missed.">									if(temptime.compareTo(mytime.getbegintime())&gt;0&amp;&amp;temptime.compareTo(mytime.getendtime())&lt;0) {  </span>
+<span class="nc" id="L711">										System.out.print(&quot;日志&quot;+ll+&quot;为：&quot;+h+&quot;\n&quot;);</span>
+<span class="nc" id="L712">										ll++;</span>
+									}
+									
+								}
+							}
+<span class="nc bnc" id="L717" title="All 2 branches missed.">							if(ll==1) {</span>
+<span class="nc" id="L718">								System.out.print(&quot;没有该时间段的日志\n&quot;);</span>
+							}
+<span class="nc" id="L720">						}catch(ArrayIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L721">							 System.out.println(&quot;未用,隔开，请重新执行操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L722">							 break;</span>
+<span class="nc" id="L723">						}catch(ParseException e) {</span>
+<span class="nc" id="L724">							System.out.println(&quot;时间不符合yyyy-MM-dd HH:mm的要求，请重新执行操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L725">							break;</span>
+<span class="nc" id="L726">						} catch (BeginEndTimeException e) {</span>
+<span class="nc" id="L727">							System.out.println(&quot;起始时间晚于终止时间，请重新执行操作，用正确格式输入\n&quot;);</span>
+<span class="nc" id="L728">							break;</span>
+						}
+					}
+<span class="nc" id="L731">					 System.out.print(&quot;\n&quot;);</span>
+<span class="nc" id="L732">					break;</span>
+				case &quot;16&quot;:
+<span class="nc" id="L734">					logger.log(Level.INFO,&quot;true:over program&quot;);</span>
+<span class="nc" id="L735">					fileHandler.close();</span>
+<span class="nc" id="L736">					System.out.println(&quot;日志已写入且程序已结束&quot;);</span>
+<span class="nc" id="L737">					System.exit(0);</span>
+<span class="nc" id="L738">					break;</span>
+				default:
+<span class="nc" id="L740">					System.out.println(&quot;请输入正确指令\n&quot;);</span>
+					break;		
+				}
+<span class="nc" id="L743">				fileHandler.close();</span>
+			}
+			
+<span class="nc" id="L746">		}catch (SecurityException e3) {</span>
+			// TODO 自动生成的 catch 块
+<span class="nc" id="L748">			e3.printStackTrace();</span>
+<span class="nc" id="L749">		} catch (IOException e1) {</span>
+			// TODO 自动生成的 catch 块
+<span class="nc" id="L751">			e1.printStackTrace();</span>
+		} 		
+<span class="nc" id="L753">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

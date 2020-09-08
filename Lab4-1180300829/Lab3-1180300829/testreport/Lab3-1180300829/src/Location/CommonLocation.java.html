@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>CommonLocation.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Location</a> &gt; <span class="el_source">CommonLocation.java</span></div><h1>CommonLocation.java</h1><pre class="source lang-java linenums">package Location;
+
+<span class="pc bpc" id="L3" title="1 of 2 branches missed.">public class CommonLocation implements Location{</span>
+
+	private final String longitude;  //位置经度
+	private final String latitude;   //位置纬度
+	private final String locationname;  //位置名称
+	
+	// inmutability类
+	// Abstraction function:
+	// AF(longitude)=该位置经度
+	// AF(longitude)=该位置纬度
+	// AF(longitude)=该位置名称
+	// Representation invariant:
+	// 位置经度,位置纬度,位置名称不为空
+	// Safety from rep exposure:
+	// 将longitude,latitude,locationname设置为private final
+	// 由于Sring为inmutable类型，不需要进行defensive copy
+	
+	// TODO checkRep
+    private void checkRep() {  //位置经度,位置纬度,位置名称不为空
+<span class="pc bpc" id="L22" title="2 of 4 branches missed.">          assert longitude!=null;</span>
+<span class="pc bpc" id="L23" title="2 of 4 branches missed.">          assert latitude!=null;</span>
+<span class="pc bpc" id="L24" title="2 of 4 branches missed.">          assert locationname!=null;</span>
+<span class="fc" id="L25">    }</span>
+	
+	/**
+	 * 构造方法
+	 * @param longitude 纬度
+	 * @param latitude 经度
+	 * @param locationname 该位置名称
+	 */
+<span class="fc" id="L33">	public CommonLocation(String longitude,String latitude,String locationname) {</span>
+<span class="fc" id="L34">		this.longitude=longitude;</span>
+<span class="fc" id="L35">		this.latitude=latitude;</span>
+<span class="fc" id="L36">		this.locationname=locationname;</span>
+<span class="fc" id="L37">		checkRep();</span>
+<span class="fc" id="L38">	}</span>
+
+	/**
+	 * 得到该位置的的纬度
+	 * @return 该位置的纬度
+	 */
+	@Override
+	public String getlongitude() {
+<span class="fc" id="L46">		checkRep();</span>
+<span class="fc" id="L47">		return longitude;</span>
+	}
+
+	/**
+	 * 得到该位置的的经度
+	 * @return 该位置的经度
+	 */
+	@Override
+	public String getlatitude() {
+<span class="fc" id="L56">		checkRep();</span>
+<span class="fc" id="L57">		return latitude;</span>
+	}
+
+	/**
+	 * 得到该位置的的名称
+	 * @return 该位置的名称
+	 */
+	@Override
+	public String getlocationname() {
+<span class="fc" id="L66">		checkRep();</span>
+<span class="fc" id="L67">		return locationname;</span>
+	}
+
+	/**
+	 * 重写hashcode方法
+	 */
+	@Override
+	public int hashCode() {
+<span class="fc" id="L75">		final int prime = 31;</span>
+<span class="fc" id="L76">		int result = 1;</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">		result = prime * result + ((locationname == null) ? 0 : locationname.hashCode());</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());</span>
+<span class="fc" id="L80">		return result;</span>
+	}
+
+	/**
+	 * 重写equals方法
+	 */
+	@Override
+	public boolean equals(Object obj) {
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (this == obj)</span>
+<span class="fc" id="L89">			return true;</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		if (obj == null)</span>
+<span class="nc" id="L91">			return false;</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">		if (getClass() != obj.getClass())</span>
+<span class="nc" id="L93">			return false;</span>
+<span class="fc" id="L94">		CommonLocation other = (CommonLocation) obj;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (latitude == null) {</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">			if (other.latitude != null)</span>
+<span class="nc" id="L97">				return false;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		} else if (!latitude.equals(other.latitude))</span>
+<span class="fc" id="L99">			return false;</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">		if (locationname == null) {</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">			if (other.locationname != null)</span>
+<span class="nc" id="L102">				return false;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		} else if (!locationname.equals(other.locationname))</span>
+<span class="fc" id="L104">			return false;</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">		if (longitude == null) {</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">			if (other.longitude != null)</span>
+<span class="nc" id="L107">				return false;</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		} else if (!longitude.equals(other.longitude))</span>
+<span class="nc" id="L109">			return false;</span>
+<span class="fc" id="L110">		return true;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TrainEntryTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">PlanningEntry</a> &gt; <span class="el_source">TrainEntryTest.java</span></div><h1>TrainEntryTest.java</h1><pre class="source lang-java linenums">package PlanningEntry;
+
+import static org.junit.Assert.*;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
+import Exception.BeginEndTimeException;
+import Exception.ConflictTimeException;
+import Exception.LessThanZeroException;
+import Exception.SameLocationException;
+import Exception.SameResourceException;
+import Factory.CourseEntryFactory;
+import Factory.TrainEntryFactory;
+import Location.CourseLocation;
+import Location.FlightTrainLocation;
+import Location.Location;
+import Resource.Carriage;
+import Resource.Teacher;
+import Timeslot.Timeslot;
+
+<span class="fc" id="L25">public class TrainEntryTest {</span>
+	
+	/**
+	 * 在测试该类的过程中已经完成了对其委托方法的测试
+	 * @throws SameLocationException 
+	 */
+
+	/* Testing strategy
+	 * 测试setlocations方法
+	 * 按照位置是否已被设置划分：位置已被设置，位置未被设置
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void setlocationstest() throws SameLocationException {
+<span class="fc" id="L39">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L43">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L44">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L45">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L46">		PlanningEntry origintrain=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L47">		TrainEntry&lt;Carriage&gt; train=(TrainEntry&lt;Carriage&gt;)origintrain;</span>
+		
+<span class="fc" id="L49">		List&lt;Location&gt; alllocation=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L50">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L51">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L52">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+      
+<span class="fc" id="L54">		assertEquals(true,train.setlocations(alllocation));</span>
+<span class="fc" id="L55">		assertEquals(false,train.setlocations(alllocation));</span>
+<span class="fc" id="L56">	}</span>
+
+	/* Testing strategy
+	 * 测试changelocations方法
+	 * 测试返回值即可
+     */
+	@Test
+	public void changelocationstest() throws SameLocationException {
+<span class="fc" id="L64">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L68">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L69">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L70">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L71">		PlanningEntry origintrain=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L72">		TrainEntry&lt;Carriage&gt; train=(TrainEntry&lt;Carriage&gt;)origintrain;</span>
+		
+<span class="fc" id="L74">		List&lt;Location&gt; alllocation=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L75">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L76">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L77">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+		
+<span class="fc" id="L79">		train.setlocations(alllocation);</span>
+<span class="fc" id="L80">		assertEquals(false,train.changelocations(alllocation));	</span>
+	
+<span class="fc" id="L82">	}</span>
+	
+	
+	/* Testing strategy
+	 * 测试getlocations方法
+     * 测试返回值即可
+     */
+	@Test
+	public void getlocationstest() throws SameLocationException {
+<span class="fc" id="L91">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L95">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L96">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L97">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L98">		PlanningEntry origintrain=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L99">		TrainEntry&lt;Carriage&gt; train=(TrainEntry&lt;Carriage&gt;)origintrain;</span>
+		
+<span class="fc" id="L101">		List&lt;Location&gt; alllocation=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L102">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L103">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L104">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+		
+<span class="fc" id="L106">		train.setlocations(alllocation);</span>
+<span class="fc" id="L107">		assertEquals(alllocation,train.getlocations());	</span>
+<span class="fc" id="L108">	}</span>
+	
+	/* Testing strategy
+	 * 测试setresource方法
+	 * 按照资源是否已被设置划分：资源已被设置，资源未被设置
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void setresourcetest() throws SameResourceException, LessThanZeroException {
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L120">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L121">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L122">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L123">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L124">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L126">		List&lt;Carriage&gt; allcarriage1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L127">		allcarriage1.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L128">		allcarriage1.add(new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+		
+<span class="fc" id="L130">		assertEquals(true,train1.setresource(allcarriage1));</span>
+<span class="fc" id="L131">		assertEquals(false,train1.setresource(allcarriage1));</span>
+<span class="fc" id="L132">	}</span>
+	
+	/* Testing strategy
+	 * 测试getresource方法
+	 * 测试返回值即可
+     */
+	@Test
+	public void getresourcetest() throws SameResourceException, LessThanZeroException {
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L143">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L144">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L145">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L146">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L147">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L149">		List&lt;Carriage&gt; allcarriage1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L150">		allcarriage1.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L151">		allcarriage1.add(new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+		
+<span class="fc" id="L153">		train1.setresource(allcarriage1);</span>
+<span class="fc" id="L154">		assertEquals(allcarriage1,train1.getresource());</span>
+<span class="fc" id="L155">	}</span>
+	
+	/* Testing strategy
+	 * 测试changeresource方法
+	 * 按照更改后是否与原车厢重复划分：重复，不重复
+	 * 按照待更改车厢是否存在划分：存在，不存在
+	 * 覆盖每个取值如下：
+     */
+	@Test
+	public void changeresourcetest() throws SameResourceException, LessThanZeroException {
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L168">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L169">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L170">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L171">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L172">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L174">		List&lt;Carriage&gt; allcarriage1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L175">		allcarriage1.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L176">		allcarriage1.add(new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+		
+<span class="fc" id="L178">		train1.setresource(allcarriage1);</span>
+<span class="fc" id="L179">		assertEquals(false,train1.changeresource(new Carriage(&quot;A01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;), new Carriage(&quot;A02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;)));</span>
+<span class="fc" id="L180">		assertEquals(false,train1.changeresource(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;), new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;)));</span>
+<span class="fc" id="L181">		assertEquals(true,train1.changeresource(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;), new Carriage(&quot;A01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;)));</span>
+<span class="fc" id="L182">	}</span>
+	
+	/* Testing strategy
+	 * 测试addresource方法
+	 * 增加车厢是否已经存在划分：存在，不存在
+	 * 按照待增加车厢的位置：高铁中部，高铁尾部
+	 * 覆盖每个取值如下：
+     */
+	@Test
+	public void addresourcetest() throws SameResourceException, LessThanZeroException {
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L195">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L196">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L197">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L198">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L199">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L201">		List&lt;Carriage&gt; allcarriage1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L202">		allcarriage1.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L203">		allcarriage1.add(new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+		
+<span class="fc" id="L205">		train1.setresource(allcarriage1);</span>
+<span class="fc" id="L206">		assertEquals(false,train1.addresource(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;), 0));</span>
+<span class="fc" id="L207">		assertEquals(true,train1.addresource(new Carriage(&quot;A01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;), 0));</span>
+<span class="fc" id="L208">		assertEquals(true,train1.addresource(new Carriage(&quot;A02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;), 3));</span>
+<span class="fc" id="L209">	}</span>
+	
+	/* Testing strategy
+	 * 测试deleteresource方法
+	 * 增加待移除车厢是否已经存在划分：存在，不存在
+	 * 覆盖每个取值如下：
+     */
+	@Test
+	public void deleteresourcetest() throws SameResourceException, LessThanZeroException {
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L221">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L222">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L223">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L224">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L225">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L227">		List&lt;Carriage&gt; allcarriage1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L228">		allcarriage1.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L229">		allcarriage1.add(new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+		
+<span class="fc" id="L231">		train1.setresource(allcarriage1);</span>
+<span class="fc" id="L232">		assertEquals(false,train1.deleteresource(new Carriage(&quot;A01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;)));</span>
+<span class="fc" id="L233">		assertEquals(true,train1.deleteresource(new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;)));</span>
+<span class="fc" id="L234">	}</span>
+	
+	
+	/* Testing strategy
+	 * 测试whetherblockable方法
+	 * 测试返回值即可
+     */
+	@Test
+	public void whetherblockabletest() {
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L246">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L247">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L248">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L249">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L250">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+<span class="fc" id="L251">		assertEquals(true,train1.whetherblockable());</span>
+<span class="fc" id="L252">	}</span>
+	
+	/* Testing strategy
+	 * 测试settimeslot方法
+	 * 按照时间是否已被设置划分：已被设置，未被设置
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void settimeslottest() throws ParseException, BeginEndTimeException, ConflictTimeException{
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L264">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L265">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L266">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L267">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L268">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L270">		List&lt;Timeslot&gt; alltime1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L271">		alltime1.add(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L272">		alltime1.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+	
+<span class="fc" id="L274">		assertEquals(true,train1.settimeslot(alltime1));</span>
+<span class="fc" id="L275">		assertEquals(false,train1.settimeslot(alltime1));</span>
+<span class="fc" id="L276">	}</span>
+	
+	/* Testing strategy
+	 * 测试gettimeslot方法
+	 * 测试返回值即可
+     */
+	@Test
+	public void gettimeslottest() throws ParseException, BeginEndTimeException, ConflictTimeException{
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L287">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L288">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L289">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L290">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L291">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L293">		List&lt;Timeslot&gt; alltime1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L294">		alltime1.add(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L295">		alltime1.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L296">		train1.settimeslot(alltime1);</span>
+	
+<span class="fc" id="L298">		assertEquals(alltime1,train1.gettimeslot());</span>
+<span class="fc" id="L299">	}</span>
+	
+	/* Testing strategy
+	 * 测试trainblocklot方法
+	 * 按照站点总数划分：不大于2，大于2
+	 * 按照是否是中间站点划分：是中间站点，不是中间站点
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void trainblocktest() throws SameLocationException {
+<span class="fc" id="L309">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L313">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L314">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L315">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L316">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L317">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L319">		List&lt;Location&gt; alllocation1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L320">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L321">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L322">		train1.setlocations(alllocation1);</span>
+		
+<span class="fc" id="L324">		assertEquals(-1,train1.trainblock(&quot;武汉&quot;));</span>
+		
+		MultipleLacationEntryImpl a8;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b8;
+		BlockableEntryImpl c8;
+<span class="fc" id="L329">		a8=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L330">		b8=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L331">		c8=new BlockableEntryImpl();</span>
+<span class="fc" id="L332">		PlanningEntry origintrain2=new TrainEntryFactory().getTrainEntry(a8, b8, c8); //用工厂方法创建对象</span>
+<span class="fc" id="L333">		TrainEntry&lt;Carriage&gt; train2=(TrainEntry&lt;Carriage&gt;)origintrain2;</span>
+		
+<span class="fc" id="L335">		List&lt;Location&gt; alllocation2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L336">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L337">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L338">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L339">		train2.setlocations(alllocation2);</span>
+		
+<span class="fc" id="L341">		assertEquals(-1,train2.trainblock(&quot;北京&quot;));</span>
+<span class="fc" id="L342">		assertEquals(-1,train2.trainblock(&quot;南京&quot;));</span>
+<span class="fc" id="L343">		assertEquals(1,train2.trainblock(&quot;武汉&quot;));</span>
+<span class="fc" id="L344">	}</span>
+	
+	/* Testing strategy
+	 * 测试compareTo方法
+	 * 按照起始时间大小划分：大于，等于，小于
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void compareTotest() throws ParseException, BeginEndTimeException, ConflictTimeException{
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L356">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L357">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L358">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L359">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L360">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L362">		List&lt;Timeslot&gt; alltime1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L363">		alltime1.add(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L364">		alltime1.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L365">		train1.settimeslot(alltime1);</span>
+		
+		MultipleLacationEntryImpl a8;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b8;
+		BlockableEntryImpl c8;
+<span class="fc" id="L370">		a8=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L371">		b8=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L372">		c8=new BlockableEntryImpl();</span>
+<span class="fc" id="L373">		PlanningEntry origintrain2=new TrainEntryFactory().getTrainEntry(a8, b8, c8); //用工厂方法创建对象</span>
+<span class="fc" id="L374">		TrainEntry&lt;Carriage&gt; train2=(TrainEntry&lt;Carriage&gt;)origintrain2;</span>
+		
+<span class="fc" id="L376">		List&lt;Timeslot&gt; alltime2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L377">		alltime2.add(new Timeslot(&quot;2020-01-01 14:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L378">		alltime2.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L379">		train2.settimeslot(alltime2);</span>
+		
+		MultipleLacationEntryImpl a9;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b9;
+		BlockableEntryImpl c9;
+<span class="fc" id="L384">		a9=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L385">		b9=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L386">		c9=new BlockableEntryImpl();</span>
+<span class="fc" id="L387">		PlanningEntry origintrain3=new TrainEntryFactory().getTrainEntry(a9, b9, c9); //用工厂方法创建对象</span>
+<span class="fc" id="L388">		TrainEntry&lt;Carriage&gt; train3=(TrainEntry&lt;Carriage&gt;)origintrain3;</span>
+
+<span class="fc" id="L390">		List&lt;Timeslot&gt; alltime3=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L391">		alltime3.add(new Timeslot(&quot;2020-01-01 14:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L392">		alltime3.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L393">		train3.settimeslot(alltime3);</span>
+		
+<span class="fc" id="L395">		assertEquals(1,train1.compareTo(train2));</span>
+<span class="fc" id="L396">		assertEquals(0,train2.compareTo(train3));</span>
+<span class="fc" id="L397">		assertEquals(-1,train2.compareTo(train1));</span>
+<span class="fc" id="L398">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

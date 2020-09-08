@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>BlockableEntryImpl.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">PlanningEntry</a> &gt; <span class="el_source">BlockableEntryImpl.java</span></div><h1>BlockableEntryImpl.java</h1><pre class="source lang-java linenums">package PlanningEntry;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import Exception.ConflictTimeException;
+import Timeslot.Timeslot;
+
+<span class="pc bpc" id="L9" title="1 of 2 branches missed.">public class BlockableEntryImpl implements Cloneable,BlockableEntry {</span>
+
+	private List&lt;Timeslot&gt; alltime; //一组时间对
+	
+	// mutability类
+	// Abstraction function:
+	// AF(mytrain)=一组时间对
+	// Representation invariant:
+	// 输入的时间对集合不能为空，每个站的抵达时间早于出发时间
+	// Safety from rep exposure:
+	// 将alltime设置为private
+	
+	// TODO checkRep
+    private void checkRep() {  //保证每个站抵达时间早于出发时间
+<span class="pc bpc" id="L23" title="2 of 4 branches missed.">    	assert alltime!=null;</span>
+<span class="fc" id="L24">    	boolean result=true;</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">    	for(int i=0;i&lt;alltime.size()-1;i++) {</span>
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">			if(alltime.get(i).getendtime().compareTo(alltime.get(i+1).getbegintime())&gt;0) {</span>
+<span class="nc" id="L27">				result=false;</span>
+			}
+		}
+<span class="pc bpc" id="L30" title="2 of 4 branches missed.">        assert result==true:&quot;某个站抵达时间晚于出发时间\n&quot;;</span>
+<span class="fc" id="L31">    }</span>
+	
+	/**
+	 * 判断是否可阻塞
+	 * @return 是否可阻塞
+	 */
+	@Override
+	public boolean whetherblockable() {
+<span class="fc" id="L39">		System.out.println(&quot;可阻塞&quot;);</span>
+<span class="fc" id="L40">		return true;</span>
+	}
+
+	 /**
+     * 设置这一组时间对
+     * @param alltime 一组时间对，每个站抵达时间早于出发时间
+     * @return 是否成功设置这一组时间对
+	 * @throws ConflictTimeException 某个站抵达时间晚于出发时间
+     */
+	@Override
+	public boolean settimeslot(List&lt;Timeslot&gt; time) throws ConflictTimeException {
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		for(int i=0;i&lt;time.size()-1;i++) {</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">			if(time.get(i).getendtime().compareTo(time.get(i+1).getbegintime())&gt;0) {</span>
+<span class="nc" id="L53">				throw new ConflictTimeException();</span>
+			}
+		}
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		if(alltime==null) {</span>
+<span class="fc" id="L57">			alltime=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L58">			this.alltime=time;</span>
+<span class="fc" id="L59">			System.out.println(&quot;一组时间对设置成功&quot;);</span>
+<span class="fc" id="L60">			checkRep();</span>
+<span class="fc" id="L61">			return true;</span>
+		}
+<span class="fc" id="L63">		System.out.println(&quot;时间只能设置一次&quot;);</span>
+<span class="fc" id="L64">		return false;</span>
+	}
+
+	
+	/**
+	 * 得到这一组时间对
+	 * @return 这一组时间对
+	 */
+	@Override
+	public List&lt;Timeslot&gt; gettimeslot() {
+<span class="fc" id="L74">		checkRep();</span>
+<span class="fc" id="L75">		return alltime;</span>
+	}
+	
+	@Override
+	  public BlockableEntryImpl clone() { 
+<span class="nc" id="L80">		BlockableEntryImpl stu = null; </span>
+	    try{ 
+<span class="nc" id="L82">	      stu = (BlockableEntryImpl)super.clone(); </span>
+<span class="nc" id="L83">	    }catch(CloneNotSupportedException e) { </span>
+<span class="nc" id="L84">	      e.printStackTrace(); </span>
+	    } 
+<span class="nc" id="L86">	    return stu; </span>
+	  } 
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

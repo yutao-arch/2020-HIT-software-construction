@@ -1,0 +1,19 @@
+Jun 07, 2020 2:55:06 AM App.TrainScheduleApp main
+INFO: true:setplanningentryname,计划项B4321
+Jun 07, 2020 2:55:10 AM App.TrainScheduleApp main
+SEVERE: flase:setlocation,SameLocationException->operation again,计划项B4321
+Exception.SameLocationException
+	at PlanningEntry.MultipleLacationEntryImpl.setlocations(MultipleLacationEntryImpl.java:55)
+	at PlanningEntry.TrainEntry.setlocations(TrainEntry.java:48)
+	at App.TrainScheduleApp.main(TrainScheduleApp.java:136)
+
+Jun 07, 2020 2:55:13 AM App.TrainScheduleApp main
+INFO: true:setplanningentryname,计划项B4321
+Jun 07, 2020 2:55:18 AM App.TrainScheduleApp main
+INFO: true:setlocation,计划项B4321
+Jun 07, 2020 2:55:30 AM App.TrainScheduleApp main
+INFO: true:settimeslot,计划项B4321
+Jun 07, 2020 2:55:39 AM App.TrainScheduleApp main
+INFO: true:setresource,计划项B4321
+Jun 07, 2020 2:55:41 AM App.TrainScheduleApp main
+INFO: true:over program

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>TrainEntryFactoryTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">Factory</a> &gt; <span class="el_source">TrainEntryFactoryTest.java</span></div><h1>TrainEntryFactoryTest.java</h1><pre class="source lang-java linenums">package Factory;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import PlanningEntry.BlockableEntryImpl;
+import PlanningEntry.MultipleLacationEntryImpl;
+import PlanningEntry.MultipleSortedResourceEntryImpl;
+import PlanningEntry.NoBlockableEntryImpl;
+import PlanningEntry.OneDistinguishResourceEntryImpl;
+import PlanningEntry.OneLocationEntryImpl;
+import PlanningEntry.TwoLocationEntryImpl;
+import Resource.Carriage;
+import Resource.Flight;
+import Resource.Teacher;
+
+<span class="pc bpc" id="L18" title="1 of 2 branches missed.">public class TrainEntryFactoryTest {</span>
+
+	/* Testing strategy
+	 * 测试getFlightEntry方法
+     * 测试返回值即可
+     */
+	@Test
+	public void getFlightEntrytest() {
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L29">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L30">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L31">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L32">		TrainEntryFactory temp=new TrainEntryFactory();</span>
+<span class="fc" id="L33">		assertEquals(null,temp.getFlightEntry(a4, b4, c4));</span>
+<span class="fc" id="L34">	}</span>
+	
+	/* Testing strategy
+	 * 测试getTrainEntry方法
+     * 测试返回值即可
+     */
+	@Test
+	public void getTrainEntrytest() {
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L45">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L46">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L47">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L48">		TrainEntryFactory temp=new TrainEntryFactory();</span>
+<span class="pc bpc" id="L49" title="2 of 4 branches missed.">		assert temp.getTrainEntry(a7, b7, c7)!=null;</span>
+<span class="fc" id="L50">	}</span>
+	
+	/* Testing strategy
+	 * 测试getCourseEntry方法
+     * 测试返回值即可
+     */
+	@Test
+	public void getCourseEntrytest() {
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L61">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L62">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L63">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L64">		TrainEntryFactory temp=new TrainEntryFactory();</span>
+<span class="fc" id="L65">		assertEquals(null,temp.getCourseEntry(a1, b1, c1));</span>
+<span class="fc" id="L66">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>

@@ -1,0 +1,830 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>PlanningEntryAPIsTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ParserTest（2） (2020-6-4 21:23:27)</a> &gt; <a href="../../index.html" class="el_group">Lab3-1180300829</a> &gt; <a href="../index.html" class="el_bundle">test</a> &gt; <a href="index.source.html" class="el_package">PlanningEntryAPIs</a> &gt; <span class="el_source">PlanningEntryAPIsTest.java</span></div><h1>PlanningEntryAPIsTest.java</h1><pre class="source lang-java linenums">package PlanningEntryAPIs;
+
+import static org.junit.Assert.*;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
+import Exception.BeginEndTimeException;
+import Exception.ConflictTimeException;
+import Exception.LessThanZeroException;
+import Exception.SameLocationException;
+import Exception.SameResourceException;
+import Factory.CourseEntryFactory;
+import Factory.FlightEntryFactory;
+import Factory.TrainEntryFactory;
+import Location.CourseLocation;
+import Location.FlightTrainLocation;
+import Location.Location;
+import PlanningEntry.BlockableEntryImpl;
+import PlanningEntry.CommonPlanningEntry;
+import PlanningEntry.CourseEntry;
+import PlanningEntry.FlightEntry;
+import PlanningEntry.MultipleLacationEntryImpl;
+import PlanningEntry.MultipleSortedResourceEntryImpl;
+import PlanningEntry.NoBlockableEntryImpl;
+import PlanningEntry.OneDistinguishResourceEntryImpl;
+import PlanningEntry.OneLocationEntryImpl;
+import PlanningEntry.PlanningEntry;
+import PlanningEntry.TrainEntry;
+import PlanningEntry.TwoLocationEntryImpl;
+import Resource.Carriage;
+import Resource.Flight;
+import Resource.Teacher;
+import Timeslot.Timeslot;
+
+<span class="fc" id="L39">public class PlanningEntryAPIsTest {</span>
+	
+<span class="fc" id="L41">	PlanningEntryAPIs myapis=new PlanningEntryAPIs&lt;&gt;();</span>
+	
+	/**
+	 * 在测试该类的过程中已经完成了对其委托方法的测试
+	 * @throws BeginEndTimeException 
+	 * @throws SameLocationException 
+	 * @throws ConflictTimeException 
+	 */
+
+	/* Testing strategy
+	 * 测试checkLocationConflict方法，由于委托关系也测试了Strategy1checkLocationConflict类和Strategy2checkLocationConflict
+	 * 按照PlanningEntry的种类划分：CourseEntry,FlightEntry,TrainEntry
+	 * 按照是否存在位置独占冲突划分，存在位置独占冲突，不存在位置独占冲突
+	 * 按照输入的指令划分：指令为1，指令为2，指令为其他
+	 * 按照输入的集合划分：为计划项集合，不为计划项集合
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void checkLocationConflicttest() throws ParseException, BeginEndTimeException, SameLocationException, ConflictTimeException {
+		
+<span class="fc" id="L61">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		//
+<span class="fc" id="L63">		List&lt;CourseEntry&lt;Teacher&gt;&gt; courselist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L64">		List&lt;CourseEntry&lt;Teacher&gt;&gt; courselist2=new ArrayList&lt;&gt;();</span>
+		
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L69">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L70">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L71">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L72">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L73">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L75">		course1.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L76">		course1.settimeslot(new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;));</span>
+<span class="fc" id="L77">		course1.setplanningentryname(&quot;软件构造&quot;);</span>
+		
+		OneLocationEntryImpl a2;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b2;
+		NoBlockableEntryImpl c2;
+<span class="fc" id="L82">		a2=new OneLocationEntryImpl();</span>
+<span class="fc" id="L83">		b2=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L84">		c2=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L85">		PlanningEntry origincourse2=new CourseEntryFactory().getCourseEntry(a2, b2, c2); //用工厂方法创建对象</span>
+<span class="fc" id="L86">		CourseEntry&lt;Teacher&gt; course2=(CourseEntry&lt;Teacher&gt;)origincourse2;</span>
+		
+<span class="fc" id="L88">		course2.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L89">		course2.settimeslot(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L90">		course2.setplanningentryname(&quot;计算机系统&quot;);</span>
+		
+		OneLocationEntryImpl a3;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b3;
+		NoBlockableEntryImpl c3;
+<span class="fc" id="L95">		a3=new OneLocationEntryImpl();</span>
+<span class="fc" id="L96">		b3=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L97">		c3=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L98">		PlanningEntry origincourse3=new CourseEntryFactory().getCourseEntry(a3, b3, c3); //用工厂方法创建对象</span>
+<span class="fc" id="L99">		CourseEntry&lt;Teacher&gt; course3=(CourseEntry&lt;Teacher&gt;)origincourse3;</span>
+		
+<span class="fc" id="L101">		course3.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L102">		course3.settimeslot(new Timeslot(&quot;2020-02-01 16:45&quot;,&quot;2020-02-01 18:30&quot;));</span>
+<span class="fc" id="L103">		course3.setplanningentryname(&quot;数据结构&quot;);</span>
+	
+<span class="fc" id="L105">		courselist1.add(course1);</span>
+<span class="fc" id="L106">		courselist1.add(course2);</span>
+<span class="fc" id="L107">		courselist2.add(course1);</span>
+<span class="fc" id="L108">		courselist2.add(course3);</span>
+		
+<span class="fc" id="L110">		assertEquals(true,myapis.checkLocationConflict(courselist1, &quot;1&quot;));</span>
+<span class="fc" id="L111">		assertEquals(false,myapis.checkLocationConflict(courselist2, &quot;1&quot;));</span>
+<span class="fc" id="L112">		assertEquals(true,myapis.checkLocationConflict(courselist1, &quot;2&quot;));</span>
+<span class="fc" id="L113">		assertEquals(false,myapis.checkLocationConflict(courselist2, &quot;2&quot;));</span>
+<span class="fc" id="L114">		assertEquals(false,myapis.checkLocationConflict(courselist2, &quot;3&quot;));</span>
+		
+		//
+<span class="fc" id="L117">		List&lt;FlightEntry&lt;Flight&gt;&gt; flightlist1=new ArrayList&lt;&gt;();</span>
+		
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L122">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L123">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L124">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L125">		PlanningEntry originflight=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L126">		FlightEntry&lt;Flight&gt; flight=(FlightEntry&lt;Flight&gt;)originflight;</span>
+		
+<span class="fc" id="L128">		flight.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L129">		flight.settimeslot(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L130">		flight.setplanningentryname(&quot;AS1234&quot;);</span>
+		
+<span class="fc" id="L132">		flightlist1.add(flight);</span>
+		
+<span class="fc" id="L134">		assertEquals(false,myapis.checkLocationConflict(flightlist1, &quot;1&quot;));</span>
+<span class="fc" id="L135">		assertEquals(false,myapis.checkLocationConflict(flightlist1, &quot;2&quot;));</span>
+		
+		//
+<span class="fc" id="L138">		List&lt;TrainEntry&lt;Carriage&gt;&gt; trainlist1=new ArrayList&lt;&gt;();</span>
+		
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L143">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L144">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L145">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L146">		PlanningEntry origintrain=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L147">		TrainEntry&lt;Carriage&gt; train=(TrainEntry&lt;Carriage&gt;)origintrain;</span>
+		
+<span class="fc" id="L149">		List&lt;Location&gt; alllocation=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L150">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L151">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L152">		alllocation.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L153">		train.setlocations(alllocation);</span>
+<span class="fc" id="L154">		List&lt;Timeslot&gt; alltime=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L155">		alltime.add(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L156">		alltime.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L157">		train.settimeslot(alltime);</span>
+<span class="fc" id="L158">		train.setplanningentryname(&quot;G109&quot;);</span>
+		
+<span class="fc" id="L160">		trainlist1.add(train);</span>
+		
+<span class="fc" id="L162">		assertEquals(false,myapis.checkLocationConflict(trainlist1, &quot;1&quot;));</span>
+<span class="fc" id="L163">		assertEquals(false,myapis.checkLocationConflict(trainlist1, &quot;2&quot;));</span>
+		
+		//
+<span class="fc" id="L166">		List&lt;CommonPlanningEntry&gt; templist=new ArrayList&lt;&gt;();</span>
+		
+<span class="fc" id="L168">		CommonPlanningEntry tempentry=new CommonPlanningEntry&lt;&gt;();</span>
+<span class="fc" id="L169">		templist.add(tempentry);</span>
+		
+<span class="fc" id="L171">		assertEquals(false,myapis.checkLocationConflict(templist, &quot;1&quot;));</span>
+<span class="fc" id="L172">		assertEquals(false,myapis.checkLocationConflict(templist, &quot;2&quot;));	</span>
+<span class="fc" id="L173">	}</span>
+	
+	
+	/* Testing strategy
+	 * 测试checkResourceExclusiveConflict方法
+	 * 按照PlanningEntry的种类划分：CourseEntry,FlightEntry,TrainEntry
+	 * 按照是否存在资源独占冲突划分，存在资源独占冲突，不存在资源独占冲突
+	 * 按照输入的集合划分：为计划项集合，不为计划项集合
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void checkResourceExclusiveConflicttest() throws ParseException, BeginEndTimeException, SameLocationException, SameResourceException, ConflictTimeException, LessThanZeroException{
+<span class="fc" id="L185">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		//
+<span class="fc" id="L187">		List&lt;CourseEntry&lt;Teacher&gt;&gt; courselist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L188">		List&lt;CourseEntry&lt;Teacher&gt;&gt; courselist2=new ArrayList&lt;&gt;();</span>
+		
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L193">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L194">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L195">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L196">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L197">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L199">		course1.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L200">		course1.settimeslot(new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;));</span>
+<span class="fc" id="L201">		course1.setplanningentryname(&quot;软件构造&quot;);</span>
+<span class="fc" id="L202">		course1.setresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+		
+		OneLocationEntryImpl a2;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b2;
+		NoBlockableEntryImpl c2;
+<span class="fc" id="L207">		a2=new OneLocationEntryImpl();</span>
+<span class="fc" id="L208">		b2=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L209">		c2=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L210">		PlanningEntry origincourse2=new CourseEntryFactory().getCourseEntry(a2, b2, c2); //用工厂方法创建对象</span>
+<span class="fc" id="L211">		CourseEntry&lt;Teacher&gt; course2=(CourseEntry&lt;Teacher&gt;)origincourse2;</span>
+		
+<span class="fc" id="L213">		course2.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L214">		course2.settimeslot(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L215">		course2.setplanningentryname(&quot;计算机系统&quot;);</span>
+<span class="fc" id="L216">		course2.setresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+		
+		OneLocationEntryImpl a3;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b3;
+		NoBlockableEntryImpl c3;
+<span class="fc" id="L221">		a3=new OneLocationEntryImpl();</span>
+<span class="fc" id="L222">		b3=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L223">		c3=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L224">		PlanningEntry origincourse3=new CourseEntryFactory().getCourseEntry(a3, b3, c3); //用工厂方法创建对象</span>
+<span class="fc" id="L225">		CourseEntry&lt;Teacher&gt; course3=(CourseEntry&lt;Teacher&gt;)origincourse3;</span>
+		
+<span class="fc" id="L227">		course3.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L228">		course3.settimeslot(new Timeslot(&quot;2020-02-01 16:45&quot;,&quot;2020-02-01 18:30&quot;));</span>
+<span class="fc" id="L229">		course3.setplanningentryname(&quot;数据结构&quot;);</span>
+<span class="fc" id="L230">		course3.setresource(new Teacher(&quot;123823199812251172&quot;,&quot;王宁&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+		
+<span class="fc" id="L232">		courselist1.add(course1);</span>
+<span class="fc" id="L233">		courselist1.add(course2);</span>
+<span class="fc" id="L234">		courselist2.add(course1);</span>
+<span class="fc" id="L235">		courselist2.add(course3);</span>
+		
+<span class="fc" id="L237">		assertEquals(true,myapis.checkResourceExclusiveConflict(courselist1));</span>
+<span class="fc" id="L238">		assertEquals(false,myapis.checkResourceExclusiveConflict(courselist2));</span>
+		
+	    //
+<span class="fc" id="L241">        List&lt;FlightEntry&lt;Flight&gt;&gt; flightlist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L242">        List&lt;FlightEntry&lt;Flight&gt;&gt; flightlist2=new ArrayList&lt;&gt;();</span>
+		
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L247">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L248">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L249">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L250">		PlanningEntry originflight1=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L251">		FlightEntry&lt;Flight&gt; flight1=(FlightEntry&lt;Flight&gt;)originflight1;</span>
+		
+<span class="fc" id="L253">		flight1.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L254">		flight1.settimeslot(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L255">		flight1.setplanningentryname(&quot;AS1234&quot;);</span>
+<span class="fc" id="L256">		flight1.setresource(new Flight(&quot;A898&quot;,&quot;C88&quot;,100,2.5));</span>
+		
+		TwoLocationEntryImpl a5;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b5;
+		NoBlockableEntryImpl c5;
+<span class="fc" id="L261">		a5=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L262">		b5=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L263">		c5=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L264">		PlanningEntry originflight2=new FlightEntryFactory().getFlightEntry(a5, b5, c5); //用工厂方法创建对象</span>
+<span class="fc" id="L265">		FlightEntry&lt;Flight&gt; flight2=(FlightEntry&lt;Flight&gt;)originflight2;</span>
+		
+<span class="fc" id="L267">		flight2.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L268">		flight2.settimeslot(new Timeslot(&quot;2020-01-01 17:45&quot;,&quot;2020-01-01 19:30&quot;));</span>
+<span class="fc" id="L269">		flight2.setplanningentryname(&quot;AS1000&quot;);</span>
+<span class="fc" id="L270">		flight2.setresource(new Flight(&quot;A898&quot;,&quot;C88&quot;,100,2.5));</span>
+		
+		TwoLocationEntryImpl a6;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b6;
+		NoBlockableEntryImpl c6;
+<span class="fc" id="L275">		a6=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L276">		b6=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L277">		c6=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L278">		PlanningEntry originflight3=new FlightEntryFactory().getFlightEntry(a6, b6, c6); //用工厂方法创建对象</span>
+<span class="fc" id="L279">		FlightEntry&lt;Flight&gt; flight3=(FlightEntry&lt;Flight&gt;)originflight3;</span>
+		
+<span class="fc" id="L281">		flight3.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L282">		flight3.settimeslot(new Timeslot(&quot;2020-01-02 16:45&quot;,&quot;2020-01-02 18:30&quot;));</span>
+<span class="fc" id="L283">		flight3.setplanningentryname(&quot;AS0999&quot;);</span>
+<span class="fc" id="L284">		flight3.setresource(new Flight(&quot;A678&quot;,&quot;A28&quot;,100,2.5));</span>
+		
+<span class="fc" id="L286">		flightlist1.add(flight1);</span>
+<span class="fc" id="L287">		flightlist1.add(flight2);</span>
+<span class="fc" id="L288">		flightlist2.add(flight1);</span>
+<span class="fc" id="L289">		flightlist2.add(flight3);</span>
+		
+<span class="fc" id="L291">		assertEquals(true,myapis.checkResourceExclusiveConflict(flightlist1));</span>
+<span class="fc" id="L292">		assertEquals(false,myapis.checkResourceExclusiveConflict(flightlist2));</span>
+		
+		//
+<span class="fc" id="L295">        List&lt;TrainEntry&lt;Carriage&gt;&gt; trainlist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L296">        List&lt;TrainEntry&lt;Carriage&gt;&gt; trainlist2=new ArrayList&lt;&gt;();</span>
+		
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L301">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L302">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L303">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L304">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L305">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L307">		List&lt;Location&gt; alllocation1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L308">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L309">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L310">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L311">		train1.setlocations(alllocation1);</span>
+<span class="fc" id="L312">		List&lt;Timeslot&gt; alltime1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L313">		alltime1.add(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L314">		alltime1.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L315">		train1.settimeslot(alltime1);</span>
+<span class="fc" id="L316">		train1.setplanningentryname(&quot;G109&quot;);</span>
+<span class="fc" id="L317">		List&lt;Carriage&gt; allcarriage1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L318">		allcarriage1.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L319">		allcarriage1.add(new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L320">		train1.setresource(allcarriage1);</span>
+		
+		MultipleLacationEntryImpl a8;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b8;
+		BlockableEntryImpl c8;
+<span class="fc" id="L325">		a8=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L326">		b8=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L327">		c8=new BlockableEntryImpl();</span>
+<span class="fc" id="L328">		PlanningEntry origintrain2=new TrainEntryFactory().getTrainEntry(a8, b8, c8); //用工厂方法创建对象</span>
+<span class="fc" id="L329">		TrainEntry&lt;Carriage&gt; train2=(TrainEntry&lt;Carriage&gt;)origintrain2;</span>
+		
+<span class="fc" id="L331">		List&lt;Location&gt; alllocation2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L332">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L333">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L334">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L335">		train2.setlocations(alllocation2);</span>
+<span class="fc" id="L336">		List&lt;Timeslot&gt; alltime2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L337">		alltime2.add(new Timeslot(&quot;2020-01-01 14:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L338">		alltime2.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L339">		train2.settimeslot(alltime2);</span>
+<span class="fc" id="L340">		train2.setplanningentryname(&quot;G320&quot;);</span>
+<span class="fc" id="L341">		List&lt;Carriage&gt; allcarriage2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L342">		allcarriage2.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L343">		allcarriage2.add(new Carriage(&quot;AS03&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L344">		train2.setresource(allcarriage2);</span>
+		
+		MultipleLacationEntryImpl a9;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b9;
+		BlockableEntryImpl c9;
+<span class="fc" id="L349">		a9=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L350">		b9=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L351">		c9=new BlockableEntryImpl();</span>
+<span class="fc" id="L352">		PlanningEntry origintrain3=new TrainEntryFactory().getTrainEntry(a9, b9, c9); //用工厂方法创建对象</span>
+<span class="fc" id="L353">		TrainEntry&lt;Carriage&gt; train3=(TrainEntry&lt;Carriage&gt;)origintrain3;</span>
+		
+<span class="fc" id="L355">		List&lt;Location&gt; alllocation3=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L356">		alllocation3.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L357">		alllocation3.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L358">		alllocation3.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L359">		train3.setlocations(alllocation3);</span>
+<span class="fc" id="L360">		List&lt;Timeslot&gt; alltime3=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L361">		alltime3.add(new Timeslot(&quot;2020-01-01 14:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L362">		alltime3.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L363">		train3.settimeslot(alltime3);</span>
+<span class="fc" id="L364">		train3.setplanningentryname(&quot;G1000&quot;);</span>
+<span class="fc" id="L365">		List&lt;Carriage&gt; allcarriage3=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L366">		allcarriage3.add(new Carriage(&quot;AS05&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L367">		allcarriage3.add(new Carriage(&quot;AS06&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L368">		train3.setresource(allcarriage3);</span>
+		
+<span class="fc" id="L370">		trainlist1.add(train1);</span>
+<span class="fc" id="L371">		trainlist1.add(train2);</span>
+<span class="fc" id="L372">		trainlist2.add(train1);</span>
+<span class="fc" id="L373">		trainlist2.add(train3);</span>
+		
+<span class="fc" id="L375">		assertEquals(true,myapis.checkResourceExclusiveConflict(trainlist1));</span>
+<span class="fc" id="L376">		assertEquals(false,myapis.checkResourceExclusiveConflict(trainlist2));</span>
+		
+		//
+<span class="fc" id="L379">        List&lt;CommonPlanningEntry&gt; templist=new ArrayList&lt;&gt;();</span>
+		
+<span class="fc" id="L381">		CommonPlanningEntry tempentry=new CommonPlanningEntry&lt;&gt;();</span>
+<span class="fc" id="L382">		templist.add(tempentry);</span>
+		
+<span class="fc" id="L384">		assertEquals(false,myapis.checkResourceExclusiveConflict(templist));</span>
+<span class="fc" id="L385">	}</span>
+	
+	/* Testing strategy
+	 * 测试findEntryPerResource方法
+	 * 按照PlanningEntry的种类划分：CourseEntry,FlightEntry,TrainEntry
+	 * 按含有资源的计划项个数划分：一个，多个
+	 * 按照输入的集合划分：为计划项集合，不为计划项集合
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void findEntryPerResourcetest() throws ParseException, BeginEndTimeException, SameLocationException, SameResourceException, ConflictTimeException, LessThanZeroException{
+<span class="fc" id="L396">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		//
+<span class="fc" id="L398">		List&lt;CourseEntry&lt;Teacher&gt;&gt; courselist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L399">		List&lt;CourseEntry&lt;Teacher&gt;&gt; courselist2=new ArrayList&lt;&gt;();</span>
+		
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L404">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L405">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L406">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L407">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L408">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L410">		course1.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L411">		course1.settimeslot(new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;));</span>
+<span class="fc" id="L412">		course1.setplanningentryname(&quot;软件构造&quot;);</span>
+<span class="fc" id="L413">		course1.setresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+		
+		OneLocationEntryImpl a2;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b2;
+		NoBlockableEntryImpl c2;
+<span class="fc" id="L418">		a2=new OneLocationEntryImpl();</span>
+<span class="fc" id="L419">		b2=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L420">		c2=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L421">		PlanningEntry origincourse2=new CourseEntryFactory().getCourseEntry(a2, b2, c2); //用工厂方法创建对象</span>
+<span class="fc" id="L422">		CourseEntry&lt;Teacher&gt; course2=(CourseEntry&lt;Teacher&gt;)origincourse2;</span>
+		
+<span class="fc" id="L424">		course2.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L425">		course2.settimeslot(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L426">		course2.setplanningentryname(&quot;计算机系统&quot;);</span>
+<span class="fc" id="L427">		course2.setresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+		
+		OneLocationEntryImpl a3;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b3;
+		NoBlockableEntryImpl c3;
+<span class="fc" id="L432">		a3=new OneLocationEntryImpl();</span>
+<span class="fc" id="L433">		b3=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L434">		c3=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L435">		PlanningEntry origincourse3=new CourseEntryFactory().getCourseEntry(a3, b3, c3); //用工厂方法创建对象</span>
+<span class="fc" id="L436">		CourseEntry&lt;Teacher&gt; course3=(CourseEntry&lt;Teacher&gt;)origincourse3;</span>
+		
+<span class="fc" id="L438">		course3.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L439">		course3.settimeslot(new Timeslot(&quot;2020-02-01 16:45&quot;,&quot;2020-02-01 18:30&quot;));</span>
+<span class="fc" id="L440">		course3.setplanningentryname(&quot;数据结构&quot;);</span>
+<span class="fc" id="L441">		course3.setresource(new Teacher(&quot;123823199812251172&quot;,&quot;王宁&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+		
+<span class="fc" id="L443">		courselist1.add(course1);</span>
+<span class="fc" id="L444">		courselist1.add(course2);</span>
+<span class="fc" id="L445">		courselist2.add(course1);</span>
+<span class="fc" id="L446">		courselist2.add(course3);</span>
+		
+<span class="fc" id="L448">		List&lt;CourseEntry&lt;Teacher&gt;&gt; tempcourselist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L449">		tempcourselist1.add(course1);</span>
+<span class="fc" id="L450">		tempcourselist1.add(course2);</span>
+<span class="fc" id="L451">		List&lt;CourseEntry&lt;Teacher&gt;&gt; tempcourselist2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L452">		tempcourselist2.add(course1);</span>
+
+		
+<span class="fc" id="L455">		assertEquals(tempcourselist1,myapis.findEntryPerResource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;), courselist1));</span>
+<span class="fc" id="L456">		assertEquals(tempcourselist2,myapis.findEntryPerResource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;), courselist2));</span>
+		
+	    //
+<span class="fc" id="L459">        List&lt;FlightEntry&lt;Flight&gt;&gt; flightlist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L460">        List&lt;FlightEntry&lt;Flight&gt;&gt; flightlist2=new ArrayList&lt;&gt;();</span>
+		
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L465">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L466">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L467">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L468">		PlanningEntry originflight1=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L469">		FlightEntry&lt;Flight&gt; flight1=(FlightEntry&lt;Flight&gt;)originflight1;</span>
+		
+<span class="fc" id="L471">		flight1.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L472">		flight1.settimeslot(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L473">		flight1.setplanningentryname(&quot;AS1234&quot;);</span>
+<span class="fc" id="L474">		flight1.setresource(new Flight(&quot;A898&quot;,&quot;C88&quot;,100,2.5));</span>
+		
+		TwoLocationEntryImpl a5;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b5;
+		NoBlockableEntryImpl c5;
+<span class="fc" id="L479">		a5=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L480">		b5=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L481">		c5=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L482">		PlanningEntry originflight2=new FlightEntryFactory().getFlightEntry(a5, b5, c5); //用工厂方法创建对象</span>
+<span class="fc" id="L483">		FlightEntry&lt;Flight&gt; flight2=(FlightEntry&lt;Flight&gt;)originflight2;</span>
+		
+<span class="fc" id="L485">		flight2.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L486">		flight2.settimeslot(new Timeslot(&quot;2020-01-01 17:45&quot;,&quot;2020-01-01 19:30&quot;));</span>
+<span class="fc" id="L487">		flight2.setplanningentryname(&quot;AS1000&quot;);</span>
+<span class="fc" id="L488">		flight2.setresource(new Flight(&quot;A898&quot;,&quot;C88&quot;,100,2.5));</span>
+		
+		TwoLocationEntryImpl a6;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b6;
+		NoBlockableEntryImpl c6;
+<span class="fc" id="L493">		a6=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L494">		b6=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L495">		c6=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L496">		PlanningEntry originflight3=new FlightEntryFactory().getFlightEntry(a6, b6, c6); //用工厂方法创建对象</span>
+<span class="fc" id="L497">		FlightEntry&lt;Flight&gt; flight3=(FlightEntry&lt;Flight&gt;)originflight3;</span>
+		
+<span class="fc" id="L499">		flight3.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L500">		flight3.settimeslot(new Timeslot(&quot;2020-01-02 16:45&quot;,&quot;2020-01-02 18:30&quot;));</span>
+<span class="fc" id="L501">		flight3.setplanningentryname(&quot;AS0999&quot;);</span>
+<span class="fc" id="L502">		flight3.setresource(new Flight(&quot;A678&quot;,&quot;A28&quot;,100,2.5));</span>
+		
+<span class="fc" id="L504">		flightlist1.add(flight1);</span>
+<span class="fc" id="L505">		flightlist1.add(flight2);</span>
+<span class="fc" id="L506">		flightlist2.add(flight1);</span>
+<span class="fc" id="L507">		flightlist2.add(flight3);</span>
+		
+<span class="fc" id="L509">		List&lt;FlightEntry&lt;Flight&gt;&gt; tempflightlist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L510">		tempflightlist1.add(flight1);</span>
+<span class="fc" id="L511">		tempflightlist1.add(flight2);</span>
+<span class="fc" id="L512">		List&lt;FlightEntry&lt;Flight&gt;&gt; tempflightlist2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L513">		tempflightlist2.add(flight1);</span>
+
+		
+<span class="fc" id="L516">		assertEquals(tempflightlist1,myapis.findEntryPerResource(new Flight(&quot;A898&quot;,&quot;C88&quot;,100,2.5), flightlist1));</span>
+<span class="fc" id="L517">		assertEquals(tempflightlist2,myapis.findEntryPerResource(new Flight(&quot;A898&quot;,&quot;C88&quot;,100,2.5), flightlist2));</span>
+		
+		//
+<span class="fc" id="L520">        List&lt;TrainEntry&lt;Carriage&gt;&gt; trainlist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L521">        List&lt;TrainEntry&lt;Carriage&gt;&gt; trainlist2=new ArrayList&lt;&gt;();</span>
+		
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L526">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L527">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L528">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L529">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L530">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L532">		List&lt;Location&gt; alllocation1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L533">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L534">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L535">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L536">		train1.setlocations(alllocation1);</span>
+<span class="fc" id="L537">		List&lt;Timeslot&gt; alltime1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L538">		alltime1.add(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L539">		alltime1.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L540">		train1.settimeslot(alltime1);</span>
+<span class="fc" id="L541">		train1.setplanningentryname(&quot;G109&quot;);</span>
+<span class="fc" id="L542">		List&lt;Carriage&gt; allcarriage1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L543">		allcarriage1.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L544">		allcarriage1.add(new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L545">		train1.setresource(allcarriage1);</span>
+		
+		MultipleLacationEntryImpl a8;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b8;
+		BlockableEntryImpl c8;
+<span class="fc" id="L550">		a8=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L551">		b8=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L552">		c8=new BlockableEntryImpl();</span>
+<span class="fc" id="L553">		PlanningEntry origintrain2=new TrainEntryFactory().getTrainEntry(a8, b8, c8); //用工厂方法创建对象</span>
+<span class="fc" id="L554">		TrainEntry&lt;Carriage&gt; train2=(TrainEntry&lt;Carriage&gt;)origintrain2;</span>
+		
+<span class="fc" id="L556">		List&lt;Location&gt; alllocation2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L557">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L558">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L559">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L560">		train2.setlocations(alllocation2);</span>
+<span class="fc" id="L561">		List&lt;Timeslot&gt; alltime2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L562">		alltime2.add(new Timeslot(&quot;2020-01-01 14:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L563">		alltime2.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L564">		train2.settimeslot(alltime2);</span>
+<span class="fc" id="L565">		train2.setplanningentryname(&quot;G320&quot;);</span>
+<span class="fc" id="L566">		List&lt;Carriage&gt; allcarriage2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L567">		allcarriage2.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L568">		allcarriage2.add(new Carriage(&quot;AS03&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L569">		train2.setresource(allcarriage2);</span>
+		
+		MultipleLacationEntryImpl a9;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b9;
+		BlockableEntryImpl c9;
+<span class="fc" id="L574">		a9=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L575">		b9=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L576">		c9=new BlockableEntryImpl();</span>
+<span class="fc" id="L577">		PlanningEntry origintrain3=new TrainEntryFactory().getTrainEntry(a9, b9, c9); //用工厂方法创建对象</span>
+<span class="fc" id="L578">		TrainEntry&lt;Carriage&gt; train3=(TrainEntry&lt;Carriage&gt;)origintrain3;</span>
+		
+<span class="fc" id="L580">		List&lt;Location&gt; alllocation3=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L581">		alllocation3.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L582">		alllocation3.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L583">		alllocation3.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L584">		train3.setlocations(alllocation3);</span>
+<span class="fc" id="L585">		List&lt;Timeslot&gt; alltime3=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L586">		alltime3.add(new Timeslot(&quot;2020-01-01 14:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L587">		alltime3.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L588">		train3.settimeslot(alltime3);</span>
+<span class="fc" id="L589">		train3.setplanningentryname(&quot;G1000&quot;);</span>
+<span class="fc" id="L590">		List&lt;Carriage&gt; allcarriage3=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L591">		allcarriage3.add(new Carriage(&quot;AS05&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L592">		allcarriage3.add(new Carriage(&quot;AS06&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L593">		train3.setresource(allcarriage3);</span>
+		
+<span class="fc" id="L595">		trainlist1.add(train1);</span>
+<span class="fc" id="L596">		trainlist1.add(train2);</span>
+<span class="fc" id="L597">		trainlist2.add(train1);</span>
+<span class="fc" id="L598">		trainlist2.add(train3);</span>
+		
+<span class="fc" id="L600">		List&lt;TrainEntry&lt;Carriage&gt;&gt; temptrainlist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L601">		temptrainlist1.add(train1);</span>
+<span class="fc" id="L602">		temptrainlist1.add(train2);</span>
+<span class="fc" id="L603">		List&lt;TrainEntry&lt;Carriage&gt;&gt; temptrainlist2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L604">		temptrainlist2.add(train1);</span>
+
+		
+<span class="fc" id="L607">		assertEquals(temptrainlist1,myapis.findEntryPerResource(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;), trainlist1));</span>
+<span class="fc" id="L608">		assertEquals(temptrainlist2,myapis.findEntryPerResource(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;), trainlist2));</span>
+		
+		//
+<span class="fc" id="L611">        List&lt;CommonPlanningEntry&gt; templist=new ArrayList&lt;&gt;();</span>
+		
+<span class="fc" id="L613">		CommonPlanningEntry tempentry=new CommonPlanningEntry&lt;&gt;();</span>
+<span class="fc" id="L614">		templist.add(tempentry);</span>
+		
+<span class="fc" id="L616">		assertEquals(null,myapis.findEntryPerResource(&quot;abc&quot;,templist));</span>
+<span class="fc" id="L617">	}</span>
+	
+	/* Testing strategy
+	 * 测试findPreEntryPerResource方法
+	 * 按照PlanningEntry的种类划分：CourseEntry,FlightEntry,TrainEntry
+	 * 按照是否有前序计划项划分：有前序计划项，无前序计划项
+	 * 按照输入的集合划分：为计划项集合，不为计划项集合
+     * 覆盖每个取值如下：
+     */
+	@Test
+	public void findPreEntryPerResourcetest() throws ParseException, BeginEndTimeException, SameLocationException, SameResourceException, ConflictTimeException, LessThanZeroException{
+<span class="fc" id="L628">		String weidu=&quot;北纬40度&quot;,jingdu=&quot;东经112度&quot;;</span>
+		//
+<span class="fc" id="L630">		List&lt;CourseEntry&lt;Teacher&gt;&gt; courselist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L631">		List&lt;CourseEntry&lt;Teacher&gt;&gt; courselist2=new ArrayList&lt;&gt;();</span>
+		
+		OneLocationEntryImpl a1;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b1;
+		NoBlockableEntryImpl c1;
+<span class="fc" id="L636">		a1=new OneLocationEntryImpl();</span>
+<span class="fc" id="L637">		b1=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L638">		c1=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L639">		PlanningEntry origincourse1=new CourseEntryFactory().getCourseEntry(a1, b1, c1); //用工厂方法创建对象</span>
+<span class="fc" id="L640">		CourseEntry&lt;Teacher&gt; course1=(CourseEntry&lt;Teacher&gt;)origincourse1;</span>
+		
+<span class="fc" id="L642">		course1.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L643">		course1.settimeslot(new Timeslot(&quot;2020-01-01 15:45&quot;,&quot;2020-01-01 17:30&quot;));</span>
+<span class="fc" id="L644">		course1.setplanningentryname(&quot;软件构造&quot;);</span>
+<span class="fc" id="L645">		course1.setresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+		
+		OneLocationEntryImpl a2;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b2;
+		NoBlockableEntryImpl c2;
+<span class="fc" id="L650">		a2=new OneLocationEntryImpl();</span>
+<span class="fc" id="L651">		b2=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L652">		c2=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L653">		PlanningEntry origincourse2=new CourseEntryFactory().getCourseEntry(a2, b2, c2); //用工厂方法创建对象</span>
+<span class="fc" id="L654">		CourseEntry&lt;Teacher&gt; course2=(CourseEntry&lt;Teacher&gt;)origincourse2;</span>
+		
+<span class="fc" id="L656">		course2.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L657">		course2.settimeslot(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L658">		course2.setplanningentryname(&quot;计算机系统&quot;);</span>
+<span class="fc" id="L659">		course2.setresource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+		
+		OneLocationEntryImpl a3;
+		OneDistinguishResourceEntryImpl&lt;Teacher&gt; b3;
+		NoBlockableEntryImpl c3;
+<span class="fc" id="L664">		a3=new OneLocationEntryImpl();</span>
+<span class="fc" id="L665">		b3=new OneDistinguishResourceEntryImpl&lt;Teacher&gt;();</span>
+<span class="fc" id="L666">		c3=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L667">		PlanningEntry origincourse3=new CourseEntryFactory().getCourseEntry(a3, b3, c3); //用工厂方法创建对象</span>
+<span class="fc" id="L668">		CourseEntry&lt;Teacher&gt; course3=(CourseEntry&lt;Teacher&gt;)origincourse3;</span>
+		
+<span class="fc" id="L670">		course3.setlocations(new CourseLocation(weidu,jingdu,&quot;正心楼32&quot;));</span>
+<span class="fc" id="L671">		course3.settimeslot(new Timeslot(&quot;2020-02-01 16:45&quot;,&quot;2020-02-01 18:30&quot;));</span>
+<span class="fc" id="L672">		course3.setplanningentryname(&quot;数据结构&quot;);</span>
+<span class="fc" id="L673">		course3.setresource(new Teacher(&quot;123823199812251172&quot;,&quot;王宁&quot;,&quot;男&quot;,&quot;讲师&quot;));</span>
+		
+<span class="fc" id="L675">		courselist1.add(course1);</span>
+<span class="fc" id="L676">		courselist1.add(course2);</span>
+<span class="fc" id="L677">		courselist2.add(course1);</span>
+<span class="fc" id="L678">		courselist2.add(course3);</span>
+		
+<span class="fc" id="L680">		assertEquals(course1,myapis.findPreEntryPerResource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;), course2, courselist1));</span>
+<span class="fc" id="L681">		assertEquals(null,myapis.findPreEntryPerResource(new Teacher(&quot;422823199812254452&quot;,&quot;余涛&quot;,&quot;男&quot;,&quot;讲师&quot;), course1, courselist1));</span>
+		
+	    //
+<span class="fc" id="L684">        List&lt;FlightEntry&lt;Flight&gt;&gt; flightlist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L685">        List&lt;FlightEntry&lt;Flight&gt;&gt; flightlist2=new ArrayList&lt;&gt;();</span>
+		
+		TwoLocationEntryImpl a4;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b4;
+		NoBlockableEntryImpl c4;
+<span class="fc" id="L690">		a4=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L691">		b4=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L692">		c4=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L693">		PlanningEntry originflight1=new FlightEntryFactory().getFlightEntry(a4, b4, c4); //用工厂方法创建对象</span>
+<span class="fc" id="L694">		FlightEntry&lt;Flight&gt; flight1=(FlightEntry&lt;Flight&gt;)originflight1;</span>
+		
+<span class="fc" id="L696">		flight1.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L697">		flight1.settimeslot(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L698">		flight1.setplanningentryname(&quot;AS1234&quot;);</span>
+<span class="fc" id="L699">		flight1.setresource(new Flight(&quot;A898&quot;,&quot;C88&quot;,100,2.5));</span>
+		
+		TwoLocationEntryImpl a5;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b5;
+		NoBlockableEntryImpl c5;
+<span class="fc" id="L704">		a5=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L705">		b5=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L706">		c5=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L707">		PlanningEntry originflight2=new FlightEntryFactory().getFlightEntry(a5, b5, c5); //用工厂方法创建对象</span>
+<span class="fc" id="L708">		FlightEntry&lt;Flight&gt; flight2=(FlightEntry&lt;Flight&gt;)originflight2;</span>
+		
+<span class="fc" id="L710">		flight2.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L711">		flight2.settimeslot(new Timeslot(&quot;2020-01-01 17:45&quot;,&quot;2020-01-01 19:30&quot;));</span>
+<span class="fc" id="L712">		flight2.setplanningentryname(&quot;AS1000&quot;);</span>
+<span class="fc" id="L713">		flight2.setresource(new Flight(&quot;A898&quot;,&quot;C88&quot;,100,2.5));</span>
+		
+		TwoLocationEntryImpl a6;
+		OneDistinguishResourceEntryImpl&lt;Flight&gt; b6;
+		NoBlockableEntryImpl c6;
+<span class="fc" id="L718">		a6=new TwoLocationEntryImpl();</span>
+<span class="fc" id="L719">		b6=new OneDistinguishResourceEntryImpl&lt;Flight&gt;();</span>
+<span class="fc" id="L720">		c6=new NoBlockableEntryImpl();</span>
+<span class="fc" id="L721">		PlanningEntry originflight3=new FlightEntryFactory().getFlightEntry(a6, b6, c6); //用工厂方法创建对象</span>
+<span class="fc" id="L722">		FlightEntry&lt;Flight&gt; flight3=(FlightEntry&lt;Flight&gt;)originflight3;</span>
+		
+<span class="fc" id="L724">		flight3.setlocations(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;), new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L725">		flight3.settimeslot(new Timeslot(&quot;2020-01-02 16:45&quot;,&quot;2020-01-02 18:30&quot;));</span>
+<span class="fc" id="L726">		flight3.setplanningentryname(&quot;AS0999&quot;);</span>
+<span class="fc" id="L727">		flight3.setresource(new Flight(&quot;A678&quot;,&quot;A28&quot;,100,2.5));</span>
+		
+<span class="fc" id="L729">		flightlist1.add(flight1);</span>
+<span class="fc" id="L730">		flightlist1.add(flight2);</span>
+<span class="fc" id="L731">		flightlist2.add(flight1);</span>
+<span class="fc" id="L732">		flightlist2.add(flight3);</span>
+		
+<span class="fc" id="L734">		assertEquals(flight1,myapis.findPreEntryPerResource(new Flight(&quot;A898&quot;,&quot;C88&quot;,100,2.5), flight2, flightlist1));</span>
+<span class="fc" id="L735">		assertEquals(null,myapis.findPreEntryPerResource(new Flight(&quot;A898&quot;,&quot;C88&quot;,100,2.5), flight1, flightlist1));</span>
+		
+		//
+<span class="fc" id="L738">        List&lt;TrainEntry&lt;Carriage&gt;&gt; trainlist1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L739">        List&lt;TrainEntry&lt;Carriage&gt;&gt; trainlist2=new ArrayList&lt;&gt;();</span>
+		
+		MultipleLacationEntryImpl a7;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b7;
+		BlockableEntryImpl c7;
+<span class="fc" id="L744">		a7=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L745">		b7=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L746">		c7=new BlockableEntryImpl();</span>
+<span class="fc" id="L747">		PlanningEntry origintrain1=new TrainEntryFactory().getTrainEntry(a7, b7, c7); //用工厂方法创建对象</span>
+<span class="fc" id="L748">		TrainEntry&lt;Carriage&gt; train1=(TrainEntry&lt;Carriage&gt;)origintrain1;</span>
+		
+<span class="fc" id="L750">		List&lt;Location&gt; alllocation1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L751">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L752">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L753">		alllocation1.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L754">		train1.setlocations(alllocation1);</span>
+<span class="fc" id="L755">		List&lt;Timeslot&gt; alltime1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L756">		alltime1.add(new Timeslot(&quot;2020-01-01 16:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L757">		alltime1.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L758">		train1.settimeslot(alltime1);</span>
+<span class="fc" id="L759">		train1.setplanningentryname(&quot;G109&quot;);</span>
+<span class="fc" id="L760">		List&lt;Carriage&gt; allcarriage1=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L761">		allcarriage1.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L762">		allcarriage1.add(new Carriage(&quot;AS02&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L763">		train1.setresource(allcarriage1);</span>
+		
+		MultipleLacationEntryImpl a8;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b8;
+		BlockableEntryImpl c8;
+<span class="fc" id="L768">		a8=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L769">		b8=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L770">		c8=new BlockableEntryImpl();</span>
+<span class="fc" id="L771">		PlanningEntry origintrain2=new TrainEntryFactory().getTrainEntry(a8, b8, c8); //用工厂方法创建对象</span>
+<span class="fc" id="L772">		TrainEntry&lt;Carriage&gt; train2=(TrainEntry)origintrain2;</span>
+		
+<span class="fc" id="L774">		List&lt;Location&gt; alllocation2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L775">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L776">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L777">		alllocation2.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L778">		train2.setlocations(alllocation2);</span>
+<span class="fc" id="L779">		List&lt;Timeslot&gt; alltime2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L780">		alltime2.add(new Timeslot(&quot;2020-01-01 14:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L781">		alltime2.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L782">		train2.settimeslot(alltime2);</span>
+<span class="fc" id="L783">		train2.setplanningentryname(&quot;G320&quot;);</span>
+<span class="fc" id="L784">		List&lt;Carriage&gt; allcarriage2=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L785">		allcarriage2.add(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L786">		allcarriage2.add(new Carriage(&quot;AS03&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L787">		train2.setresource(allcarriage2);</span>
+		
+		MultipleLacationEntryImpl a9;
+		MultipleSortedResourceEntryImpl&lt;Carriage&gt; b9;
+		BlockableEntryImpl c9;
+<span class="fc" id="L792">		a9=new MultipleLacationEntryImpl();</span>
+<span class="fc" id="L793">		b9=new MultipleSortedResourceEntryImpl&lt;Carriage&gt;();</span>
+<span class="fc" id="L794">		c9=new BlockableEntryImpl();</span>
+<span class="fc" id="L795">		PlanningEntry origintrain3=new TrainEntryFactory().getTrainEntry(a9, b9, c9); //用工厂方法创建对象</span>
+<span class="fc" id="L796">		TrainEntry&lt;Carriage&gt; train3=(TrainEntry&lt;Carriage&gt;)origintrain3;</span>
+		
+<span class="fc" id="L798">		List&lt;Location&gt; alllocation3=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L799">		alllocation3.add(new FlightTrainLocation(weidu,jingdu,&quot;北京&quot;));</span>
+<span class="fc" id="L800">		alllocation3.add(new FlightTrainLocation(weidu,jingdu,&quot;武汉&quot;));</span>
+<span class="fc" id="L801">		alllocation3.add(new FlightTrainLocation(weidu,jingdu,&quot;南京&quot;));</span>
+<span class="fc" id="L802">		train3.setlocations(alllocation3);</span>
+<span class="fc" id="L803">		List&lt;Timeslot&gt; alltime3=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L804">		alltime3.add(new Timeslot(&quot;2020-01-01 14:45&quot;,&quot;2020-01-01 18:30&quot;));</span>
+<span class="fc" id="L805">		alltime3.add(new Timeslot(&quot;2020-01-01 18:40&quot;,&quot;2020-01-01 20:30&quot;));</span>
+<span class="fc" id="L806">		train3.settimeslot(alltime3);</span>
+<span class="fc" id="L807">		train3.setplanningentryname(&quot;G1000&quot;);</span>
+<span class="fc" id="L808">		List&lt;Carriage&gt; allcarriage3=new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L809">		allcarriage3.add(new Carriage(&quot;AS05&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L810">		allcarriage3.add(new Carriage(&quot;AS06&quot;,&quot;二等座&quot;,100,&quot;2011&quot;));</span>
+<span class="fc" id="L811">		train3.setresource(allcarriage3);</span>
+		
+<span class="fc" id="L813">		trainlist1.add(train1);</span>
+<span class="fc" id="L814">		trainlist1.add(train2);</span>
+<span class="fc" id="L815">		trainlist2.add(train1);</span>
+<span class="fc" id="L816">		trainlist2.add(train3);</span>
+		
+<span class="fc" id="L818">		assertEquals(train2,myapis.findPreEntryPerResource(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;), train1, trainlist1));</span>
+<span class="fc" id="L819">		assertEquals(null,myapis.findPreEntryPerResource(new Carriage(&quot;AS01&quot;,&quot;二等座&quot;,100,&quot;2011&quot;), train2, trainlist1));</span>
+		
+		//
+<span class="fc" id="L822">        List&lt;CommonPlanningEntry&gt; templist=new ArrayList&lt;&gt;();</span>
+		
+<span class="fc" id="L824">		CommonPlanningEntry tempentry=new CommonPlanningEntry&lt;&gt;();</span>
+<span class="fc" id="L825">		templist.add(tempentry);</span>
+		
+<span class="fc" id="L827">		assertEquals(null,myapis.findPreEntryPerResource(&quot;abc&quot;, tempentry, templist));</span>
+<span class="fc" id="L828">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>ParserTest（2） (2020-6-4 21:23:27)</div></body></html>
